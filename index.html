@@ -1,0 +1,2583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jodee's Life OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #0e0a0a;
+    --bg2:        #160e0e;
+    --bg3:        #1e1414;
+    /* teal — header + title only */
+    --teal:       #0d8c8c;
+    --teal-lt:    #10aaaa;
+    --teal-glow:  0 0 14px #0d8c8c99, 0 0 32px #0d8c8c44;
+    --teal-dim:   #061e1e;
+    /* maroon — primary content accent */
+    --maroon:     #b02030;
+    --maroon-lt:  #d02840;
+    --maroon-glow:0 0 12px #b0203088, 0 0 28px #b0203044;
+    --maroon-dim: #2a0810;
+    /* teal — Reedle Night, water, secondary content */
+    --green:      #0d8a7a;
+    --green-lt:   #10aa90;
+    --green-glow: 0 0 12px #0d8a7a88, 0 0 28px #0d8a7a33;
+    --green-dim:  #041e18;
+    /* mustard — highlights, CTAs, labels */
+    --mustard:    #e8b020;
+    --mustard-lt: #f2c040;
+    --mustard-glow:0 0 14px #e8b02099, 0 0 32px #e8b02044;
+    --mustard-dim:#271e00;
+    --text:       #f0e8e0;
+    --text-soft:  #a09080;
+    --text-muted: #5a4840;
+    --border:     #2a1818;
+    --border2:    #3a2020;
+    --card:       #130c0c;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 32px 16px 90px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .greeting {
+    font-size: 13px; font-weight: 400;
+    color: var(--maroon-lt);
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    text-shadow: var(--maroon-glow);
+  }
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 62px; letter-spacing: 0.06em;
+    line-height: 0.9; margin-bottom: 14px;
+    color: var(--text);
+  }
+  .header h1 .glow-m { color: var(--teal); text-shadow: var(--teal-glow); }
+  .header h1 .glow-y { color: var(--mustard); text-shadow: var(--mustard-glow); }
+  .date-line {
+    font-size: 12px; color: var(--text-muted);
+    font-weight: 300; letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+  .day-badge {
+    display: inline-block;
+    background: var(--maroon-dim);
+    color: var(--maroon-lt);
+    border: 1px solid var(--maroon);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px; letter-spacing: 0.16em;
+    padding: 5px 16px 4px; border-radius: 3px;
+    box-shadow: var(--maroon-glow);
+  }
+
+  /* recovery banner */
+  .recovery-banner {
+    background: #1e0a0e;
+    border: 1px solid var(--maroon);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    box-shadow: var(--maroon-glow);
+  }
+  .recovery-banner .rb-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px; letter-spacing: 0.14em;
+    color: var(--maroon); text-shadow: var(--maroon-glow);
+    margin-bottom: 6px;
+  }
+  .recovery-banner .rb-body { font-size: 12px; color: var(--text-soft); line-height: 1.7; }
+  .recovery-banner .rb-body strong { color: var(--mustard); }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex; gap: 6px; margin-bottom: 24px;
+    overflow-x: auto; padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    justify-content: center;
+  }
+  .tabs::-webkit-scrollbar { display:none; }
+  .tab {
+    flex-shrink: 0; padding: 7px 14px;
+    border-radius: 3px; border: 1px solid var(--border2);
+    background: var(--bg2); color: var(--text-muted);
+    font-size: 10px; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; cursor: pointer;
+    transition: all 0.18s; font-family: 'Inter', sans-serif;
+  }
+  .tab.active {
+    background: var(--mustard-dim);
+    border-color: var(--mustard);
+    color: var(--mustard);
+    box-shadow: var(--mustard-glow);
+  }
+  .tab:hover:not(.active) { border-color: var(--mustard); color: var(--mustard); }
+
+  /* ── SECTION ── */
+  .section { display:none; }
+  .section.active { display:block; animation: fadeUp 0.22s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 6px; padding: 18px; margin-bottom: 12px;
+  }
+  .card.glow-card-m { border-color: var(--maroon); box-shadow: 0 0 14px #b0203033; }
+  .card.glow-card-g { border-color: var(--green);  box-shadow: 0 0 14px #0d8a7a22; }
+  .card.glow-card-y { border-color: var(--mustard); box-shadow: 0 0 14px #e8b02022; }
+
+  .card-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  }
+  .card-icon {
+    width: 36px; height: 36px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; flex-shrink: 0;
+  }
+  .icon-m { background: var(--maroon-dim); }
+  .icon-g { background: var(--green-dim); }
+  .icon-y { background: var(--mustard-dim); }
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 0.08em; color: var(--text);
+  }
+  .card-subtitle { font-size: 11px; color: var(--text-muted); font-weight: 300; margin-top: 2px; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 12px; letter-spacing: 0.22em;
+    color: var(--mustard); text-shadow: var(--mustard-glow);
+    margin: 22px 0 10px;
+  }
+
+  /* ── CHECKLIST ── */
+  .checklist { list-style:none; }
+  .checklist li {
+    display:flex; align-items:flex-start; gap:12px;
+    padding:11px 0; border-bottom:1px solid var(--bg3);
+    cursor:pointer; transition:opacity 0.2s;
+  }
+  .checklist li:last-child { border-bottom:none; padding-bottom:0; }
+  .checklist li:first-child { padding-top:0; }
+  .checklist li.done { opacity:0.3; }
+  .checklist li.done .item-text { text-decoration:line-through; }
+  .check-box {
+    width:20px; height:20px; border-radius:3px;
+    border:1.5px solid var(--border2); flex-shrink:0; margin-top:1px;
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.15s; background:transparent; font-size:11px; color:white;
+  }
+  li.done .check-box { background:var(--maroon); border-color:var(--maroon); box-shadow:var(--maroon-glow); }
+  .item-text { font-size:14px; line-height:1.45; font-weight:400; }
+  .item-note { font-size:11px; color:var(--text-muted); margin-top:3px; font-weight:300; }
+  .item-warn { font-size:11px; color:var(--maroon); margin-top:3px; font-weight:500; }
+
+  /* ── PROGRESS ── */
+  .progress-wrap { margin:4px 0 20px; }
+  .progress-bar-bg { background:var(--bg3); border-radius:2px; height:4px; overflow:hidden; }
+  .progress-bar-fill {
+    height:100%; border-radius:2px;
+    background:linear-gradient(90deg, var(--maroon), var(--mustard));
+    box-shadow: 0 0 8px #e8b02055;
+    transition:width 0.4s ease;
+  }
+  .progress-meta {
+    display:flex; justify-content:space-between;
+    font-size:10px; color:var(--text-muted);
+    margin-top:5px; letter-spacing:0.06em; text-transform:uppercase;
+  }
+
+  /* ── EDIT NOTE / ALERT ── */
+  .edit-note {
+    background: var(--mustard-dim); border-left:3px solid var(--mustard);
+    border-radius:0 4px 4px 0; padding:10px 14px;
+    font-size:12px; color:var(--text-soft); margin-bottom:14px; line-height:1.6;
+  }
+  .alert-note {
+    background:#1e0a0e; border-left:3px solid var(--maroon);
+    border-radius:0 4px 4px 0; padding:10px 14px;
+    font-size:12px; color:#d09090; margin-bottom:14px; line-height:1.6;
+  }
+
+  /* ── WATER ── */
+  .water-time-row {
+    display:flex; align-items:center; gap:10px;
+    padding:9px 0; border-bottom:1px solid var(--bg3);
+  }
+  .water-time-row:last-child { border-bottom:none; }
+  .water-time { font-size:11px; color:var(--text-muted); width:58px; flex-shrink:0; }
+  .water-label { font-size:13px; flex:1; }
+  .cup {
+    width:20px; height:26px; border-radius:3px;
+    border:1.5px solid var(--border2); background:transparent;
+    cursor:pointer; transition:background 0.15s,border-color 0.15s,box-shadow 0.15s;
+  }
+  .cup.filled { background:var(--green); border-color:var(--green); box-shadow:var(--green-glow); }
+  .cup.current-zone { border-color:var(--mustard); }
+  .water-total {
+    margin-top:14px; display:flex; align-items:center; justify-content:space-between;
+    background:var(--bg3); border-radius:4px; padding:12px 16px;
+    border:1px solid var(--green); box-shadow:0 0 12px #0d8a7a22;
+  }
+  .water-total-label { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; }
+  .water-total-count {
+    font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:0.06em;
+    color:var(--green); text-shadow:var(--green-glow);
+  }
+
+  /* ── HAIR BADGE ── */
+  .hair-badge {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:6px 14px; border-radius:3px;
+    font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:0.1em;
+    margin-bottom:14px;
+  }
+  .hair-badge.wash { background:var(--maroon-dim); color:var(--maroon); border:1px solid var(--maroon); box-shadow:var(--maroon-glow); }
+  .hair-badge.no-wash { background:var(--green-dim); color:var(--green); border:1px solid var(--green); box-shadow:var(--green-glow); }
+
+  /* ── ROUTINE STEPS ── */
+  .routine-step {
+    display:flex; align-items:flex-start; gap:14px;
+    padding:12px 0; border-bottom:1px solid var(--bg3);
+  }
+  .routine-step:last-child { border-bottom:none; }
+  .step-order {
+    width:26px; height:26px; border-radius:3px;
+    background:var(--maroon-dim); color:var(--mustard);
+    font-family:'Bebas Neue',sans-serif; font-size:14px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .step-order.g { background:var(--green-dim); color:var(--green); }
+  .step-name { font-size:14px; font-weight:500; }
+  .step-product { font-size:11px; color:var(--text-muted); margin-top:3px; font-style:italic; }
+  .step-rule { font-size:11px; color:var(--maroon); margin-top:3px; }
+
+  /* ── NIGHT TYPE CARDS ── */
+  .night-type {
+    border:1px solid var(--border2); border-radius:5px;
+    padding:12px 14px; margin-bottom:8px;
+    background:var(--bg3);
+  }
+  .night-type-label {
+    font-family:'Bebas Neue',sans-serif; font-size:13px;
+    letter-spacing:0.1em; margin-bottom:8px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .night-freq {
+    font-size:10px; font-family:'Inter',sans-serif;
+    font-weight:500; letter-spacing:0.08em;
+    padding:2px 8px; border-radius:10px;
+  }
+  .nt-retinol .night-type-label { color:var(--mustard); }
+  .nt-retinol .night-freq { background:var(--mustard-dim); color:var(--mustard); }
+  .nt-reedle .night-type-label { color:var(--green); }
+  .nt-reedle .night-freq { background:var(--green-dim); color:var(--green); }
+  .nt-recovery .night-type-label { color:var(--text-soft); }
+  .nt-recovery .night-freq { background:var(--bg2); color:var(--text-muted); }
+  .nt-bha .night-type-label { color:#a080d0; }
+  .nt-bha .night-freq { background:#1a1030; color:#a080d0; }
+  .nt-steps { font-size:12px; color:var(--text-soft); line-height:1.8; }
+  .nt-step { display:flex; gap:8px; align-items:flex-start; }
+  .nt-dot { width:5px; height:5px; border-radius:50%; background:var(--mustard); flex-shrink:0; margin-top:6px; }
+
+  /* ── WEEK GRID ── */
+  .week-grid {
+    display:grid; grid-template-columns:repeat(7,1fr);
+    gap:5px; margin-bottom:14px;
+  }
+  .week-day {
+    text-align:center; padding:10px 3px; border-radius:4px;
+    border:1px solid var(--border); background:var(--bg2);
+  }
+  .week-day.today {
+    background:var(--maroon-dim); border-color:var(--maroon);
+    box-shadow:var(--maroon-glow);
+  }
+  .wd-label {
+    font-family:'Bebas Neue',sans-serif; font-size:12px;
+    letter-spacing:0.06em; color:var(--text-soft); margin-bottom:2px;
+  }
+  .week-day.today .wd-label { color:var(--maroon); text-shadow:var(--maroon-glow); }
+  .wd-date { font-size:10px; color:var(--text-muted); margin-bottom:5px; }
+  .wd-dots { display:flex; gap:3px; justify-content:center; flex-wrap:wrap; }
+  .dot { width:5px; height:5px; border-radius:50%; display:inline-block; }
+  .dot-m { background:var(--maroon); box-shadow:0 0 4px var(--maroon); }
+  .dot-g { background:var(--green);  box-shadow:0 0 4px var(--green); }
+  .dot-y { background:var(--mustard);box-shadow:0 0 4px var(--mustard); }
+
+  /* ── LEGEND ── */
+  .legend { display:flex; flex-wrap:wrap; gap:12px; }
+  .legend-item { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--text-muted); }
+
+  /* ── EXERCISE ── */
+  .exercise-day { padding:12px 0; border-bottom:1px solid var(--bg3); }
+  .exercise-day:last-child { border-bottom:none; }
+  .exercise-day-label {
+    font-family:'Bebas Neue',sans-serif; font-size:14px;
+    letter-spacing:0.12em; color:var(--mustard);
+    text-shadow:var(--mustard-glow); margin-bottom:3px;
+  }
+  .exercise-detail { font-size:14px; color:var(--text); }
+  .exercise-note { font-size:11px; color:var(--text-muted); font-style:italic; margin-top:2px; }
+
+  /* ── PILLS ── */
+  .pill { display:inline-block; padding:3px 10px; border-radius:3px; font-size:11px; font-weight:500; margin:2px; }
+  .pill-m { background:var(--maroon-dim); color:var(--maroon); }
+  .pill-g { background:var(--green-dim);  color:var(--green); }
+  .pill-y { background:var(--mustard-dim);color:var(--mustard); }
+
+  /* ── MONTH ROW ── */
+  .month-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:11px 0; border-bottom:1px solid var(--bg3); font-size:13px; gap:10px;
+  }
+  .month-row:last-child { border-bottom:none; }
+  .month-row-label { color:var(--text-soft); flex:1; }
+  .month-row-pills { display:flex; flex-wrap:wrap; gap:4px; flex-shrink:0; }
+
+  /* ── HAIR STEP ── */
+  .hair-step {
+    display:flex; align-items:flex-start; gap:10px;
+    padding:8px 0; font-size:13px; border-bottom:1px solid var(--bg3);
+  }
+  .hair-step:last-child { border-bottom:none; }
+  .h-num {
+    font-family:'Bebas Neue',sans-serif; font-size:13px;
+    letter-spacing:0.06em; color:var(--mustard);
+    text-shadow:var(--mustard-glow); width:22px; flex-shrink:0;
+  }
+  .h-sub { font-size:11px; color:var(--text-muted); margin-top:2px; font-style:italic; }
+
+  /* ── MED ROW ── */
+  .med-row {
+    padding:10px 0; border-bottom:1px solid var(--bg3);
+  }
+  .med-row:last-child { border-bottom:none; }
+  .med-name { font-size:13px; font-weight:500; color:var(--text); }
+  .med-type { font-size:11px; color:var(--text-muted); margin-top:2px; }
+  .med-warn { font-size:11px; color:var(--maroon); margin-top:2px; font-weight:500; }
+
+  /* ── SUPPLEMENT BUTTONS ── */
+  .supp-btn {
+    flex:1; padding:8px 4px; border-radius:4px;
+    border:1px solid var(--border2); background:var(--bg3);
+    color:var(--text-muted); font-size:12px; font-weight:500;
+    cursor:pointer; transition:all 0.15s; font-family:'Inter',sans-serif;
+  }
+  .supp-btn.active-y { background:var(--mustard-dim); border-color:var(--mustard); color:var(--mustard); box-shadow:var(--mustard-glow); }
+  .supp-btn.active-g { background:var(--green-dim); border-color:var(--green); color:var(--green); box-shadow:var(--green-glow); }
+  .supp-btn.active-m { background:var(--maroon-dim); border-color:var(--maroon); color:var(--maroon); box-shadow:var(--maroon-glow); }
+
+  .supp-item {
+    display:flex; align-items:flex-start; gap:10px;
+    padding:9px 0; border-bottom:1px solid var(--bg3); font-size:13px;
+  }
+  .supp-item:last-child { border-bottom:none; padding-bottom:0; }
+  .supp-item:first-child { padding-top:0; }
+  .supp-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+  .supp-name { font-weight:500; }
+  .supp-why { font-size:11px; color:var(--text-muted); margin-top:2px; }
+  .supp-skip { font-size:11px; color:var(--text-muted); font-style:italic; opacity:0.6; }
+
+  /* ── RESET ── */
+  .reset-btn {
+    position:fixed; bottom:20px; right:16px;
+    background:var(--maroon-dim); color:var(--maroon);
+    border:1px solid var(--maroon); border-radius:3px;
+    padding:11px 20px;
+    font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:0.14em;
+    cursor:pointer; box-shadow:var(--maroon-glow); transition:background 0.15s;
+  }
+  .reset-btn:hover { background:var(--maroon); color:var(--bg); }
+  .today-btn {
+    position:fixed; bottom:20px; left:16px;
+    background:var(--mustard-dim); color:var(--mustard);
+    border:1px solid var(--mustard); border-radius:3px;
+    padding:11px 18px;
+    font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:0.14em;
+    cursor:pointer; box-shadow:var(--mustard-glow); transition:all 0.15s;
+    display:none;
+  }
+  .today-btn:hover { background:var(--mustard); color:var(--bg); }
+  .today-btn.visible { display:block; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="greeting" id="greeting-text"></div>
+  <h1><span class="glow-m">LIFE</span><br><span class="glow-y">OS</span></h1>
+  <div class="date-line" id="date-line">—</div>
+  <div class="day-badge" id="day-badge">—</div>
+</div>
+
+<!-- RECOVERY BANNER (shown only during recovery period) -->
+<div class="recovery-banner" id="recovery-banner">
+  <div class="rb-title">⚕ POST-PROCEDURE MODE — MELLOW CLINIC · Apr 24</div>
+  <div class="rb-body">
+    <strong>Meds:</strong> 엠피디엘정 + 인데놀정 + 미노씬캡슐 · 2x daily with food (morning + evening) · 3-day course<br>
+    <strong>Skin:</strong> No actives. Minimal routine only — gentle mist, barrier cream, SPF.<br>
+    <strong>Piercings:</strong> Hypochlorous acid spray morning + night · Do not rotate jewelry · No sleeping on pierced side<br>
+    <strong>Jaw:</strong> May look bigger (swelling) until Day 7–14 — normal, not sagging
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('today',this)">✅ Today</button>
+  <button class="tab" onclick="switchTab('drinks',this)">💧 Drinks</button>
+  <button class="tab" onclick="switchTab('food',this)">🍽 Food</button>
+  <button class="tab" onclick="switchTab('skincare',this)">✨ Skincare</button>
+  <button class="tab" onclick="switchTab('hair',this)">🌿 Hair</button>
+  <button class="tab" onclick="switchTab('exercise',this)">🏃 Exercise</button>
+  <button class="tab" onclick="switchTab('supplements',this)">💊 Supplements</button>
+  <button class="tab" onclick="switchTab('sleep',this)">😴 Sleep</button>
+  <button class="tab" onclick="switchTab('content',this)">🎥 Content</button>
+  <button class="tab" onclick="switchTab('chores',this)">🧹 Chores</button>
+  <button class="tab" onclick="switchTab('week',this)">📅 Week</button>
+  <button class="tab" onclick="switchTab('monthly',this)">🗓 Monthly</button>
+  <button class="tab" onclick="switchTab('patterns',this)">📊 Patterns</button>
+  <button class="tab" onclick="switchTab('settings',this)">⚙️ Settings</button>
+  <button class="tab" onclick="switchTab('recovery',this)">⚕ Recovery</button>
+</div>
+
+<!-- TODAY -->
+<div class="section active" id="tab-today">
+  <div class="edit-note">✏️ Customize medication names and supplement timing to match your actual schedule.</div>
+  <div id="today-checklist"></div>
+  <div class="progress-wrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="today-progress" style="width:0%"></div></div>
+    <div class="progress-meta">
+      <span id="progress-text">0 of 0 done</span>
+      <span id="progress-pct">0%</span>
+    </div>
+  </div>
+</div>
+
+<!-- DRINKS -->
+<div class="section" id="tab-drinks">
+
+  <div class="section-label">Water</div>
+  <div class="card glow-card-g">
+    <div class="card-header">
+      <div class="card-icon icon-g">💧</div>
+      <div>
+        <div class="card-title">Daily Water</div>
+        <div class="card-subtitle">8 glasses · ~2L · tap each cup as you drink it</div>
+      </div>
+    </div>
+    <div id="water-rows"></div>
+    <div class="water-total">
+      <span class="water-total-label">Today's total</span>
+      <span class="water-total-count" id="water-count">0 / 8</span>
+    </div>
+  </div>
+
+  <div class="section-label" style="margin-top:22px;">Coke Zero</div>
+  <div class="card glow-card-m">
+    <div class="card-header">
+      <div class="card-icon icon-m">🥤</div>
+      <div>
+        <div class="card-title">Weekly Tracker</div>
+        <div class="card-subtitle">Max 4 cans · resets every Monday · you do you</div>
+      </div>
+    </div>
+    <div style="margin-bottom:18px;">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">
+        <span id="coke-label">0 / 4 cans this week</span>
+        <span id="coke-status"></span>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;" id="coke-cans"></div>
+      <div class="progress-bar-bg" style="height:8px;border-radius:4px;">
+        <div id="coke-bar" style="height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--mustard));box-shadow:0 0 8px #e8b02055;transition:width 0.4s ease;width:0%;"></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+      <button onclick="logCoke(1)" id="coke-full-btn" style="padding:14px;border-radius:4px;background:var(--maroon-dim);border:1px solid var(--maroon);color:var(--maroon);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.1em;cursor:pointer;box-shadow:var(--maroon-glow);transition:all 0.15s;"
+        onmouseover="this.style.background='var(--maroon)';this.style.color='var(--bg)'"
+        onmouseout="this.style.background='var(--maroon-dim)';this.style.color='var(--maroon)'">+ FULL CAN</button>
+      <button onclick="logCoke(0.5)" id="coke-half-btn" style="padding:14px;border-radius:4px;background:var(--mustard-dim);border:1px solid var(--mustard);color:var(--mustard);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.1em;cursor:pointer;box-shadow:var(--mustard-glow);transition:all 0.15s;"
+        onmouseover="this.style.background='var(--mustard)';this.style.color='var(--bg)'"
+        onmouseout="this.style.background='var(--mustard-dim)';this.style.color='var(--mustard)'">+ HALF CAN</button>
+    </div>
+    <button onclick="undoCoke()" style="width:100%;padding:10px;border-radius:4px;background:var(--bg3);border:1px solid var(--border2);color:var(--text-muted);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:0.1em;cursor:pointer;">↺ UNDO LAST</button>
+  </div>
+  <div class="section-label">Coke Log This Week</div>
+  <div id="coke-log-list"><div style="font-size:13px;color:var(--text-muted);padding:8px 0;">No Coke Zero logged yet this week.</div></div>
+  <div class="edit-note" style="margin-top:10px;">Resets automatically every Monday. Half cans count as 0.5.</div>
+</div>
+
+<!-- SKINCARE -->
+<div class="section" id="tab-skincare">
+  <div class="alert-note">⚕ <strong>Recovery mode active.</strong> No actives until skin is fully healed. Morning = gentle mist + barrier + SPF only.</div>
+
+  <!-- TONIGHT PICKER (top, like supplements) -->
+  <div class="section-label">Tonight's Pick</div>
+  <div class="card glow-card-y">
+    <div class="card-header">
+      <div class="card-icon icon-y">🌙</div>
+      <div><div class="card-title">What's Tonight?</div><div class="card-subtitle">Answer 2 questions · get your routine type</div></div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">How does your skin feel right now?</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="supp-btn" id="sk-calm" onclick="setSkin('calm')">Calm 😌</button>
+        <button class="supp-btn" id="sk-okay" onclick="setSkin('okay')">Okay 😐</button>
+        <button class="supp-btn" id="sk-sens" onclick="setSkin('sens')">Sensitive 😬</button>
+        <button class="supp-btn" id="sk-cong" onclick="setSkin('cong')">Congested 😤</button>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Last active used was…</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="supp-btn" id="la-tonight" onclick="setLastActive('tonight')">Tonight 🔁</button>
+        <button class="supp-btn" id="la-last" onclick="setLastActive('last')">Last night</button>
+        <button class="supp-btn" id="la-2ago" onclick="setLastActive('2ago')">2 nights ago</button>
+        <button class="supp-btn" id="la-longer" onclick="setLastActive('longer')">3+ nights ago</button>
+        <button class="supp-btn" id="la-none" onclick="setLastActive('none')">None recently</button>
+      </div>
+    </div>
+    <button onclick="calcNight()" style="width:100%;padding:12px;border-radius:4px;background:var(--mustard-dim);border:1px solid var(--mustard);color:var(--mustard);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--mustard-glow);"
+      onmouseover="this.style.background='var(--mustard)';this.style.color='var(--bg)'"
+      onmouseout="this.style.background='var(--mustard-dim)';this.style.color='var(--mustard)'">→ PICK TONIGHT'S ROUTINE</button>
+  </div>
+  <div id="night-result" style="display:none;">
+    <div class="section-label">Tonight's Routine</div>
+    <div class="card" id="night-result-card"></div>
+    <div class="edit-note" id="night-result-note" style="margin-top:0;margin-bottom:14px;"></div>
+  </div>
+
+  <div class="section-label">Morning (Fixed — Always)</div>
+  <div class="card glow-card-m">
+    <div class="card-header">
+      <div class="card-icon icon-m">☀️</div>
+      <div>
+        <div class="card-title">AM Routine</div>
+        <div class="card-subtitle">Simple · consistent · always end with SPF</div>
+      </div>
+    </div>
+    <div class="routine-step"><div class="step-order">1</div><div><div class="step-name">Vitamin C</div><div class="step-product">Goodal (or replacement) — brighten + antioxidant</div></div></div>
+    <div class="routine-step"><div class="step-order">2</div><div><div class="step-name">Azelaic Acid</div><div class="step-product">After Vitamin C · dark spots + texture · ⏸ paused during recovery · resume when cleared</div><div class="step-rule">Old derm said AM + PM consistently. Current state: dark spots mostly resolved, texture remains — reassess PM use with new derm.</div></div></div>
+    <div class="routine-step"><div class="step-order">3</div><div><div class="step-name">Moisturizer</div><div class="step-product">Dr. G Red Blemish Cream or Dr. Althea 345 Cream</div></div></div>
+    <div class="routine-step"><div class="step-order">4</div><div><div class="step-name">Sunscreen — always last</div><div class="step-product">Skin1004 Centella Sun Serum SPF</div></div></div>
+    <div class="routine-step"><div class="step-order g">+</div><div><div class="step-name">Optional: d'Alba First Spray Serum</div><div class="step-product">Before moisturizer if using · lightweight layer only</div></div></div>
+    <div class="routine-step"><div class="step-order g">+</div><div><div class="step-name">During recovery: no face wash AM</div><div class="step-product">Tower 28 Hypochlorous Acid spray for piercings only</div></div></div>
+  </div>
+
+  <div class="section-label">Night Rotation (Post-Recovery)</div>
+  <div class="edit-note">⏸ All active nights are paused during recovery. Resume once skin is fully healed (est. 1–2 weeks post-Apr 24).</div>
+
+  <div class="night-type nt-retinol">
+    <div class="night-type-label">Retinol Night <span class="night-freq">2–3x / week</span></div>
+    <div class="nt-steps">
+      <div class="nt-step"><div class="nt-dot"></div><div>Cleanser</div></div>
+      <div class="nt-step"><div class="nt-dot"></div><div>Innisfree Retinol</div></div>
+      <div class="nt-step"><div class="nt-dot"></div><div>Moisturizer (Dr. G or Dr. Althea)</div></div>
+    </div>
+  </div>
+
+  <div class="night-type nt-reedle">
+    <div class="night-type-label">Reedle Night <span class="night-freq">1–2x / week</span></div>
+    <div class="nt-steps">
+      <div class="nt-step"><div class="nt-dot" style="background:var(--green)"></div><div>Cleanser</div></div>
+      <div class="nt-step"><div class="nt-dot" style="background:var(--green)"></div><div>VT Reedle Shot 100</div></div>
+      <div class="nt-step"><div class="nt-dot" style="background:var(--green)"></div><div>Moisturizer</div></div>
+    </div>
+  </div>
+
+  <div class="night-type nt-recovery">
+    <div class="night-type-label">Recovery Night <span class="night-freq">2–4x / week minimum</span></div>
+    <div class="nt-steps">
+      <div class="nt-step"><div class="nt-dot" style="background:var(--text-muted)"></div><div>Cleanser</div></div>
+      <div class="nt-step"><div class="nt-dot" style="background:var(--text-muted)"></div><div>Mediheal Madecassoside (or nothing)</div></div>
+      <div class="nt-step"><div class="nt-dot" style="background:var(--text-muted)"></div><div>Moisturizer</div></div>
+    </div>
+  </div>
+
+  <div class="night-type nt-bha">
+    <div class="night-type-label">BHA Night <span class="night-freq">0–2x / week (only if congestion increases)</span></div>
+    <div class="nt-steps">
+      <div class="nt-step"><div class="nt-dot" style="background:#a080d0"></div><div>Cleanser</div></div>
+      <div class="nt-step"><div class="nt-dot" style="background:#a080d0"></div><div>Paula's Choice BHA — nose + T-zone only</div></div>
+      <div class="nt-step"><div class="nt-dot" style="background:#a080d0"></div><div>Moisturizer</div></div>
+    </div>
+  </div>
+
+  <div class="section-label">Conflict Rules — Never Combine</div>
+  <div class="card">
+    <ul class="checklist" style="pointer-events:none;">
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">Retinol + Reedle</div></div></li>
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">Retinol + BHA</div></div></li>
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">Reedle + BHA</div></div></li>
+      <li style="border:none;padding-bottom:0;"><div class="check-box" style="border-color:var(--green);color:var(--green);">✓</div><div><div class="item-text">Max 1 active per night · always 2+ recovery nights/week</div></div></li>
+    </ul>
+  </div>
+
+  <div class="section-label">Future Purchases to Consider</div>
+  <div class="card">
+    <div class="hair-step"><div class="h-num">→</div><div><strong>BHA replacement</strong> (when Paula's Choice runs out)<div class="h-sub">COSRX BHA Blackhead Power Liquid or Anua Blackhead 45% Clear Serum — both gentler, good for maintenance</div></div></div>
+    <div class="hair-step"><div class="h-num">→</div><div><strong>Niacinamide serum</strong> (once fully healed)<div class="h-sub">Good for pores + texture · pairs well with your routine · introduce slowly</div></div></div>
+    <div class="hair-step"><div class="h-num">→</div><div><strong>Vitamin C upgrade</strong> (if Goodal runs out)<div class="h-sub">iUNIK Vitamin C Serum or Klairs Freshly Juiced — stable formulas, compatible with azelaic acid</div></div></div>
+    <div class="hair-step"><div class="h-num">→</div><div><strong>Azelaic acid restock</strong><div class="h-sub">Confirm with new derm whether to continue AM + PM or just AM given skin improvement</div></div></div>
+  </div>
+
+  <!-- SKIN LOG — merged here -->
+  <div class="section-label" style="margin-top:22px;">Skin Log</div>
+  <div class="card glow-card-m">
+    <div class="card-header">
+      <div class="card-icon icon-m">📋</div>
+      <div><div class="card-title">Log Today's Skin</div><div class="card-subtitle">Patterns only show up when you track them</div></div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Overall skin today</div>
+      <div style="display:flex;gap:6px;">
+        <button class="supp-btn" id="sl-1" onclick="setSkinScore(1)">1 😩</button>
+        <button class="supp-btn" id="sl-2" onclick="setSkinScore(2)">2 😕</button>
+        <button class="supp-btn" id="sl-3" onclick="setSkinScore(3)">3 😐</button>
+        <button class="supp-btn" id="sl-4" onclick="setSkinScore(4)">4 🙂</button>
+        <button class="supp-btn" id="sl-5" onclick="setSkinScore(5)">5 ✨</button>
+      </div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Any of these today?</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;" id="skin-flags">
+        <button class="supp-btn" onclick="toggleFlag(this)" data-flag="texture">Texture</button>
+        <button class="supp-btn" onclick="toggleFlag(this)" data-flag="congestion">Congestion</button>
+        <button class="supp-btn" onclick="toggleFlag(this)" data-flag="redness">Redness</button>
+        <button class="supp-btn" onclick="toggleFlag(this)" data-flag="dryness">Dryness</button>
+        <button class="supp-btn" onclick="toggleFlag(this)" data-flag="sensitivity">Sensitivity</button>
+        <button class="supp-btn" onclick="toggleFlag(this)" data-flag="breakout">Breakout</button>
+        <button class="supp-btn" onclick="toggleFlag(this)" data-flag="glow">Glow ✨</button>
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">Notes (optional)</div>
+      <textarea id="skin-note" placeholder="e.g. tried Dr. G again, chin bumps returned..." style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;resize:vertical;min-height:64px;"></textarea>
+    </div>
+    <button onclick="saveSkinLog()" style="width:100%;padding:11px;border-radius:4px;background:var(--maroon-dim);border:1px solid var(--maroon);color:var(--maroon);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--maroon-glow);"
+      onmouseover="this.style.background='var(--maroon)';this.style.color='var(--bg)'"
+      onmouseout="this.style.background='var(--maroon-dim)';this.style.color='var(--maroon)'">SAVE TODAY'S LOG</button>
+  </div>
+  <div class="section-label">Recent Entries</div>
+  <div id="skin-log-list"><div style="font-size:13px;color:var(--text-muted);padding:8px 0;">No entries yet — log your first day above.</div></div>
+</div>
+
+<!-- FOOD -->
+<div class="section" id="tab-food">
+
+  <!-- TODAY'S FUEL SUGGESTION -->
+  <div class="section-label">Today's Fuel Plan</div>
+  <div class="card glow-card-m" id="fuel-card">
+    <div class="card-header">
+      <div class="card-icon icon-m">⚡</div>
+      <div>
+        <div class="card-title" id="fuel-day-label">Loading...</div>
+        <div class="card-subtitle" id="fuel-day-sub"></div>
+      </div>
+    </div>
+    <div id="fuel-pillars" style="margin-bottom:14px;"></div>
+    <div id="fuel-main-advice" style="font-size:13px;color:var(--text-soft);line-height:1.7;padding:12px;background:var(--bg3);border-radius:4px;border-left:3px solid var(--maroon);"></div>
+    <div id="fuel-yesterday-note" style="display:none;margin-top:10px;font-size:12px;color:var(--mustard);font-style:italic;padding:8px 0;border-top:1px solid var(--border2);"></div>
+  </div>
+
+  <!-- SMART LOGGER -->
+  <div class="section-label">Log a Meal</div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-y">📝</div>
+      <div><div class="card-title">Quick Log</div><div class="card-subtitle">Log as you eat · I'll tell you what's missing</div></div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Meal type</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="supp-btn" id="mt-lunch" onclick="setMealType('lunch')">Lunch 🍚</button>
+        <button class="supp-btn" id="mt-dinner" onclick="setMealType('dinner')">Dinner 🍖</button>
+        <button class="supp-btn" id="mt-snack" onclick="setMealType('snack')">Snack 🍿</button>
+      </div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Had protein? (meat, egg, fish)</div>
+      <div style="display:flex;gap:6px;">
+        <button class="supp-btn" id="pr-yes" onclick="setProtein(true)">Yes 🍖</button>
+        <button class="supp-btn" id="pr-no" onclick="setProtein(false)">No</button>
+      </div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Had vegetables? (kangkong, okra, corn…)</div>
+      <div style="display:flex;gap:6px;">
+        <button class="supp-btn" id="veg-yes" onclick="setVeg(true)">Yes 🥬</button>
+        <button class="supp-btn" id="veg-no" onclick="setVeg(false)">No</button>
+      </div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Had rice or carbs?</div>
+      <div style="display:flex;gap:6px;">
+        <button class="supp-btn" id="carb-yes" onclick="setCarb(true)">Yes 🍚</button>
+        <button class="supp-btn" id="carb-no" onclick="setCarb(false)">No</button>
+      </div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">How did you feel after?</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="supp-btn" id="f-good" onclick="setFoodFeel('good')">Good 💪</button>
+        <button class="supp-btn" id="f-full" onclick="setFoodFeel('full')">Too full 😮‍💨</button>
+        <button class="supp-btn" id="f-hungry" onclick="setFoodFeel('hungry')">Still hungry 😤</button>
+        <button class="supp-btn" id="f-heavy" onclick="setFoodFeel('heavy')">Heavy 😴</button>
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">What did you eat? (optional)</div>
+      <input id="food-note-input" placeholder="e.g. adobo, rice, chips" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;">
+    </div>
+    <button onclick="saveFood()" style="width:100%;padding:11px;border-radius:4px;background:var(--maroon-dim);border:1px solid var(--maroon);color:var(--maroon);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--maroon-glow);"
+      onmouseover="this.style.background='var(--maroon)';this.style.color='var(--bg)'"
+      onmouseout="this.style.background='var(--maroon-dim)';this.style.color='var(--maroon)'">+ LOG THIS MEAL</button>
+  </div>
+
+  <!-- SMART FEEDBACK -->
+  <div id="food-feedback" style="display:none;margin-bottom:12px;"></div>
+
+  <!-- SNACK SUGGESTER -->
+  <div class="section-label">What Should I Have?</div>
+  <div class="card glow-card-y">
+    <div class="card-header">
+      <div class="card-icon icon-y">🍽</div>
+      <div><div class="card-title">Snack Suggester</div><div class="card-subtitle">Tell me where you're at · I'll suggest something</div></div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">How hungry are you?</div>
+      <div style="display:flex;gap:6px;">
+        <button class="supp-btn" id="h-little" onclick="setHunger('little')">A little 🙂</button>
+        <button class="supp-btn" id="h-moderate" onclick="setHunger('moderate')">Moderate 😐</button>
+        <button class="supp-btn" id="h-hungry" onclick="setHunger('hungry')">Hungry 😩</button>
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Craving?</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="supp-btn" id="c-sweet" onclick="setCraving('sweet')">Sweet 🍫</button>
+        <button class="supp-btn" id="c-salty" onclick="setCraving('salty')">Salty 🧂</button>
+        <button class="supp-btn" id="c-both" onclick="setCraving('both')">Both 🤌</button>
+        <button class="supp-btn" id="c-none" onclick="setCraving('none')">No preference</button>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Had Coke Zero today?</div>
+      <div style="display:flex;gap:6px;">
+        <button class="supp-btn" id="ck-yes" onclick="setHadCoke(true)">Yes 🥤</button>
+        <button class="supp-btn" id="ck-no" onclick="setHadCoke(false)">Not yet</button>
+      </div>
+    </div>
+    <button onclick="suggestSnack()" style="width:100%;padding:12px;border-radius:4px;background:var(--mustard-dim);border:1px solid var(--mustard);color:var(--mustard);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--mustard-glow);"
+      onmouseover="this.style.background='var(--mustard)';this.style.color='var(--bg)'"
+      onmouseout="this.style.background='var(--mustard-dim)';this.style.color='var(--mustard)'">→ SUGGEST SOMETHING</button>
+  </div>
+  <div id="snack-result" style="display:none;margin-bottom:12px;">
+    <div class="card glow-card-g">
+      <div style="font-size:11px;color:var(--green-lt);letter-spacing:0.14em;text-transform:uppercase;font-family:'Bebas Neue',sans-serif;margin-bottom:8px;">Have this →</div>
+      <div id="snack-suggestion" style="font-size:18px;font-family:'Bebas Neue',sans-serif;letter-spacing:0.06em;color:var(--text);margin-bottom:6px;"></div>
+      <div id="snack-reason" style="font-size:12px;color:var(--text-muted);font-style:italic;"></div>
+    </div>
+  </div>
+
+  <!-- LOG ENTRIES -->
+  <div class="section-label">Today's Entries</div>
+  <div id="food-log-list"><div style="font-size:13px;color:var(--text-muted);padding:8px 0;">Nothing logged yet today.</div></div>
+</div>
+
+<!-- SLEEP TRACKER -->
+<div class="section" id="tab-sleep">
+
+  <!-- Afternoon rest recommendation -->
+  <div class="section-label">Afternoon Rest</div>
+  <div class="card glow-card-y" id="rest-rec-card">
+    <div class="card-header">
+      <div class="card-icon icon-y">🛋</div>
+      <div>
+        <div class="card-title">Today's Rest Recommendation</div>
+        <div class="card-subtitle">Based on last night's sleep</div>
+      </div>
+    </div>
+    <div id="rest-recommendation" style="font-size:14px;color:var(--text);line-height:1.7;padding:12px;background:var(--bg3);border-radius:4px;border-left:3px solid var(--mustard);"></div>
+  </div>
+
+  <!-- Log afternoon rest -->
+  <div class="card" style="margin-bottom:12px;">
+    <div class="card-header">
+      <div class="card-icon icon-y">😪</div>
+      <div><div class="card-title">Log Afternoon Rest</div><div class="card-subtitle">Your second sleep block · whenever it happens</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">Fell asleep at</div>
+        <input type="time" id="rest-in" value="13:00" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;">
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">Woke up at</div>
+        <input type="time" id="rest-out" value="14:30" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;">
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Felt after waking?</div>
+      <div style="display:flex;gap:6px;">
+        <button class="supp-btn" id="rf-good" onclick="setRestFeel('good')">Refreshed 💪</button>
+        <button class="supp-btn" id="rf-groggy" onclick="setRestFeel('groggy')">Groggy 😵</button>
+        <button class="supp-btn" id="rf-ok" onclick="setRestFeel('ok')">Okay 😐</button>
+      </div>
+    </div>
+    <button onclick="saveRest()" style="width:100%;padding:11px;border-radius:4px;background:var(--mustard-dim);border:1px solid var(--mustard);color:var(--mustard);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--mustard-glow);"
+      onmouseover="this.style.background='var(--mustard)';this.style.color='var(--bg)'"
+      onmouseout="this.style.background='var(--mustard-dim)';this.style.color='var(--mustard)'">+ LOG REST</button>
+  </div>
+
+  <!-- Log main sleep -->
+  <div class="section-label">Log Last Night</div>
+  <div class="card glow-card-g">
+    <div class="card-header">
+      <div class="card-icon icon-g">😴</div>
+      <div><div class="card-title">Main Sleep</div><div class="card-subtitle">Target: asleep by 3AM · awake by 11AM–12PM</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">Slept at</div>
+        <input type="time" id="sleep-in" value="03:00" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;">
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">Woke up at</div>
+        <input type="time" id="sleep-out" value="11:00" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;">
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Sleep quality</div>
+      <div style="display:flex;gap:6px;">
+        <button class="supp-btn" id="sq-bad" onclick="setSleepQ('bad')">Bad 😞</button>
+        <button class="supp-btn" id="sq-ok" onclick="setSleepQ('ok')">Okay 😴</button>
+        <button class="supp-btn" id="sq-good" onclick="setSleepQ('good')">Good 😌</button>
+      </div>
+    </div>
+    <button onclick="saveSleep()" style="width:100%;padding:11px;border-radius:4px;background:var(--green-dim);border:1px solid var(--green);color:var(--green);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--green-glow);"
+      onmouseover="this.style.background='var(--green)';this.style.color='var(--bg)'"
+      onmouseout="this.style.background='var(--green-dim)';this.style.color='var(--green)'">SAVE SLEEP LOG</button>
+  </div>
+
+  <div class="section-label">This Week</div>
+  <div id="sleep-log-list"><div style="font-size:13px;color:var(--text-muted);padding:8px 0;">No entries yet.</div></div>
+  <div id="sleep-warning" style="display:none;" class="alert-note">⚠ You've been sleeping past 4AM multiple nights this week. Sleep drift detected — try pulling back by 30 min tonight.</div>
+</div>
+<div class="section" id="tab-hair">
+  <div class="card" id="hair-today-card">
+    <div class="card-header">
+      <div class="card-icon icon-g">🌿</div>
+      <div>
+        <div class="card-title" id="hair-today-title">Today's Hair</div>
+        <div class="card-subtitle" id="hair-today-sub">—</div>
+      </div>
+    </div>
+    <div id="hair-today-body"></div>
+  </div>
+
+  <div class="section-label">Standard Wash Day (2–3x / week)</div>
+  <div class="card glow-card-g">
+    <div class="card-header">
+      <div class="card-icon icon-g">🚿</div>
+      <div>
+        <div class="card-title">Standard Wash</div>
+        <div class="card-subtitle">Aromatica · color-safe · gentle</div>
+      </div>
+    </div>
+    <div class="hair-step"><div class="h-num">01</div><div><strong>Pre-wash scalp massage</strong><div class="h-sub">2–3 min · dry or with oil</div></div></div>
+    <div class="hair-step"><div class="h-num">02</div><div><strong>Aromatica Quinoa Protein Shampoo</strong><div class="h-sub">Gentle, color-safe · main shampoo</div></div></div>
+    <div class="hair-step"><div class="h-num">03</div><div><strong>Unove Deep Damage Treatment EX</strong><div class="h-sub">Mid-lengths to ends only · leave 2–3 min</div></div></div>
+    <div class="hair-step"><div class="h-num">04</div><div><strong>Cold rinse</strong><div class="h-sub">Seals cuticle, preserves color</div></div></div>
+    <div class="hair-step"><div class="h-num">05</div><div><strong>Labo-H Hairline Ampoule</strong><div class="h-sub">After drying · apply to hairline daily</div></div></div>
+  </div>
+
+  <div class="section-label">Deep Clean Wash (1x / week)</div>
+  <div class="card glow-card-m">
+    <div class="card-header">
+      <div class="card-icon icon-m">🧴</div>
+      <div>
+        <div class="card-title">Deep Clean Wash</div>
+        <div class="card-subtitle">Dr. For Hair · scalp reset · once weekly max</div>
+      </div>
+    </div>
+    <div class="hair-step"><div class="h-num">01</div><div><strong>Pre-wash scalp massage</strong><div class="h-sub">2–3 min</div></div></div>
+    <div class="hair-step"><div class="h-num">02</div><div><strong>Dr. For Hair Folligen Shampoo</strong><div class="h-sub">Deep cleanse · scalp health · once/week only</div></div></div>
+    <div class="hair-step"><div class="h-num">03</div><div><strong>Unove Deep Damage Treatment EX</strong><div class="h-sub">Mid-lengths to ends only · leave 2–3 min</div></div></div>
+    <div class="hair-step"><div class="h-num">04</div><div><strong>Cold rinse</strong></div></div>
+    <div class="hair-step"><div class="h-num">05</div><div><strong>Labo-H Hairline Ampoule</strong><div class="h-sub">After drying · daily use</div></div></div>
+  </div>
+
+  <div class="section-label">No-Wash Day (Refresh)</div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-y">✨</div>
+      <div>
+        <div class="card-title">Refresh Day</div>
+        <div class="card-subtitle">No wash · protect color · ampoule always</div>
+      </div>
+    </div>
+    <div class="hair-step"><div class="h-num">01</div><div><strong>Labo-H Hairline Ampoule</strong><div class="h-sub">Daily regardless of wash day</div></div></div>
+    <div class="hair-step"><div class="h-num">02</div><div><strong>Dry shampoo at roots if needed</strong><div class="h-sub">Roots only · brush through after</div></div></div>
+    <div class="hair-step"><div class="h-num">03</div><div><strong>Aromatica Rosemary Root Enhancer</strong><div class="h-sub">Optional · volume + styling</div></div></div>
+    <div class="hair-step"><div class="h-num">04</div><div><strong>Style or protect ends</strong><div class="h-sub">Loose styles protect length and color</div></div></div>
+  </div>
+</div>
+
+<!-- EXERCISE -->
+<div class="section" id="tab-exercise">
+  <div class="edit-note">✏️ Pilates is your anchor. Everything else is optional — add movement when it feels right, not because a schedule says so.</div>
+  <div class="card glow-card-m">
+    <div class="card-header">
+      <div class="card-icon icon-m">🏃</div>
+      <div>
+        <div class="card-title">Weekly Movement</div>
+        <div class="card-subtitle">One committed class · everything else is a bonus</div>
+      </div>
+    </div>
+    <div class="exercise-day"><div class="exercise-day-label">Monday</div><div class="exercise-detail">Rest or light walk</div><div class="exercise-note">Day before pilates · don't tire yourself out</div></div>
+    <div class="exercise-day" style="border-left:3px solid var(--mustard);padding-left:10px;box-shadow:inset 3px 0 8px #e8b02022;"><div class="exercise-day-label">Tuesday ✦</div><div class="exercise-detail">Pilates · 11AM</div><div class="exercise-note">Your committed class · set an alarm the night before · non-negotiable</div></div>
+    <div class="exercise-day"><div class="exercise-day-label">Wednesday</div><div class="exercise-detail">Rest</div><div class="exercise-note">Recovery day post-pilates</div></div>
+    <div class="exercise-day"><div class="exercise-day-label">Thursday</div><div class="exercise-detail">Optional · walk or stretch</div><div class="exercise-note">If energy allows · 20–30 min is plenty</div></div>
+    <div class="exercise-day"><div class="exercise-day-label">Friday</div><div class="exercise-detail">Optional · movement of any kind</div><div class="exercise-note">Dance, walk, YouTube workout — whatever sounds fun</div></div>
+    <div class="exercise-day"><div class="exercise-day-label">Saturday</div><div class="exercise-detail">Go outside day</div><div class="exercise-note">Counts as movement — walk somewhere, explore</div></div>
+    <div class="exercise-day"><div class="exercise-day-label">Sunday</div><div class="exercise-detail">Full rest</div><div class="exercise-note">You showed up this week.</div></div>
+  </div>
+</div>
+
+<!-- WEEK -->
+<div class="section" id="tab-week">
+  <div class="week-grid" id="week-grid"></div>
+  <div class="legend">
+    <div class="legend-item"><span class="dot dot-m"></span> Exercise</div>
+    <div class="legend-item"><span class="dot dot-g"></span> Hair wash</div>
+    <div class="legend-item"><span class="dot dot-y"></span> Laundry / Reset</div>
+  </div>
+  <div class="section-label" style="margin-top:22px;">Weekly Anchors</div>
+  <div class="card">
+    <ul class="checklist">
+      <li onclick="toggle(this)"><div class="check-box"></div><div><div class="item-text">Hair wash (2–3x this week · 1 deep clean)</div><div class="item-note">Hair tab has today's routine</div></div></li>
+      <li onclick="toggle(this)"><div class="check-box"></div><div><div class="item-text">Labo-H ampoule every day</div><div class="item-note">Daily hairline treatment — non-negotiable</div></div></li>
+      <li onclick="toggle(this)"><div class="check-box"></div><div><div class="item-text">Laundry day</div><div class="item-note">Pick one consistent day</div></div></li>
+      <li onclick="toggle(this)"><div class="check-box"></div><div><div class="item-text">Room reset</div><div class="item-note">Sunday evening · 20 min</div></div></li>
+      <li onclick="toggle(this)"><div class="check-box"></div><div><div class="item-text">Go outside (non-errand)</div><div class="item-note">Walk, café, anywhere that isn't home</div></div></li>
+      <li onclick="toggle(this)"><div class="check-box"></div><div><div class="item-text">Hobby or content time</div><div class="item-note">Filming, editing — protect this slot</div></div></li>
+      <li onclick="toggle(this)"><div class="check-box"></div><div><div class="item-text">At least 2 recovery skin nights this week</div><div class="item-note">Especially while healing post-procedure</div></div></li>
+    </ul>
+  </div>
+</div>
+
+<!-- MONTHLY -->
+<div class="section" id="tab-monthly">
+  <div class="edit-note">✏️ Pick consistent dates — same day each month makes it stick.</div>
+  <div class="card glow-card-y">
+    <div class="card-header">
+      <div class="card-icon icon-y">🗓</div>
+      <div>
+        <div class="card-title">Monthly Recurring</div>
+        <div class="card-subtitle">Bigger habits that need a real date</div>
+      </div>
+    </div>
+    <div class="month-row"><div class="month-row-label">Deep clean / reorganize room</div><div class="month-row-pills"><span class="pill pill-y">1st Sunday</span></div></div>
+    <div class="month-row"><div class="month-row-label">Medication refill check</div><div class="month-row-pills"><span class="pill pill-m">25th</span></div></div>
+    <div class="month-row"><div class="month-row-label">Supplement restock</div><div class="month-row-pills"><span class="pill pill-g">End of month</span></div></div>
+    <div class="month-row"><div class="month-row-label">Skin check — actives working? any irritation?</div><div class="month-row-pills"><span class="pill pill-m">Mid-month</span></div></div>
+    <div class="month-row"><div class="month-row-label">Hair treatment / mask</div><div class="month-row-pills"><span class="pill pill-g">Every 2 weeks</span></div></div>
+    <div class="month-row"><div class="month-row-label">Plan next month's content</div><div class="month-row-pills"><span class="pill pill-y">Last weekend</span></div></div>
+    <div class="month-row"><div class="month-row-label">Schedule one solo outing</div><div class="month-row-pills"><span class="pill pill-g">Anytime</span></div></div>
+    <div class="month-row"><div class="month-row-label">Review CV / career goals</div><div class="month-row-pills"><span class="pill pill-y">Last Sunday</span></div></div>
+  </div>
+</div>
+
+<!-- SUPPLEMENTS -->
+<div class="section" id="tab-supplements">
+
+  <!-- Daily Check-in -->
+  <div class="section-label">Today's Check-In</div>
+  <div class="card glow-card-y">
+    <div class="card-header">
+      <div class="card-icon icon-y">🧠</div>
+      <div>
+        <div class="card-title">How Are You Today?</div>
+        <div class="card-subtitle">Answers shape what you take today</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Energy level</div>
+      <div style="display:flex;gap:6px;">
+        <button class="supp-btn" id="e-low"  onclick="setEnergy('low')" >Low 😩</button>
+        <button class="supp-btn" id="e-mid"  onclick="setEnergy('mid')" >Okay 😐</button>
+        <button class="supp-btn" id="e-good" onclick="setEnergy('good')">Good 💪</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Last night's sleep</div>
+      <div style="display:flex;gap:6px;">
+        <button class="supp-btn" id="s-bad"  onclick="setSleep('bad')" >Bad 😞</button>
+        <button class="supp-btn" id="s-ok"   onclick="setSleep('ok')"  >Okay 😴</button>
+        <button class="supp-btn" id="s-good" onclick="setSleep('good')">Good 😌</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Today's load</div>
+      <div style="display:flex;gap:6px;">
+        <button class="supp-btn" id="l-chill" onclick="setLoad('chill')">Chill 🛋</button>
+        <button class="supp-btn" id="l-normal" onclick="setLoad('normal')">Normal 📋</button>
+        <button class="supp-btn" id="l-heavy" onclick="setLoad('heavy')">Heavy 🔥</button>
+      </div>
+    </div>
+
+    <button onclick="calcSupps()" style="
+      width:100%; padding:12px; border-radius:4px;
+      background:var(--mustard-dim); border:1px solid var(--mustard);
+      color:var(--mustard); font-family:'Bebas Neue',sans-serif;
+      font-size:15px; letter-spacing:0.14em; cursor:pointer;
+      box-shadow:var(--mustard-glow); transition:background 0.15s;
+    " onmouseover="this.style.background='var(--mustard)';this.style.color='var(--bg)'"
+       onmouseout="this.style.background='var(--mustard-dim)';this.style.color='var(--mustard)'">
+      → SHOW TODAY'S STACK
+    </button>
+  </div>
+
+  <!-- Result -->
+  <div id="supp-result" style="display:none;">
+    <div class="section-label">Today's Stack</div>
+
+    <div class="card" style="margin-bottom:8px;">
+      <div class="card-header" style="margin-bottom:10px;padding-bottom:10px;">
+        <div class="card-icon icon-g">🌞</div>
+        <div><div class="card-title">Morning</div><div class="card-subtitle">Empty stomach or before food</div></div>
+      </div>
+      <div id="supp-morning"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:8px;">
+      <div class="card-header" style="margin-bottom:10px;padding-bottom:10px;">
+        <div class="card-icon icon-y">☀️</div>
+        <div><div class="card-title">Anytime / Midday</div><div class="card-subtitle">Timing flexible</div></div>
+      </div>
+      <div id="supp-midday"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" style="margin-bottom:10px;padding-bottom:10px;">
+        <div class="card-icon icon-m">🌙</div>
+        <div><div class="card-title">Night</div><div class="card-subtitle">Before bed</div></div>
+      </div>
+      <div id="supp-night"></div>
+    </div>
+
+    <div id="supp-rules-note" class="edit-note" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- Reference -->
+  <div class="section-label" style="margin-top:4px;">Full Inventory</div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-g">🧬</div>
+      <div><div class="card-title">Core Daily</div><div class="card-subtitle">Always include · consistency is the goal</div></div>
+    </div>
+    <div class="hair-step">
+      <div class="h-num">💊</div>
+      <div><strong>Lacto-Fit Eve (락토핏 이브)</strong>
+        <div class="h-sub">Probiotic powder stick · gut health + digestion + feminine balance</div>
+        <div class="h-sub" style="color:var(--mustard);">Morning · empty stomach or before food · daily</div>
+      </div>
+    </div>
+    <div class="hair-step">
+      <div class="h-num">🍊</div>
+      <div><strong>BB Lab Pomegranate Collagen S</strong>
+        <div class="h-sub">Stick/jelly · skin hydration + elasticity · consistency-based, minimal short-term effect</div>
+        <div class="h-sub" style="color:var(--mustard);">Anytime · daily or 5–7x/week</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-m">⚡</div>
+      <div><div class="card-title">Conditional / As Needed</div><div class="card-subtitle">Not daily — use when relevant</div></div>
+    </div>
+    <div class="hair-step">
+      <div class="h-num">🌿</div>
+      <div><strong>JungKwanJang Everytime K-Energy (Ginseng)</strong>
+        <div class="h-sub">Liquid stick · mild energy + focus + fatigue support · subtle effect</div>
+        <div class="h-sub" style="color:var(--maroon);">Morning only · 2–4x/week max · never at night · don't stack with other energy</div>
+      </div>
+    </div>
+    <div class="hair-step">
+      <div class="h-num">🌙</div>
+      <div><strong>Magnesium (glycinate or citrate)</strong>
+        <div class="h-sub">Capsule or powder · sleep quality + nervous system + fatigue reduction</div>
+        <div class="h-sub" style="color:var(--maroon);">Night only · 3–5x/week · especially after long/heavy days</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Rules</div>
+  <div class="card glow-card-m">
+    <ul class="checklist" style="pointer-events:none;">
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">No stacking multiple energy supplements</div></div></li>
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">No ginseng at night or daily reliance</div></div></li>
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">Supplements don't replace sleep or real nutrition</div></div></li>
+      <li style="border:none;padding-bottom:0;"><div class="check-box" style="border-color:var(--green);color:var(--green);">✓</div><div><div class="item-text">Probiotic + collagen → daily · everything else → as needed</div></div></li>
+    </ul>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="section" id="tab-settings">
+
+  <div class="section-label">Export Data</div>
+  <div class="card glow-card-y">
+    <div class="card-header">
+      <div class="card-icon icon-y">📤</div>
+      <div>
+        <div class="card-title">Export Your Data</div>
+        <div class="card-subtitle">Copy this code before updating the file</div>
+      </div>
+    </div>
+    <div class="edit-note" style="margin-bottom:12px;">Before installing a new version of the file, tap Export, copy the code, then paste it into the new file using Import. This saves all your logs.</div>
+    <button onclick="exportData()" style="width:100%;padding:12px;border-radius:4px;background:var(--mustard-dim);border:1px solid var(--mustard);color:var(--mustard);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--mustard-glow);margin-bottom:10px;"
+      onmouseover="this.style.background='var(--mustard)';this.style.color='var(--bg)'"
+      onmouseout="this.style.background='var(--mustard-dim)';this.style.color='var(--mustard)'">📤 EXPORT ALL DATA</button>
+    <textarea id="export-box" placeholder="Your data code will appear here — copy it all" readonly style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:12px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;resize:none;height:100px;display:none;"></textarea>
+    <div id="export-copy-btn" style="display:none;margin-top:8px;">
+      <button onclick="copyExport()" style="width:100%;padding:10px;border-radius:4px;background:var(--green-dim);border:1px solid var(--green);color:var(--green-lt);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:0.1em;cursor:pointer;">✓ COPY TO CLIPBOARD</button>
+    </div>
+    <div id="export-success" style="display:none;font-size:12px;color:var(--green-lt);margin-top:8px;text-align:center;">Copied! Paste this into the new file's Import box.</div>
+  </div>
+
+  <div class="section-label">Import Data</div>
+  <div class="card glow-card-m">
+    <div class="card-header">
+      <div class="card-icon icon-m">📥</div>
+      <div>
+        <div class="card-title">Import Your Data</div>
+        <div class="card-subtitle">Paste your export code into a new file</div>
+      </div>
+    </div>
+    <div class="alert-note" style="margin-bottom:12px;">⚠ This will overwrite any existing data in this file. Only do this when setting up a freshly downloaded update.</div>
+    <textarea id="import-box" placeholder="Paste your export code here..." style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:12px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;resize:none;height:100px;margin-bottom:10px;"></textarea>
+    <button onclick="importData()" style="width:100%;padding:12px;border-radius:4px;background:var(--maroon-dim);border:1px solid var(--maroon);color:var(--maroon);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--maroon-glow);"
+      onmouseover="this.style.background='var(--maroon)';this.style.color='var(--bg)'"
+      onmouseout="this.style.background='var(--maroon-dim)';this.style.color='var(--maroon)'">📥 IMPORT & RESTORE</button>
+    <div id="import-success" style="display:none;font-size:12px;color:var(--green-lt);margin-top:8px;text-align:center;">Data restored successfully! Reload the page to see everything.</div>
+    <div id="import-error" style="display:none;font-size:12px;color:var(--maroon);margin-top:8px;text-align:center;">Something went wrong — make sure you pasted the full code.</div>
+  </div>
+
+  <div class="section-label">Data Summary</div>
+  <div class="card" id="data-summary"></div>
+
+</div>
+
+<!-- PATTERNS -->
+<div class="section" id="tab-patterns">
+
+  <div class="section-label">Last 7 Days</div>
+
+  <!-- Sleep -->
+  <div class="card glow-card-g" style="margin-bottom:12px;">
+    <div class="card-header">
+      <div class="card-icon icon-g">😴</div>
+      <div><div class="card-title">Sleep</div><div class="card-subtitle">Hours · quality · bed time drift</div></div>
+    </div>
+    <div id="pat-sleep-bars" style="margin-bottom:12px;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;" id="pat-sleep-stats"></div>
+    <div id="pat-sleep-warning" style="display:none;margin-top:10px;font-size:12px;color:var(--maroon);padding-top:10px;border-top:1px solid var(--border2);"></div>
+  </div>
+
+  <!-- Skin -->
+  <div class="card glow-card-m" style="margin-bottom:12px;">
+    <div class="card-header">
+      <div class="card-icon icon-m">✨</div>
+      <div><div class="card-title">Skin</div><div class="card-subtitle">Daily score trend</div></div>
+    </div>
+    <div id="pat-skin-bars" style="margin-bottom:12px;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="pat-skin-stats"></div>
+    <div id="pat-skin-flags" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- Food -->
+  <div class="card glow-card-y" style="margin-bottom:12px;">
+    <div class="card-header">
+      <div class="card-icon icon-y">🍽</div>
+      <div><div class="card-title">Food & Fuel</div><div class="card-subtitle">Protein · veg · carbs · how you felt</div></div>
+    </div>
+    <div id="pat-food-stats" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;"></div>
+    <div id="pat-food-feels" style="margin-top:4px;"></div>
+  </div>
+
+  <!-- Coke -->
+  <div class="card" style="margin-bottom:12px;">
+    <div class="card-header">
+      <div class="card-icon icon-m">🥤</div>
+      <div><div class="card-title">Coke Zero</div><div class="card-subtitle">Weekly average vs your 4-can limit</div></div>
+    </div>
+    <div id="pat-coke-stats"></div>
+  </div>
+
+  <div class="edit-note">📊 Patterns build up over time — the more you log, the more useful this gets. Check back after a week of consistent logging.</div>
+
+</div>
+
+<!-- RECOVERY -->
+<div class="section" id="tab-recovery">
+  <div class="alert-note">⚕ Procedures done April 24, 2026 at Mellow Clinic, Seoul. Meds are a 3-day course — check if still ongoing.</div>
+
+  <div class="section-label">Medications</div>
+  <div class="card glow-card-m">
+    <div class="card-header">
+      <div class="card-icon icon-m">💊</div>
+      <div>
+        <div class="card-title">Prescribed Meds</div>
+        <div class="card-subtitle">2x daily · morning + evening · always after food</div>
+      </div>
+    </div>
+    <div class="med-row">
+      <div class="med-name">엠피디엘정 — Corticosteroid</div>
+      <div class="med-type">Anti-inflammatory / immune suppressant</div>
+      <div class="med-warn">⚠ Take with food — can cause stomach irritation</div>
+    </div>
+    <div class="med-row">
+      <div class="med-name">인데놀정 10mg — Inderal / Propranolol</div>
+      <div class="med-type">Beta-blocker</div>
+      <div class="med-warn">⚠ May cause dizziness — don't stand up fast</div>
+    </div>
+    <div class="med-row">
+      <div class="med-name">미노씬캡슐 50mg — Minocycline</div>
+      <div class="med-type">Tetracycline antibiotic</div>
+      <div class="med-warn">⚠ Take with food — notorious for nausea on empty stomach</div>
+    </div>
+  </div>
+
+  <div class="section-label">Procedures & Recovery Timeline</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-m">⏱</div><div><div class="card-title">What to Expect</div><div class="card-subtitle">Vbeam · Hydratox · Rejuran HB · Ultracol · Masseter Botox</div></div></div>
+    <div class="hair-step"><div class="h-num">D1–5</div><div>Redness, flushing, sensitivity · normal post-laser<div class="h-sub">Jaw may look bigger — swelling from injections, not sagging</div></div></div>
+    <div class="hair-step"><div class="h-num">W1–2</div><div>Redness fades · skin calms · smile may feel slightly different<div class="h-sub">Temporary — resolves as botox settles (7–14 days)</div></div></div>
+    <div class="hair-step"><div class="h-num">W2–4</div><div>Rejuran healing effect becomes visible · texture improvement starts</div></div>
+    <div class="hair-step"><div class="h-num">M1+</div><div>Clarity and texture improvement more visible</div></div>
+    <div class="hair-step"><div class="h-num">W4–6</div><div>Jaw slimming effect starts showing as muscle reduces</div></div>
+    <div class="hair-step"><div class="h-num">M3–4</div><div>Full masseter botox result · jaw at slimmest</div></div>
+  </div>
+
+  <div class="section-label">Skincare During Recovery</div>
+  <div class="card">
+    <ul class="checklist" style="pointer-events:none;">
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">No BHA, AHA, retinol, niacinamide</div><div class="item-note">Until fully healed</div></div></li>
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">No face wash in the morning (per doctor's instruction)</div></div></li>
+      <li><div class="check-box" style="border-color:var(--green);color:var(--green);">✓</div><div><div class="item-text">Gentle mist / spray + barrier cream + SPF only</div></div></li>
+      <li style="border:none;padding-bottom:0;"><div class="check-box" style="border-color:var(--green);color:var(--green);">✓</div><div><div class="item-text">Hypochlorous acid spray — piercings morning + night</div></div></li>
+    </ul>
+  </div>
+
+  <div class="section-label">Piercings (3 days old · Apr 24)</div>
+  <div class="card">
+    <ul class="checklist" style="pointer-events:none;">
+      <li><div class="check-box" style="border-color:var(--green);color:var(--green);">✓</div><div><div class="item-text">Clean with hypochlorous acid spray AM + PM</div></div></li>
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">Do not rotate jewelry</div></div></li>
+      <li style="border:none;padding-bottom:0;"><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">Avoid sleeping on pierced side</div><div class="item-note">Occasional bleeding from movement is normal</div></div></li>
+    </ul>
+  </div>
+
+  <div class="section-label">Red Flags — Contact Mellow Clinic if:</div>
+  <div class="card glow-card-m">
+    <ul class="checklist" style="pointer-events:none;">
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">!</div><div><div class="item-text">Increasing swelling or pain beyond Day 5</div></div></li>
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">!</div><div><div class="item-text">Pus or warmth around injection sites</div></div></li>
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">!</div><div><div class="item-text">Fever</div></div></li>
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">!</div><div><div class="item-text">Piercing signs of infection (not just dried blood)</div></div></li>
+      <li style="border:none;padding-bottom:0;"><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">!</div><div><div class="item-text">Smile asymmetry not improving by Week 2</div></div></li>
+    </ul>
+  </div>
+</div>
+
+<button class="reset-btn" onclick="resetToday()">↺ RESET TODAY</button>
+<button class="today-btn" id="today-btn" onclick="goToday()">✅ TODAY</button>
+
+<!-- CONTENT IDEAS -->
+<div class="section" id="tab-content">
+  <div class="section-label">Capture an Idea</div>
+  <div class="card glow-card-y">
+    <div class="card-header">
+      <div class="card-icon icon-y">🎥</div>
+      <div><div class="card-title">Content Parking Lot</div><div class="card-subtitle">Drop ideas before they disappear · review when planning</div></div>
+    </div>
+    <div style="margin-bottom:10px;">
+      <input id="content-input" placeholder="e.g. 'morning routine as a night shift girlie'" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:11px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;" onkeydown="if(event.key==='Enter')saveContent()">
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Category</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;">
+        <button class="supp-btn" id="ct-lifestyle" onclick="setContentCat('lifestyle')">Lifestyle</button>
+        <button class="supp-btn" id="ct-career" onclick="setContentCat('career')">Career</button>
+        <button class="supp-btn" id="ct-skincare" onclick="setContentCat('skincare')">Skincare</button>
+        <button class="supp-btn" id="ct-fitness" onclick="setContentCat('fitness')">Fitness</button>
+        <button class="supp-btn" id="ct-travel" onclick="setContentCat('travel')">Travel</button>
+        <button class="supp-btn" id="ct-misc" onclick="setContentCat('misc')">Misc</button>
+      </div>
+    </div>
+    <button onclick="saveContent()" style="width:100%;padding:11px;border-radius:4px;background:var(--mustard-dim);border:1px solid var(--mustard);color:var(--mustard);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--mustard-glow);"
+      onmouseover="this.style.background='var(--mustard)';this.style.color='var(--bg)'"
+      onmouseout="this.style.background='var(--mustard-dim)';this.style.color='var(--mustard)'">+ ADD IDEA</button>
+  </div>
+  <div class="section-label">Ideas Bank</div>
+  <div id="content-list"><div style="font-size:13px;color:var(--text-muted);padding:8px 0;">No ideas yet — add your first one above.</div></div>
+</div>
+
+<!-- CHORES -->
+<div class="section" id="tab-chores">
+  <div class="section-label">Add a Chore</div>
+  <div class="card glow-card-g">
+    <div class="card-header">
+      <div class="card-icon icon-g">🧹</div>
+      <div><div class="card-title">Chore Backlog</div><div class="card-subtitle">Add things you keep putting off · spin to pick one</div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <input id="chore-input" placeholder="e.g. clean shoe rack" style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;" onkeydown="if(event.key==='Enter')addChore()">
+      <button onclick="addChore()" style="padding:10px 16px;border-radius:4px;background:var(--green-dim);border:1px solid var(--green);color:var(--green);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:0.1em;cursor:pointer;">+ ADD</button>
+    </div>
+    <button onclick="pickChore()" style="width:100%;padding:12px;border-radius:4px;background:var(--mustard-dim);border:1px solid var(--mustard);color:var(--mustard);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--mustard-glow);"
+      onmouseover="this.style.background='var(--mustard)';this.style.color='var(--bg)'"
+      onmouseout="this.style.background='var(--mustard-dim)';this.style.color='var(--mustard)'">🎲 PICK TODAY'S CHORE</button>
+  </div>
+  <div id="chore-pick-result" style="display:none;margin-bottom:12px;">
+    <div class="card glow-card-y">
+      <div style="font-size:11px;color:var(--mustard);letter-spacing:0.14em;text-transform:uppercase;font-family:'Bebas Neue',sans-serif;margin-bottom:6px;">Today's chore is —</div>
+      <div id="chore-picked" style="font-size:20px;font-family:'Bebas Neue',sans-serif;letter-spacing:0.06em;color:var(--text);margin-bottom:12px;"></div>
+      <button onclick="doneChore()" style="width:100%;padding:10px;border-radius:4px;background:var(--green-dim);border:1px solid var(--green);color:var(--green);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:0.1em;cursor:pointer;">✓ MARK DONE & REMOVE</button>
+    </div>
+  </div>
+  <div class="section-label">Backlog</div>
+  <div id="chore-list"><div style="font-size:13px;color:var(--text-muted);padding:8px 0;">No chores added yet.</div></div>
+</div>
+
+<script>
+  // ── GLOBALS ──
+  const now = new Date();
+  const dow = now.getDay();
+
+  // ── DAILY GREETING ──
+  const greetings = [
+    'hey, jodee 👋',
+    "what's up, jodee ✨",
+    'good to see you, jodee 🌸',
+    'hi jodee, let\'s go 💪',
+    'welcome back, jodee 🌿',
+    'hey jodee, you got this 🔥',
+    'rise and shine, jodee ☀️',
+    'how\'s it going, jodee 🤍',
+    'ready, jodee? let\'s go ⚡',
+    'another day, jodee 🌸',
+    'hey jodee, take it one step at a time',
+    'let\'s make it count, jodee 🌙',
+    'hey jodee, you\'re doing great 💫',
+    'what\'s the move today, jodee 👀',
+  ];
+  // rotates by day of year so it changes daily but is consistent within a day
+  const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+  document.getElementById('greeting-text').textContent = greetings[dayOfYear % greetings.length];
+
+  // ── PERSISTENT STORAGE ──
+  function lsGet(key, fallback) {
+    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+    catch(e) { return fallback; }
+  }
+  function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {} }
+
+  // ── COKE ZERO TRACKER ──
+  const COKE_MAX = 4;
+  const cokeMemory = { total: 0, log: [] }; // fallback for preview
+
+  function getCokeWeekKey() {
+    const d = new Date(), day = d.getDay();
+    const mon = new Date(d);
+    mon.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+    return `coke-week-${mon.toISOString().slice(0,10)}`;
+  }
+  function loadCokeData() {
+    try {
+      const saved = localStorage.getItem(getCokeWeekKey());
+      return saved ? JSON.parse(saved) : { total: 0, log: [] };
+    } catch(e) { return cokeMemory; }
+  }
+  function saveCokeData(data) {
+    try { localStorage.setItem(getCokeWeekKey(), JSON.stringify(data)); }
+    catch(e) { Object.assign(cokeMemory, data); }
+  }
+
+  function logCoke(amount) {
+    const data = loadCokeData();
+    if (data.total >= COKE_MAX) return;
+    const actual = Math.round(Math.min(amount, COKE_MAX - data.total) * 10) / 10;
+    data.total = Math.round((data.total + actual) * 10) / 10;
+    const label = actual === 1 ? 'Full can' : 'Half can';
+    const time = new Date().toLocaleTimeString('en-PH', {hour:'2-digit', minute:'2-digit'});
+    const date = new Date().toLocaleDateString('en-PH', {weekday:'short', month:'short', day:'numeric'});
+    data.log.unshift({ label, time, date, amount: actual });
+    saveCokeData(data);
+    renderCoke();
+  }
+
+  function undoCoke() {
+    const data = loadCokeData();
+    if (!data.log.length) return;
+    const last = data.log.shift();
+    data.total = Math.round(Math.max(0, data.total - last.amount) * 10) / 10;
+    saveCokeData(data);
+    renderCoke();
+  }
+
+  function renderCoke() {
+    const data = loadCokeData();
+    const pct = Math.min((data.total / COKE_MAX) * 100, 100);
+    const remaining = Math.round((COKE_MAX - data.total) * 10) / 10;
+    const atMax = data.total >= COKE_MAX;
+
+    // bar color shifts from green → mustard → maroon as it fills
+    let barColor;
+    if (pct < 50) barColor = 'linear-gradient(90deg,var(--green),var(--green-lt))';
+    else if (pct < 85) barColor = 'linear-gradient(90deg,var(--mustard),var(--mustard-lt))';
+    else barColor = 'linear-gradient(90deg,var(--maroon-lt),var(--maroon))';
+
+    document.getElementById('coke-bar').style.width = pct + '%';
+    document.getElementById('coke-bar').style.background = barColor;
+    document.getElementById('coke-label').textContent = `${data.total} / ${COKE_MAX} cans this week`;
+
+    const statusEl = document.getElementById('coke-status');
+    if (atMax) {
+      statusEl.textContent = 'LIMIT REACHED 🚫';
+      statusEl.style.color = 'var(--maroon)';
+    } else if (remaining <= 0.5) {
+      statusEl.textContent = 'Last half can ⚠';
+      statusEl.style.color = 'var(--mustard)';
+    } else {
+      statusEl.textContent = `${remaining} left`;
+      statusEl.style.color = 'var(--text-muted)';
+    }
+
+    // can icons — each full can = 1, shown as segments
+    const cansEl = document.getElementById('coke-cans');
+    cansEl.innerHTML = '';
+    for (let i = 0; i < COKE_MAX; i++) {
+      const filled = data.total >= i + 1 ? 1 : data.total > i ? data.total - i : 0;
+      const div = document.createElement('div');
+      div.style.cssText = `flex:1;height:36px;border-radius:4px;border:1.5px solid ${filled > 0 ? 'var(--maroon)' : 'var(--border2)'};background:${filled >= 1 ? 'var(--maroon)' : filled > 0 ? 'linear-gradient(90deg,var(--maroon) 50%,var(--bg3) 50%)' : 'var(--bg3)'};box-shadow:${filled > 0 ? 'var(--maroon-glow)' : 'none'};transition:all 0.3s;`;
+      cansEl.appendChild(div);
+    }
+
+    // disable buttons at max
+    ['coke-full-btn','coke-half-btn'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (atMax) {
+        btn.style.opacity = '0.3';
+        btn.style.pointerEvents = 'none';
+      } else {
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'auto';
+      }
+    });
+
+    // log
+    const logEl = document.getElementById('coke-log-list');
+    if (!data.log.length) {
+      logEl.innerHTML = '<div style="font-size:13px;color:var(--text-muted);padding:8px 0;">No Coke Zero logged yet this week.</div>';
+      return;
+    }
+    logEl.innerHTML = data.log.map(e => `
+      <div class="card" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:13px;font-weight:500;">${e.label}</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${e.date} · ${e.time}</div>
+        </div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--maroon);">+${e.amount}</div>
+      </div>`).join('');
+  }
+
+  renderCoke();
+
+  // ── FOOD TAB ──
+  let hungerLevel='moderate', cravingType='both', hadCokeToday=false;
+  let mealType='snack', hadVeg=null, hadProtein=null, hadCarb=null, foodFeel=null;
+  const foodLogs = lsGet('jodee-foodlogs', []);
+
+  // ── DAILY FUEL SUGGESTION ENGINE ──
+  function getDailyFuelPlan() {
+    const d = now.getDay(); // 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
+    const yesterday = new Date(now); yesterday.setDate(now.getDate()-1);
+    const yDate = yesterday.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    const yLogs = foodLogs.filter(e=>e.date===yDate);
+    const yHadVeg = yLogs.some(e=>e.hadVeg);
+    const yHadCarb = yLogs.some(e=>e.hadCarb);
+    const yHadProtein = yLogs.some(e=>e.hadProtein);
+
+    const plans = {
+      0: { // Sunday — rest day
+        label: 'Sunday · Rest Day',
+        sub: 'No night shift · eat what feels good',
+        pillars: ['protein','vegetable','enjoy'],
+        advice: 'Rest day so no need to fuel for a shift. Eat enjoyably — a proper meal with some protein and whatever vegetable is available. Light is fine. No pressure on carbs today.',
+      },
+      1: { // Monday — night shift starts + day before pilates
+        label: 'Monday · Night Shift + Pre-Pilates',
+        sub: 'Eat rice tonight — pilates is tomorrow morning',
+        pillars: ['protein','vegetable','carb'],
+        advice: 'Tonight is your pre-pilates fuel night. Make sure dinner has rice or another carb — your body needs glycogen stored overnight for your 11AM class tomorrow. Protein at both meals. Snack before your shift starts (~6PM).',
+      },
+      2: { // Tuesday — pilates day + night shift
+        label: 'Tuesday · Pilates Day 🧘',
+        sub: 'Biggest fuel day of the week',
+        pillars: ['protein','vegetable','carb','pre-pilates'],
+        advice: 'Pilates at 11AM means you need fuel before class — eat your first meal by 10AM or at least have something light (fruit, small snack). After pilates, eat a proper lunch with protein and some carbs to recover. Then dinner before your shift with protein + vegetable. This is the day not to skip meals.',
+      },
+      3: { // Wednesday — mid-week night shift
+        label: 'Wednesday · Night Shift',
+        sub: 'Mid-week steady — stay fueled through the shift',
+        pillars: ['protein','vegetable','snack'],
+        advice: 'Standard work day. Two proper meals — lunch and dinner. Make sure at least one has a vegetable. Have your pre-shift snack around 6PM so you\'re not running on empty by midnight. Rice is optional — have it if you feel like you need the energy.',
+      },
+      4: { // Thursday — night shift
+        label: 'Thursday · Night Shift',
+        sub: 'Keep the pattern — don\'t skip dinner',
+        pillars: ['protein','vegetable','snack'],
+        advice: 'Same as Wednesday — two meals, one vegetable, pre-shift snack. By now in the work week you might feel a little fatigue — that\'s normal. Make sure dinner is substantial enough to carry you through the full shift.',
+      },
+      5: { // Friday — last night shift
+        label: 'Friday · Last Night Shift',
+        sub: 'End of the work week — finish strong',
+        pillars: ['protein','vegetable','snack'],
+        advice: 'Last shift of the week. Eat well so you finish strong and wake up Saturday feeling okay. Avoid eating too heavy right before bed — dinner should be a couple of hours before your intended sleep time.',
+      },
+      6: { // Saturday — off day
+        label: 'Saturday · Day Off 🌤',
+        sub: 'No night shift · go outside · eat what you want',
+        pillars: ['protein','vegetable','enjoy'],
+        advice: 'Weekend off. No shift to fuel for. Eat enjoyably — one or two proper meals, add a vegetable wherever it fits naturally. This is a good day to go outside, which counts as movement. Light eating is totally fine today.',
+      },
+    };
+
+    const plan = plans[d];
+
+    // yesterday nudge
+    let yNote = '';
+    if(!yHadVeg && yLogs.length > 0) yNote = '🥬 You didn\'t have vegetables yesterday — try to add kangkong, okra, or corn to at least one meal today.';
+    else if(!yHadProtein && yLogs.length > 0) yNote = '🍖 Light on protein yesterday — make sure today\'s meals have a proper protein source.';
+    else if(d===2 && !yHadCarb) yNote = '⚡ You didn\'t log carbs yesterday — today\'s pilates day so make sure you ate enough. Have rice at lunch to compensate.';
+
+    return { ...plan, yNote };
+  }
+
+  function renderFuelPlan() {
+    const plan = getDailyFuelPlan();
+    document.getElementById('fuel-day-label').textContent = plan.label;
+    document.getElementById('fuel-day-sub').textContent = plan.sub;
+    document.getElementById('fuel-main-advice').textContent = plan.advice;
+
+    const pillarEmoji = { protein:'🍖 Protein', vegetable:'🥬 Vegetable', carb:'🍚 Carbs/Rice', 'pre-pilates':'🧘 Pre-Pilates Fuel', snack:'🍿 Pre-Shift Snack', enjoy:'✨ Eat Enjoyably' };
+    const todayDate = now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    const todayLogs = foodLogs.filter(e=>e.date===todayDate);
+    const gotVeg = todayLogs.some(e=>e.hadVeg);
+    const gotProtein = todayLogs.some(e=>e.hadProtein);
+    const gotCarb = todayLogs.some(e=>e.hadCarb);
+
+    document.getElementById('fuel-pillars').innerHTML = plan.pillars.map(p => {
+      let done = false;
+      if(p==='protein') done=gotProtein;
+      else if(p==='vegetable') done=gotVeg;
+      else if(p==='carb') done=gotCarb;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border2);">
+        <div style="width:20px;height:20px;border-radius:3px;border:1.5px solid ${done?'var(--maroon)':'var(--border2)'};background:${done?'var(--maroon)':'transparent'};display:flex;align-items:center;justify-content:center;font-size:11px;color:white;flex-shrink:0;">${done?'✓':''}</div>
+        <div style="font-size:13px;color:${done?'var(--text-muted)':'var(--text)'};${done?'text-decoration:line-through;':''}">${pillarEmoji[p]||p}</div>
+      </div>`;
+    }).join('');
+
+    const yNoteEl = document.getElementById('fuel-yesterday-note');
+    if(plan.yNote){ yNoteEl.textContent = plan.yNote; yNoteEl.style.display='block'; }
+    else yNoteEl.style.display='none';
+  }
+
+  function setHunger(v){
+    hungerLevel=v;
+    ['little','moderate','hungry'].forEach(k=>document.getElementById('h-'+k).className='supp-btn');
+    const cls={little:'active-g',moderate:'active-y',hungry:'active-m'}[v];
+    document.getElementById('h-'+v).classList.add(cls);
+  }
+  function setCraving(v){
+    cravingType=v;
+    ['sweet','salty','both','none'].forEach(k=>document.getElementById('c-'+k).className='supp-btn');
+    document.getElementById('c-'+v).classList.add('active-y');
+  }
+  function setHadCoke(v){
+    hadCokeToday=v;
+    ['yes','no'].forEach(k=>document.getElementById('ck-'+k).className='supp-btn');
+    document.getElementById(v?'ck-yes':'ck-no').classList.add(v?'active-m':'active-g');
+  }
+  function setMealType(v){
+    mealType=v;
+    ['lunch','dinner','snack'].forEach(k=>document.getElementById('mt-'+k).className='supp-btn');
+    document.getElementById('mt-'+v).classList.add('active-y');
+  }
+  function setVeg(v){
+    hadVeg=v;
+    ['yes','no'].forEach(k=>document.getElementById('veg-'+k).className='supp-btn');
+    document.getElementById(v?'veg-yes':'veg-no').classList.add(v?'active-g':'active-m');
+  }
+  function setProtein(v){
+    hadProtein=v;
+    ['yes','no'].forEach(k=>document.getElementById('pr-'+k).className='supp-btn');
+    document.getElementById(v?'pr-yes':'pr-no').classList.add(v?'active-g':'active-m');
+  }
+  function setCarb(v){
+    hadCarb=v;
+    ['yes','no'].forEach(k=>document.getElementById('carb-'+k).className='supp-btn');
+    document.getElementById(v?'carb-yes':'carb-no').classList.add(v?'active-g':'active-m');
+  }
+  function setFoodFeel(v){
+    foodFeel=v;
+    ['good','full','hungry','heavy'].forEach(k=>document.getElementById('f-'+k).className='supp-btn');
+    const cls={good:'active-g',full:'active-m',hungry:'active-m',heavy:'active-y'}[v];
+    document.getElementById('f-'+v).classList.add(cls);
+  }
+
+  const SNACKS = [
+    {name:'Boiled corn 🌽', sweet:true, salty:false, sustaining:true, reason:'Slow-burning, fills you up, scratches the sweet craving naturally'},
+    {name:'Peanuts 🥜', sweet:false, salty:true, sustaining:true, reason:'Protein + fat = sustained energy, great before a shift'},
+    {name:'Butong pakwan 🌱', sweet:false, salty:true, sustaining:true, reason:'Salty, light, keeps your hands busy — perfect snack energy'},
+    {name:'Chips (portioned bowl) 🍿', sweet:false, salty:true, sustaining:false, reason:'Keep it to your small bowl and enjoy it'},
+    {name:'Buncha Crunch (small cup) 🍫', sweet:true, salty:false, sustaining:false, reason:'Your treat — enjoy it, just keep the cup portion'},
+    {name:'Canned corn 🌽', sweet:true, salty:false, sustaining:true, reason:'Easy, no prep, sweet and filling'},
+  ];
+
+  function suggestSnack(){
+    let pool = [...SNACKS];
+    if(hadCokeToday) pool = pool.sort((a,b)=>(a.sweet===b.sweet)?0:a.sweet?1:-1);
+    if(cravingType==='sweet') pool = pool.filter(s=>s.sweet).concat(pool.filter(s=>!s.sweet));
+    if(cravingType==='salty') pool = pool.filter(s=>s.salty).concat(pool.filter(s=>!s.salty));
+    if(hungerLevel==='hungry') pool = pool.filter(s=>s.sustaining).concat(pool.filter(s=>!s.sustaining));
+    if(hungerLevel==='little') pool = pool.filter(s=>!s.sustaining).concat(pool.filter(s=>s.sustaining));
+    const pick = pool[0];
+    let cokeNote = '';
+    if(hadCokeToday && cravingType==='sweet') cokeNote = ' (already had Coke today — savory is the better call)';
+    else if(!hadCokeToday && hungerLevel==='little' && cravingType==='sweet') cokeNote = ' — or have your Coke Zero instead if that hits the spot';
+    document.getElementById('snack-suggestion').textContent = pick.name;
+    document.getElementById('snack-reason').textContent = pick.reason + cokeNote;
+    document.getElementById('snack-result').style.display = 'block';
+  }
+
+  function saveFood(){
+    const note = document.getElementById('food-note-input').value.trim();
+    const time = new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});
+    const date = now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    const entry = { mealType, hadVeg, hadProtein, hadCarb, foodFeel, note, time, date, id: Date.now() };
+    foodLogs.unshift(entry);
+    lsSet('jodee-foodlogs', foodLogs);
+
+    // smart feedback
+    const todayLogs = foodLogs.filter(e=>e.date===date);
+    const gotVeg = todayLogs.some(e=>e.hadVeg);
+    const gotProtein = todayLogs.some(e=>e.hadProtein);
+    const gotCarb = todayLogs.some(e=>e.hadCarb);
+    const d = now.getDay();
+    const msgs = [];
+
+    if(!gotVeg && todayLogs.length>=2) msgs.push('🥬 No vegetables yet today — try adding kangkong, okra, or corn to your next meal.');
+    if(!gotProtein && todayLogs.length>=2) msgs.push('🍖 Light on protein so far — make sure dinner has a proper meat or egg dish.');
+    if(d===1 && !gotCarb && todayLogs.filter(e=>e.mealType==='dinner').length>0) msgs.push('🍚 No carbs logged tonight — remember this is your pre-pilates night. Rice at dinner helps.');
+    if(d===2 && !gotCarb && mealType==='lunch') msgs.push('🧘 Pilates day — make sure you have some carbs at lunch to recover from this morning.');
+    if(foodFeel==='hungry' && mealType!=='snack') msgs.push('😤 Still hungry after that meal — next time try adding more protein or a vegetable side to stay fuller longer.');
+    if(foodFeel==='heavy') msgs.push('😴 Felt heavy after eating — maybe a lighter portion next time, or less fried food if that was in the mix.');
+    if(gotVeg && gotProtein && todayLogs.length>=2) msgs.push('✅ Looking well fueled today — protein and vegetables covered.');
+
+    const fbEl = document.getElementById('food-feedback');
+    if(msgs.length){
+      fbEl.style.display='block';
+      fbEl.innerHTML = msgs.map(m=>`<div class="edit-note" style="margin-bottom:6px;">${m}</div>`).join('');
+    } else fbEl.style.display='none';
+
+    // reset form
+    document.getElementById('food-note-input').value='';
+    foodFeel=null; hadVeg=null; hadProtein=null; hadCarb=null;
+    ['mt-lunch','mt-dinner','mt-snack'].forEach(id=>document.getElementById(id).className='supp-btn');
+    ['veg-yes','veg-no','pr-yes','pr-no','carb-yes','carb-no'].forEach(id=>document.getElementById(id).className='supp-btn');
+    ['f-good','f-full','f-hungry','f-heavy'].forEach(id=>document.getElementById(id).className='supp-btn');
+
+    renderFoodLog();
+    renderFuelPlan(); // update pillar checkmarks
+  }
+
+  function renderFoodLog(){
+    const el = document.getElementById('food-log-list');
+    const today = now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    const todayLogs = foodLogs.filter(e=>e.date===today);
+    if(!todayLogs.length){ el.innerHTML='<div style="font-size:13px;color:var(--text-muted);padding:8px 0;">Nothing logged yet today.</div>'; return; }
+    const feelEmoji={good:'💪',full:'😮‍💨',hungry:'😤',heavy:'😴'};
+    const typeLabel={lunch:'Lunch 🍚',dinner:'Dinner 🍖',snack:'Snack 🍿'};
+    el.innerHTML = todayLogs.map(e=>`
+      <div class="card" style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.08em;color:var(--mustard);">${typeLabel[e.mealType]||e.mealType}</span>
+          <span style="font-size:11px;color:var(--text-muted);">${e.time}</span>
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;">
+          ${e.hadProtein?'<span class="pill pill-m">🍖 protein</span>':''}
+          ${e.hadVeg?'<span class="pill pill-g">🥬 veg</span>':''}
+          ${e.hadCarb?'<span class="pill pill-y">🍚 carbs</span>':''}
+          ${e.foodFeel?`<span class="pill pill-y">${feelEmoji[e.foodFeel]||''} ${e.foodFeel}</span>`:''}
+        </div>
+        ${e.note?`<div style="font-size:12px;color:var(--text-soft);font-style:italic;">${e.note}</div>`:''}
+      </div>`).join('');
+  }
+
+  setHunger('moderate'); setCraving('both'); setHadCoke(false); setMealType('snack');
+  renderFuelPlan();
+  renderFoodLog();
+
+  // ── NIGHT PICKER ──
+  let skinState='okay', lastActive='last';
+  function setSkin(v){
+    skinState=v;
+    ['calm','okay','sens','cong'].forEach(k=>document.getElementById('sk-'+k).className='supp-btn');
+    const cls={calm:'active-g',okay:'active-y',sens:'active-m',cong:'active-m'}[v];
+    document.getElementById('sk-'+v).classList.add(cls);
+  }
+  function setLastActive(v){
+    lastActive=v;
+    ['tonight','last','2ago','longer','none'].forEach(k=>document.getElementById('la-'+k).className='supp-btn');
+    document.getElementById('la-'+v).classList.add('active-y');
+  }
+  function calcNight(){
+    const isSens = skinState==='sens';
+    const isCong = skinState==='cong';
+    const isCalm = skinState==='calm';
+    const freshActive = lastActive==='tonight'||lastActive==='last';
+    const readyForActive = lastActive==='2ago'||lastActive==='longer'||lastActive==='none';
+
+    let type, steps, note;
+
+    if(isSens || lastActive==='tonight'){
+      type='Recovery Night'; 
+      steps=['Cleanser','Mediheal Madecassoside (or nothing)','Moisturizer (Dr. G or Dr. Althea)'];
+      note='Skin needs a break tonight. No actives — barrier first.';
+    } else if(isCong && readyForActive){
+      type='BHA Night';
+      steps=['Cleanser','Paula\'s Choice BHA — nose + T-zone only','Moisturizer'];
+      note='Congestion flag + ready for an active = BHA night. Keep it targeted.';
+    } else if(readyForActive && isCalm){
+      type='Retinol Night';
+      steps=['Cleanser','Innisfree Retinol','Moisturizer'];
+      note='Skin is calm and it\'s been a while since your last active. Good retinol conditions.';
+    } else if(freshActive || skinState==='okay'){
+      type='Reedle Night';
+      steps=['Cleanser','VT Reedle Shot 100','Moisturizer'];
+      note='Had an active recently — reedle is a good middle ground. Texture support without stressing the barrier.';
+    } else {
+      type='Recovery Night';
+      steps=['Cleanser','Mediheal Madecassoside (or nothing)','Moisturizer'];
+      note='When in doubt, recover. Consistency over intensity.';
+    }
+
+    const colors={
+      'Retinol Night':'var(--mustard)',
+      'Reedle Night':'var(--green)',
+      'Recovery Night':'var(--text-soft)',
+      'BHA Night':'#a080d0'
+    };
+    const c = colors[type]||'var(--mustard)';
+    document.getElementById('night-result-card').innerHTML=`
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.1em;color:${c};text-shadow:0 0 12px ${c}55;margin-bottom:14px;">${type}</div>
+      ${steps.map((s,i)=>`<div class="hair-step"><div class="h-num" style="color:${c};">${i+1}</div><div>${s}</div></div>`).join('')}`;
+    document.getElementById('night-result-note').textContent=note;
+    document.getElementById('night-result').style.display='block';
+  }
+  setSkin('okay'); setLastActive('last');
+
+  // ── SKIN LOG ──
+  let skinScore=0, skinFlagsSelected=new Set();
+  function setSkinScore(v){
+    skinScore=v;
+    [1,2,3,4,5].forEach(k=>{
+      const btn=document.getElementById('sl-'+k);
+      btn.className='supp-btn';
+      if(k<=v) btn.classList.add(v>=4?'active-g':v===3?'active-y':'active-m');
+    });
+  }
+  function toggleFlag(btn){
+    const f=btn.dataset.flag;
+    if(skinFlagsSelected.has(f)){ skinFlagsSelected.delete(f); btn.className='supp-btn'; }
+    else { skinFlagsSelected.add(f); btn.classList.add('active-y'); }
+  }
+  const skinLogs = lsGet('jodee-skinlogs', []);
+  function saveSkinLog(){
+    if(!skinScore){ alert('Pick a skin score first'); return; }
+    const entry={
+      date:new Date().toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'}),
+      score:skinScore,
+      flags:[...skinFlagsSelected],
+      note:document.getElementById('skin-note').value.trim()
+    };
+    skinLogs.unshift(entry);
+    lsSet('jodee-skinlogs', skinLogs);
+    renderSkinLogs();
+    skinScore=0; skinFlagsSelected.clear();
+    [1,2,3,4,5].forEach(k=>document.getElementById('sl-'+k).className='supp-btn');
+    document.querySelectorAll('#skin-flags .supp-btn').forEach(b=>b.className='supp-btn');
+    document.getElementById('skin-note').value='';
+  }
+  function renderSkinLogs(){
+    const el=document.getElementById('skin-log-list');
+    if(!skinLogs.length){ el.innerHTML='<div style="font-size:13px;color:var(--text-muted);padding:8px 0;">No entries yet.</div>'; return; }
+    const scoreEmoji=['','😩','😕','😐','🙂','✨'];
+    el.innerHTML=skinLogs.slice(0,10).map(e=>`
+      <div class="card" style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:12px;color:var(--text-muted);">${e.date}</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--mustard);">${scoreEmoji[e.score]} ${e.score}/5</span>
+        </div>
+        ${e.flags.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;">${e.flags.map(f=>`<span class="pill pill-m">${f}</span>`).join('')}</div>`:''}
+        ${e.note?`<div style="font-size:12px;color:var(--text-soft);font-style:italic;">${e.note}</div>`:''}
+      </div>`).join('');
+  }
+
+  // ── SLEEP TRACKER ──
+  let sleepQ='ok', restFeel=null;
+  const restLogs = lsGet('jodee-restlogs', []);
+
+  function setRestFeel(v){
+    restFeel=v;
+    ['good','groggy','ok'].forEach(k=>document.getElementById('rf-'+k).className='supp-btn');
+    const cls={good:'active-g',groggy:'active-m',ok:'active-y'}[v];
+    document.getElementById('rf-'+v).classList.add(cls);
+  }
+
+  function getRestRecommendation() {
+    const today = now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    const yesterday = new Date(now); yesterday.setDate(now.getDate()-1);
+    const yDate = yesterday.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    const lastSleep = sleepLogs.find(e=>e.date===today) || sleepLogs.find(e=>e.date===yDate);
+    const todayRest = restLogs.find(e=>e.date===today);
+    const isPilatesDay = dow===2;
+    const isOffDay = dow===0||dow===6;
+
+    if(todayRest){
+      const hrs = todayRest.hrs;
+      const feel = todayRest.feel;
+      if(feel==='groggy') return `You rested ${hrs}h but woke up groggy — you likely went into deep sleep. Next time try capping it at 60 min. Be up by 5PM to give yourself time before your shift.`;
+      if(feel==='good') return `You rested ${hrs}h and felt refreshed — that's your sweet spot. Remember this felt good.`;
+      return `You already rested today (${hrs}h). You should be good to go for your shift.`;
+    }
+
+    if(!lastSleep) return `No sleep data logged yet — log last night's sleep below and I'll give you a better recommendation.`;
+
+    const hrs = lastSleep.hrs;
+    const quality = lastSleep.q;
+
+    let rec = '';
+    if(isPilatesDay){
+      rec = hrs >= 7
+        ? `You slept ${hrs}h — solid for a pilates day. A short 60–90 min rest after class is fine if you need it. Just be up by 4:30PM so you're alert for your shift.`
+        : `You slept ${hrs}h — a bit short for pilates day. Rest for 90 min after class, up by 4:30PM. Make sure dinner is substantial before your shift.`;
+    } else if(isOffDay){
+      rec = hrs >= 7
+        ? `You slept ${hrs}h — you're well rested. Rest only if you genuinely feel like it. No shift today so timing is flexible.`
+        : `You slept ${hrs}h — a bit short for an off day. Rest up to 90 min whenever you feel like it. No shift so no hard deadline on when to be up.`;
+    } else {
+      // Work day
+      if(hrs >= 7.5 && quality === 'good'){
+        rec = `You slept ${hrs}h and slept well. You probably don't need a long rest today — 60 min max if you feel like it. Be up by 5PM to have time to eat before your shift.`;
+      } else if(hrs >= 6.5){
+        rec = `You slept ${hrs}h — decent but not quite full. A 60–90 min rest this afternoon will help you finish the shift strong. Aim to be up by 5PM.`;
+      } else {
+        rec = `You only slept ${hrs}h — rest is important today. Give yourself up to 90 min. Be up by 5PM so you have time to eat and prep before your shift starts.`;
+      }
+    }
+    return rec;
+  }
+
+  function renderRestRecommendation(){
+    document.getElementById('rest-recommendation').textContent = getRestRecommendation();
+  }
+
+  function saveRest(){
+    const inn = document.getElementById('rest-in').value;
+    const out = document.getElementById('rest-out').value;
+    if(!inn||!out){ alert('Enter both times'); return; }
+    const [ih,im]=inn.split(':').map(Number);
+    const [oh,om]=out.split(':').map(Number);
+    const dur=((oh*60+om)-(ih*60+im)+1440)%1440;
+    const hrs=parseFloat((dur/60).toFixed(1));
+    const date=now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    const entry={date,in:inn,out:out,hrs,feel:restFeel,id:Date.now()};
+    restLogs.unshift(entry);
+    lsSet('jodee-restlogs',restLogs);
+    restFeel=null;
+    ['rf-good','rf-groggy','rf-ok'].forEach(id=>document.getElementById(id).className='supp-btn');
+    renderRestRecommendation();
+    renderSleepLogs();
+  }
+  function setSleepQ(v){
+    sleepQ=v;
+    ['bad','ok','good'].forEach(k=>document.getElementById('sq-'+k).className='supp-btn');
+    const cls={bad:'active-m',ok:'active-y',good:'active-g'}[v];
+    document.getElementById('sq-'+v).classList.add(cls);
+  }
+  const sleepLogs = lsGet('jodee-sleeplogs', []);
+  function saveSleep(){
+    const inn=document.getElementById('sleep-in').value;
+    const out=document.getElementById('sleep-out').value;
+    if(!inn||!out){ alert('Enter both times'); return; }
+    const [ih,im]=inn.split(':').map(Number);
+    const [oh,om]=out.split(':').map(Number);
+    let dur=((oh*60+om)-(ih*60+im)+1440)%1440;
+    const hrs=(dur/60).toFixed(1);
+    const entry={
+      date:new Date().toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'}),
+      in:inn, out:out, hrs:parseFloat(hrs), q:sleepQ,
+      lateBed: ih>=4&&ih<12
+    };
+    sleepLogs.unshift(entry);
+    lsSet('jodee-sleeplogs', sleepLogs);
+    renderSleepLogs();
+  }
+  function renderSleepLogs(){
+    const el=document.getElementById('sleep-log-list');
+    if(!sleepLogs.length){ el.innerHTML='<div style="font-size:13px;color:var(--text-muted);padding:8px 0;">No entries yet.</div>'; return; }
+    const lateDays=sleepLogs.slice(0,7).filter(e=>e.lateBed).length;
+    document.getElementById('sleep-warning').style.display=lateDays>=3?'block':'none';
+    const qEmoji={bad:'😞',ok:'😴',good:'😌'};
+    const rfEmoji={good:'💪',groggy:'😵',ok:'😐'};
+    el.innerHTML=sleepLogs.slice(0,7).map(e=>{
+      const todayRest=restLogs.find(r=>r.date===e.date);
+      const totalHrs=todayRest?parseFloat((e.hrs+todayRest.hrs).toFixed(1)):e.hrs;
+      return `<div class="card" style="margin-bottom:8px;${e.lateBed?'border-color:var(--maroon);box-shadow:0 0 8px #b0203022;':''}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:12px;color:var(--text-muted);">${e.date}</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${e.hrs>=7?'var(--green-lt)':'var(--mustard)'};">${e.hrs}h ${qEmoji[e.q]}</span>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${e.in} → ${e.out}${e.lateBed?' · <span style="color:var(--maroon);">past 4AM</span>':''}</div>
+        ${todayRest?`<div style="font-size:11px;color:var(--text-muted);margin-top:4px;padding-top:4px;border-top:1px solid var(--border2);">+ ${todayRest.hrs}h rest ${rfEmoji[todayRest.feel]||''} · total ${totalHrs}h</div>`:''}
+      </div>`;
+    }).join('');
+  }
+  setSleepQ('ok');
+
+  // ── CONTENT IDEAS ──
+  let contentCat='lifestyle';
+  const contentItems = lsGet('jodee-content', []);
+  function setContentCat(v){
+    contentCat=v;
+    ['lifestyle','career','skincare','fitness','travel','misc'].forEach(k=>document.getElementById('ct-'+k).className='supp-btn');
+    document.getElementById('ct-'+v).classList.add('active-y');
+  }
+  function saveContent(){
+    const val=document.getElementById('content-input').value.trim();
+    if(!val) return;
+    contentItems.unshift({id:Date.now(),text:val,cat:contentCat,done:false});
+    lsSet('jodee-content', contentItems);
+    document.getElementById('content-input').value='';
+    renderContent();
+  }
+  function doneContent(id){
+    const i=contentItems.findIndex(c=>c.id===id);
+    if(i>-1) contentItems[i].done=!contentItems[i].done;
+    lsSet('jodee-content', contentItems);
+    renderContent();
+  }
+  function deleteContent(id){
+    const i=contentItems.findIndex(c=>c.id===id);
+    if(i>-1) contentItems.splice(i,1);
+    lsSet('jodee-content', contentItems);
+    renderContent();
+  }
+  const catColors={lifestyle:'pill-y',career:'pill-m',skincare:'pill-g',fitness:'pill-m',travel:'pill-y',misc:'pill-g'};
+  function renderContent(){
+    const el=document.getElementById('content-list');
+    const active=contentItems.filter(c=>!c.done);
+    const done=contentItems.filter(c=>c.done);
+    if(!contentItems.length){ el.innerHTML='<div style="font-size:13px;color:var(--text-muted);padding:8px 0;">No ideas yet.</div>'; return; }
+    const renderItem=c=>`
+      <div class="card" style="margin-bottom:8px;${c.done?'opacity:0.4;':''}">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div onclick="doneContent(${c.id})" style="width:20px;height:20px;border-radius:3px;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;margin-top:1px;${c.done?'background:var(--green);border-color:var(--green);':''}font-size:11px;color:white;">${c.done?'✓':''}</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;${c.done?'text-decoration:line-through;':''}">${c.text}</div>
+            <div style="margin-top:4px;"><span class="pill ${catColors[c.cat]||'pill-y'}">${c.cat}</span></div>
+          </div>
+          <div onclick="deleteContent(${c.id})" style="font-size:16px;color:var(--text-muted);cursor:pointer;padding:0 4px;">×</div>
+        </div>
+      </div>`;
+    el.innerHTML=active.map(renderItem).join('')+(done.length?`<div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin:12px 0 8px;">Done</div>`+done.map(renderItem).join(''):'');
+  }
+  setContentCat('lifestyle');
+
+  // ── CHORES ──
+  const choreList = lsGet('jodee-chores', []);
+  let pickedChore=null;
+  function addChore(){
+    const val=document.getElementById('chore-input').value.trim();
+    if(!val) return;
+    choreList.push({id:Date.now(),text:val});
+    lsSet('jodee-chores', choreList);
+    document.getElementById('chore-input').value='';
+    renderChores();
+  }
+  function pickChore(){
+    const pending=choreList.filter(c=>c);
+    if(!pending.length){ alert('Add some chores first!'); return; }
+    pickedChore=pending[Math.floor(Math.random()*pending.length)];
+    document.getElementById('chore-picked').textContent=pickedChore.text;
+    document.getElementById('chore-pick-result').style.display='block';
+  }
+  function doneChore(){
+    if(!pickedChore) return;
+    const i=choreList.findIndex(c=>c.id===pickedChore.id);
+    if(i>-1) choreList.splice(i,1);
+    lsSet('jodee-chores', choreList);
+    pickedChore=null;
+    document.getElementById('chore-pick-result').style.display='none';
+    renderChores();
+  }
+  function deleteChore(id){
+    const i=choreList.findIndex(c=>c.id===id);
+    if(i>-1) choreList.splice(i,1);
+    lsSet('jodee-chores', choreList);
+    renderChores();
+  }
+  function renderChores(){
+    const el=document.getElementById('chore-list');
+    if(!choreList.length){ el.innerHTML='<div style="font-size:13px;color:var(--text-muted);padding:8px 0;">Backlog is empty — add things you keep putting off.</div>'; return; }
+    el.innerHTML=choreList.map(c=>`
+      <div class="card" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;">
+        <div style="flex:1;font-size:13px;">${c.text}</div>
+        <div onclick="deleteChore(${c.id})" style="font-size:16px;color:var(--text-muted);cursor:pointer;padding:0 4px;">×</div>
+      </div>`).join('');
+  }
+
+  const SHORT=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const HAIR_WASH_DAYS=[2,4,6]; // Tue, Thu, Sat
+  const DEEP_CLEAN_DAY=[2]; // Tuesday — after pilates
+  const EXERCISE_DAYS=[2]; // Tuesday pilates
+  const OUTSIDE_DAYS=[6];
+  const LAUNDRY_DAYS=[3];
+  const RESET_DAYS=[0];
+
+  // Recovery: procedures Apr 24 2026
+  const PROCEDURE_DATE = new Date('2026-04-24');
+  const daysSince = Math.floor((now - PROCEDURE_DATE)/(1000*60*60*24));
+  const inRecovery = daysSince < 14;
+
+  if(!inRecovery) document.getElementById('recovery-banner').style.display='none';
+
+  document.getElementById('date-line').textContent =
+    now.toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  function getDayBadge(){
+    const isHairWash = HAIR_WASH_DAYS.includes(dow);
+    const dc = DEEP_CLEAN_DAY.includes(dow);
+    const isPilates = dow===2;
+    const isOff = dow===0||dow===6;
+    const isWorkDay = dow>=1&&dow<=5;
+    const hairCode = dc ? 'deep 🧴' : isHairWash ? 'regular 🚿' : 'refresh 🌿';
+
+    if(inRecovery && daysSince < 5) return `Recovery Mode · ${hairCode}`;
+    if(isPilates) return `Pilates Day · ${hairCode}`;
+    if(isOff) return `Off Day · ${hairCode}`;
+    if(isWorkDay) return `Night Shift · ${hairCode}`;
+    return hairCode;
+  }
+  document.getElementById('day-badge').textContent=getDayBadge();
+
+  function buildTodayItems(){
+    const hw=HAIR_WASH_DAYS.includes(dow);
+    const dc=DEEP_CLEAN_DAY.includes(dow);
+    const ex=EXERCISE_DAYS.includes(dow);
+    const items=[
+      // ── WAKE UP (11am–12pm) ──
+      {text:'Wake up + drink a glass of water', note:'Target: 11AM–12PM · before anything else'},
+      {text:'Lacto-Fit Eve probiotic', note:'Take now · empty stomach · before eating anything · powder stick'},
+      {text:'Morning skincare', note: inRecovery?'Recovery: gentle mist + barrier cream + SPF · no actives · no face wash':'Vitamin C → moisturizer → SPF'},
+      ...(inRecovery?[{text:'Piercing care — hypochlorous acid spray', note:'Morning clean · both piercings'}]:[]),
+      // ── AFTERNOON (1–5pm) ──
+      {text:'Eat a proper first meal', note:'Your "breakfast" — eat properly before taking meds'},
+      {text:'Morning meds (아침 pack)', warn: inRecovery?'엠피디엘정 + 인데놀정 + 미노씬캡슐 — always after food':'Check if 3-day course is complete'},
+      {text: hw?(dc?'Hair wash — Dr. For Hair (deep clean)':'Hair wash — Aromatica (color-safe)'):'Hair refresh (no wash today)',
+       note: hw?(dc?'Deep clean day · scalp reset · once/week max':'Standard wash · Unove treatment · cold rinse'):'Dry shampoo if needed · Aromatica spray optional'},
+      {text:'Labo-H Hairline Ampoule', note:'Daily · apply after hair routine'},
+      {text:'BB Lab Collagen', note:'Anytime · can take with your first meal'},
+      ...(dow===2?[{text:'Pilates · 11AM', note:'Your Tuesday class · set an alarm the night before'}]:[]),
+      ...(OUTSIDE_DAYS.includes(dow)?[{text:'Go outside today', note:'Afternoon window · café, walk, errands on foot'}]:[]),
+      ...(LAUNDRY_DAYS.includes(dow)?[{text:'Laundry day', note:'Get it going in the afternoon'}]:[]),
+      // ── PRE-WORK WIND-UP (5–7pm) ──
+      {text:'Water check: 4 glasses by 6PM', note:'See Water tab · adjust for your wake time'},
+      {text:'Second meal / pre-work food', note:'Eat properly before your shift starts · fuel up'},
+      {text:'Ginseng (if needed today)', note:'Take by 6PM max · not later than that · check Supplements tab'},
+      // ── WORK (7–9pm actual start, target 7pm) ──
+      {text:'Start work by 9PM', note:'Target is 7PM · even starting at 8:30 gives you more breathing room'},
+      // ── DURING SHIFT ──
+      {text:'Water goal: 8 glasses by 2AM', note:'Spread across your shift · keep a water bottle at your desk'},
+      {text:'Hobby or content time', note:'Carve out even 20 min during a break · protect this'},
+      // ── WIND DOWN (2–3am) ──
+      {text:'Evening meds (저녁 pack)', warn: inRecovery?'엠피디엘정 + 인데놀정 + 미노씬캡슐 — eat something first':'Check if 3-day course is complete'},
+      {text:'Magnesium (if taking tonight)', note:'1–2 hours before sleep target · check Supplements tab'},
+      {text:'Evening skincare', note: inRecovery?'Recovery: gentle cleanse + barrier cream · no actives':'PM routine — check Skincare tab for tonight\'s type'},
+      ...(inRecovery?[{text:'Piercing care — hypochlorous acid spray', note:'Night clean · both piercings'}]:[]),
+      ...(RESET_DAYS.includes(dow)?[{text:'Room reset — 20 min tidy', note:'Sunday reset · set yourself up for the week'}]:[]),
+      {text:'Wind down — screens off, wrap up', note:'Target: asleep by 3AM · no later than 4AM'},
+    ];
+    return items;
+  }
+
+  function getWorkout(d){
+    return({1:'Upper body',2:'Walk / cardio',3:'Lower body',4:'Yoga & stretch',5:'Full body',6:'Outdoors'})[d]||'Movement';
+  }
+
+  function buildChecklist(){
+    const items=buildTodayItems();
+    const c=document.getElementById('today-checklist');
+    c.innerHTML='';
+    items.forEach((item,i)=>{
+      const div=document.createElement('div');
+      div.className='card'; div.style.marginBottom='8px';
+      div.innerHTML=`<ul class="checklist"><li onclick="toggleItem(this)" id="ti-${i}">
+        <div class="check-box"></div>
+        <div>
+          <div class="item-text">${item.text}</div>
+          ${item.note?`<div class="item-note">${item.note}</div>`:''}
+          ${item.warn?`<div class="item-warn">⚕ ${item.warn}</div>`:''}
+        </div>
+      </li></ul>`;
+      c.appendChild(div);
+    });
+    updateProgress();
+  }
+
+  function toggleItem(el){
+    el.classList.toggle('done');
+    el.querySelector('.check-box').textContent=el.classList.contains('done')?'✓':'';
+    updateProgress();
+  }
+  function toggle(el){
+    el.classList.toggle('done');
+    el.querySelector('.check-box').textContent=el.classList.contains('done')?'✓':'';
+  }
+  function updateProgress(){
+    const all=document.querySelectorAll('[id^="ti-"]').length;
+    const done=document.querySelectorAll('[id^="ti-"].done').length;
+    const pct=all?Math.round(done/all*100):0;
+    document.getElementById('today-progress').style.width=pct+'%';
+    document.getElementById('progress-text').textContent=`${done} of ${all} done`;
+    document.getElementById('progress-pct').textContent=pct+'%';
+  }
+
+  const WS=[
+    {time:'11AM–12',label:'Wake up · first glass'},
+    {time:'1–2 PM', label:'With first meal'},
+    {time:'3–4 PM', label:'Afternoon'},
+    {time:'5–6 PM', label:'Pre-work'},
+    {time:'8–9 PM', label:'Early shift'},
+    {time:'11PM–12',label:'Mid-shift'},
+    {time:'1–2 AM', label:'Late shift'},
+    {time:'2–3 AM', label:'Wind down · last glass'},
+  ];
+  function getZone(){
+    const h=now.getHours();
+    if(h<13)return 0; if(h<15)return 1; if(h<17)return 2; if(h<19)return 3;
+    if(h<22)return 4; if(h<24)return 5; if(h<2)return 6; return 7;
+  }
+  function buildWater(){
+    const z=getZone();
+    document.getElementById('water-rows').innerHTML=WS.map((r,i)=>`
+      <div class="water-time-row">
+        <div class="water-time">${r.time}</div>
+        <div class="water-label">${r.label}</div>
+        <div class="cup ${i<z?'filled':''} ${i===z?'current-zone':''}" onclick="toggleCup(this)"></div>
+      </div>`).join('');
+    updateWaterCount();
+  }
+  function toggleCup(el){el.classList.toggle('filled');updateWaterCount();}
+  function updateWaterCount(){
+    document.getElementById('water-count').textContent=document.querySelectorAll('.cup.filled').length+' / 8';
+  }
+
+  function buildHairToday(){
+    const hw=HAIR_WASH_DAYS.includes(dow), dc=DEEP_CLEAN_DAY.includes(dow);
+    document.getElementById('hair-today-sub').textContent=hw?(dc?'Deep clean wash day':'Standard wash day'):'Refresh day — no wash';
+    document.getElementById('hair-today-body').innerHTML=hw
+      ?`<div class="hair-badge wash">🚿 ${dc?'DEEP CLEAN WASH':'STANDARD WASH'}</div>
+        <div class="hair-step"><div class="h-num">→</div><div><strong>${dc?'Dr. For Hair Folligen Shampoo':'Aromatica Quinoa Protein Shampoo'}</strong><div class="h-sub">${dc?'Deep clean · scalp reset · once/week only':'Color-safe · gentle main shampoo'}</div></div></div>
+        <div class="hair-step"><div class="h-num">→</div><div>Unove Deep Damage Treatment EX<div class="h-sub">Mid-lengths to ends · 2–3 min</div></div></div>
+        <div class="hair-step"><div class="h-num">→</div><div>Cold rinse · then Labo-H ampoule after drying</div></div>`
+      :`<div class="hair-badge no-wash">✨ REFRESH DAY</div>
+        <div class="hair-step"><div class="h-num">→</div><div><strong>Labo-H Hairline Ampoule</strong><div class="h-sub">Daily — always</div></div></div>
+        <div class="hair-step"><div class="h-num">→</div><div>Dry shampoo if needed · Aromatica spray optional</div></div>
+        <div class="hair-step"><div class="h-num">→</div><div>Style, protect ends</div></div>`;
+  }
+
+  function buildWeekGrid(){
+    const start=new Date(now); start.setDate(now.getDate()-dow);
+    document.getElementById('week-grid').innerHTML=Array.from({length:7},(_,i)=>{
+      const d=new Date(start); d.setDate(start.getDate()+i);
+      const dots=[
+        EXERCISE_DAYS.includes(i)?'<span class="dot dot-m"></span>':'',
+        HAIR_WASH_DAYS.includes(i)?'<span class="dot dot-g"></span>':'',
+        (LAUNDRY_DAYS.includes(i)||RESET_DAYS.includes(i))?'<span class="dot dot-y"></span>':'',
+      ].join('');
+      return `<div class="week-day ${i===dow?'today':''}">
+        <div class="wd-label">${SHORT[i]}</div>
+        <div class="wd-date">${d.getDate()}</div>
+        <div class="wd-dots">${dots}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function switchTab(id,btn){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('tab-'+id).classList.add('active');
+    btn.classList.add('active');
+    // show "back to today" button when not on today tab
+    const todayBtn = document.getElementById('today-btn');
+    if(id==='today') todayBtn.classList.remove('visible');
+    else todayBtn.classList.add('visible');
+  }
+  function goToday(){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('tab-today').classList.add('active');
+    document.querySelector('.tab').classList.add('active');
+    document.getElementById('today-btn').classList.remove('visible');
+  }
+
+  function resetToday(){
+    document.querySelectorAll('.checklist li').forEach(li=>{
+      li.classList.remove('done');
+      const cb=li.querySelector('.check-box');
+      if(cb&&!cb.style.borderColor.includes('maroon')&&!cb.style.color.includes('green'))
+        cb.textContent='';
+    });
+    document.querySelectorAll('.cup').forEach(c=>c.classList.remove('filled'));
+    updateProgress(); updateWaterCount();
+  }
+
+  // ── SUPPLEMENTS ──
+  let energy='mid', sleep='ok', load='normal';
+
+  function setEnergy(v){
+    energy=v;
+    ['low','mid','good'].forEach(k=>document.getElementById('e-'+k).className='supp-btn');
+    const cls={low:'active-m',mid:'active-y',good:'active-g'}[v];
+    document.getElementById('e-'+v).classList.add(cls);
+  }
+  function setSleep(v){
+    sleep=v;
+    ['bad','ok','good'].forEach(k=>document.getElementById('s-'+k).className='supp-btn');
+    const cls={bad:'active-m',ok:'active-y',good:'active-g'}[v];
+    document.getElementById('s-'+v).classList.add(cls);
+  }
+  function setLoad(v){
+    load=v;
+    ['chill','normal','heavy'].forEach(k=>document.getElementById('l-'+k).className='supp-btn');
+    const cls={chill:'active-g',normal:'active-y',heavy:'active-m'}[v];
+    document.getElementById('l-'+v).classList.add(cls);
+  }
+
+  function suppItem(emoji,color,name,why,skip){
+    return `<div class="supp-item">
+      <div class="supp-dot" style="background:${color};box-shadow:0 0 6px ${color}66;"></div>
+      <div>
+        <div class="supp-name">${emoji} ${name}</div>
+        ${why?`<div class="supp-why">${why}</div>`:''}
+        ${skip?`<div class="supp-skip">${skip}</div>`:''}
+      </div>
+    </div>`;
+  }
+
+  function calcSupps(){
+    const needGinseng = energy==='low' || sleep==='bad' || load==='heavy';
+    const needMag = sleep==='bad' || sleep==='ok' || load==='heavy' || energy==='low';
+    const ginFreqOk = true; // user decides — we just advise
+
+    // Morning
+    let morning = suppItem('💊','var(--green)','Lacto-Fit Eve','Probiotic · empty stomach or before food · always');
+    if(needGinseng){
+      morning += suppItem('🌿','var(--mustard)','K-Energy Ginseng','Use today — low energy / demanding day detected','Max 2–4x/week · skip if you\'ve had it 2+ days in a row');
+    } else {
+      morning += suppItem('🌿','var(--text-muted)','Ginseng — optional today','Energy looks okay · skip unless you really need it','');
+    }
+
+    // Midday
+    const midday = suppItem('🍊','var(--mustard)','BB Lab Pomegranate Collagen','Anytime · daily or near-daily · results are consistency-based');
+
+    // Night
+    let night = '';
+    if(needMag){
+      night = suppItem('🌙','var(--green)','Magnesium (glycinate or citrate)','Take tonight — poor sleep or heavy day · supports sleep quality + recovery');
+    } else {
+      night = suppItem('🌙','var(--text-muted)','Magnesium — optional','Sleep looks okay today · take if you want the baseline support · skip if not purchased yet');
+    }
+
+    document.getElementById('supp-morning').innerHTML = morning;
+    document.getElementById('supp-midday').innerHTML  = midday;
+    document.getElementById('supp-night').innerHTML   = night;
+
+    let note = '✓ Stack is minimal. ';
+    if(needGinseng && needMag) note += 'Ginseng (morning) + Magnesium (night) — these don\'t conflict. ';
+    if(!needGinseng) note += 'Ginseng skipped today — energy looks fine. ';
+    note += 'Probiotic + collagen are daily anchors regardless of how you feel.';
+    document.getElementById('supp-rules-note').textContent = note;
+    document.getElementById('supp-result').style.display = 'block';
+  }
+
+  // set defaults visually
+  setEnergy('mid'); setSleep('ok'); setLoad('normal');
+
+  // ── SETTINGS / EXPORT / IMPORT ──
+  const DATA_KEYS = [
+    'jodee-skinlogs', 'jodee-sleeplogs', 'jodee-restlogs',
+    'jodee-foodlogs', 'jodee-content', 'jodee-chores'
+  ];
+
+  function exportData() {
+    const bundle = {};
+    DATA_KEYS.forEach(k => {
+      try { const v = localStorage.getItem(k); if(v) bundle[k] = JSON.parse(v); } catch(e) {}
+    });
+    // also grab coke weeks
+    for(let w=0; w<8; w++){
+      const d = new Date(now); d.setDate(d.getDate() - w*7);
+      const day = d.getDay();
+      const mon = new Date(d); mon.setDate(d.getDate()-(day===0?6:day-1));
+      const key = `coke-week-${mon.toISOString().slice(0,10)}`;
+      try { const v = localStorage.getItem(key); if(v) bundle[key] = JSON.parse(v); } catch(e) {}
+    }
+    const code = btoa(JSON.stringify(bundle));
+    const box = document.getElementById('export-box');
+    box.value = code;
+    box.style.display = 'block';
+    document.getElementById('export-copy-btn').style.display = 'block';
+    renderDataSummary();
+  }
+
+  function copyExport() {
+    const box = document.getElementById('export-box');
+    box.select();
+    try {
+      navigator.clipboard.writeText(box.value).then(() => {
+        document.getElementById('export-success').style.display = 'block';
+      });
+    } catch(e) {
+      document.execCommand('copy');
+      document.getElementById('export-success').style.display = 'block';
+    }
+  }
+
+  function importData() {
+    const code = document.getElementById('import-box').value.trim();
+    if(!code) return;
+    try {
+      const bundle = JSON.parse(atob(code));
+      Object.entries(bundle).forEach(([k,v]) => {
+        localStorage.setItem(k, JSON.stringify(v));
+      });
+      document.getElementById('import-success').style.display = 'block';
+      document.getElementById('import-error').style.display = 'none';
+      // reload data into memory
+      sleepLogs.splice(0, sleepLogs.length, ...lsGet('jodee-sleeplogs',[]));
+      skinLogs.splice(0, skinLogs.length, ...lsGet('jodee-skinlogs',[]));
+      foodLogs.splice(0, foodLogs.length, ...lsGet('jodee-foodlogs',[]));
+      restLogs.splice(0, restLogs.length, ...lsGet('jodee-restlogs',[]));
+      contentItems.splice(0, contentItems.length, ...lsGet('jodee-content',[]));
+      choreList.splice(0, choreList.length, ...lsGet('jodee-chores',[]));
+      renderSkinLogs(); renderSleepLogs(); renderContent(); renderChores();
+      renderFoodLog(); renderPatterns(); renderDataSummary(); renderCoke();
+    } catch(e) {
+      document.getElementById('import-error').style.display = 'block';
+      document.getElementById('import-success').style.display = 'none';
+    }
+  }
+
+  function renderDataSummary() {
+    const summary = [
+      { label: 'Skin logs', count: skinLogs.length },
+      { label: 'Sleep logs', count: sleepLogs.length },
+      { label: 'Rest logs', count: restLogs.length },
+      { label: 'Food logs', count: foodLogs.length },
+      { label: 'Content ideas', count: contentItems.length },
+      { label: 'Chores', count: choreList.length },
+    ];
+    document.getElementById('data-summary').innerHTML =
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">` +
+      summary.map(s => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border2);">
+          <span style="font-size:12px;color:var(--text-soft);">${s.label}</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--mustard);">${s.count}</span>
+        </div>`).join('') +
+      `</div>`;
+  }
+
+  // ── PATTERNS DASHBOARD ──
+  function getLastNDates(n) {
+    return Array.from({length: n}, (_, i) => {
+      const d = new Date(now);
+      d.setDate(now.getDate() - (n - 1 - i));
+      return d.toLocaleDateString('en-PH', {weekday:'short', month:'short', day:'numeric'});
+    });
+  }
+
+  function statBox(label, value, sub, color) {
+    return `<div style="background:var(--bg3);border-radius:4px;padding:10px;text-align:center;border:1px solid var(--border2);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.04em;color:${color||'var(--mustard)'};">${value}</div>
+      <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">${label}</div>
+      ${sub?`<div style="font-size:10px;color:var(--text-muted);margin-top:1px;">${sub}</div>`:''}
+    </div>`;
+  }
+
+  function miniBar(value, max, color, label, sublabel) {
+    const pct = max > 0 ? Math.min((value/max)*100, 100) : 0;
+    const isEmpty = value === null || value === undefined;
+    return `<div style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:3px;">
+        <span>${label}</span><span style="color:${isEmpty?'var(--text-muted)':color};">${isEmpty?'—':sublabel}</span>
+      </div>
+      <div style="background:var(--bg3);border-radius:2px;height:6px;overflow:hidden;">
+        <div style="width:${pct}%;height:100%;background:${color};border-radius:2px;transition:width 0.4s;"></div>
+      </div>
+    </div>`;
+  }
+
+  function renderPatterns() {
+    const dates7 = getLastNDates(7);
+    const sleepLogs7 = dates7.map(d => sleepLogs.find(e => e.date === d) || null);
+    const skinLogs7 = dates7.map(d => skinLogs.find(e => e.date === d) || null);
+    const foodLogs7 = dates7.flatMap(d => foodLogs.filter(e => e.date === d));
+
+    // ── SLEEP ──
+    const validSleep = sleepLogs7.filter(Boolean);
+    const avgHrs = validSleep.length ? (validSleep.reduce((s,e)=>s+e.hrs,0)/validSleep.length).toFixed(1) : '—';
+    const lateBed = validSleep.filter(e=>e.lateBed).length;
+    const goodNights = validSleep.filter(e=>e.q==='good').length;
+
+    document.getElementById('pat-sleep-bars').innerHTML = dates7.map((d, i) => {
+      const e = sleepLogs7[i];
+      const r = restLogs.find(rl=>rl.date===d);
+      const mainHrs = e ? e.hrs : null;
+      const restHrs = r ? r.hrs : 0;
+      const totalHrs = mainHrs !== null ? parseFloat((mainHrs + restHrs).toFixed(1)) : null;
+      const color = !e ? 'var(--border2)' : totalHrs >= 8 ? 'var(--green)' : totalHrs >= 6.5 ? 'var(--mustard)' : 'var(--maroon)';
+      const label = totalHrs !== null ? (restHrs > 0 ? `${mainHrs}+${restHrs}h` : `${totalHrs}h`) : '—';
+      return miniBar(totalHrs, 10, color, d.split(',')[0], label);
+    }).join('');
+
+    document.getElementById('pat-sleep-stats').innerHTML = [
+      statBox('Avg Hours', avgHrs+'h', `${validSleep.length} nights logged`, 'var(--green-lt)'),
+      statBox('Late Nights', lateBed, 'past 4AM', lateBed >= 3 ? 'var(--maroon)' : 'var(--mustard)'),
+      statBox('Good Nights', goodNights, 'of '+validSleep.length, 'var(--green-lt)'),
+    ].join('');
+
+    const sleepWarn = document.getElementById('pat-sleep-warning');
+    if(lateBed >= 3){ sleepWarn.textContent = '⚠ You\'ve slept past 4AM '+lateBed+' nights this week — sleep drift is building up.'; sleepWarn.style.display='block'; }
+    else sleepWarn.style.display='none';
+
+    // ── SKIN ──
+    const validSkin = skinLogs7.filter(Boolean);
+    const avgSkin = validSkin.length ? (validSkin.reduce((s,e)=>s+e.score,0)/validSkin.length).toFixed(1) : '—';
+    const bestSkin = validSkin.length ? Math.max(...validSkin.map(e=>e.score)) : '—';
+    const scoreEmoji = ['','😩','😕','😐','🙂','✨'];
+
+    document.getElementById('pat-skin-bars').innerHTML = dates7.map((d,i) => {
+      const e = skinLogs7[i];
+      const score = e ? e.score : null;
+      const color = !e ? 'var(--border2)' : score >= 4 ? 'var(--green)' : score === 3 ? 'var(--mustard)' : 'var(--maroon)';
+      return miniBar(score, 5, color, d.split(',')[0], score ? scoreEmoji[score]+' '+score+'/5' : '—');
+    }).join('');
+
+    document.getElementById('pat-skin-stats').innerHTML = [
+      statBox('Avg Score', avgSkin+'/5', `${validSkin.length} days logged`, 'var(--maroon-lt)'),
+      statBox('Best Day', bestSkin !== '—' ? scoreEmoji[bestSkin]+' '+bestSkin : '—', 'this week', 'var(--mustard)'),
+    ].join('');
+
+    // common flags
+    const allFlags = validSkin.flatMap(e=>e.flags||[]);
+    const flagCounts = allFlags.reduce((acc,f)=>{acc[f]=(acc[f]||0)+1;return acc;},{});
+    const topFlags = Object.entries(flagCounts).sort((a,b)=>b[1]-a[1]).slice(0,4);
+    document.getElementById('pat-skin-flags').innerHTML = topFlags.length
+      ? `<div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Most frequent this week</div>`
+        + topFlags.map(([f,c])=>`<span class="pill pill-m" style="margin:2px;">${f} ×${c}</span>`).join('')
+      : '';
+
+    // ── FOOD ──
+    const foodDays = dates7.map(d => foodLogs.filter(e=>e.date===d));
+    const daysWithProtein = foodDays.filter(d=>d.some(e=>e.hadProtein)).length;
+    const daysWithVeg = foodDays.filter(d=>d.some(e=>e.hadVeg)).length;
+    const daysWithCarb = foodDays.filter(d=>d.some(e=>e.hadCarb)).length;
+    const loggedDays = foodDays.filter(d=>d.length>0).length;
+
+    document.getElementById('pat-food-stats').innerHTML = [
+      statBox('Protein Days', daysWithProtein+'/'+loggedDays, 'days logged', 'var(--maroon-lt)'),
+      statBox('Veg Days', daysWithVeg+'/'+loggedDays, 'hit your greens', 'var(--green-lt)'),
+      statBox('Carb Days', daysWithCarb+'/'+loggedDays, 'rice or carbs', 'var(--mustard)'),
+    ].join('');
+
+    const allFeels = foodLogs7.map(e=>e.foodFeel).filter(Boolean);
+    const feelCounts = allFeels.reduce((acc,f)=>{acc[f]=(acc[f]||0)+1;return acc;},{});
+    const feelEmoji = {good:'💪',full:'😮‍💨',hungry:'😤',heavy:'😴'};
+    document.getElementById('pat-food-feels').innerHTML = Object.keys(feelCounts).length
+      ? `<div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">How meals felt this week</div>`
+        + Object.entries(feelCounts).map(([f,c])=>`<span class="pill pill-y" style="margin:2px;">${feelEmoji[f]||''} ${f} ×${c}</span>`).join('')
+      : '<div style="font-size:13px;color:var(--text-muted);">No meals logged yet this week.</div>';
+
+    // ── COKE ──
+    const cokeWeeks = [];
+    for(let w=0; w<4; w++){
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - (dow===0?6:dow-1) - w*7);
+      const key = `coke-week-${weekStart.toISOString().slice(0,10)}`;
+      try {
+        const saved = localStorage.getItem(key);
+        if(saved) cokeWeeks.push({week: w===0?'This week':w===1?'Last week':w+' weeks ago', data: JSON.parse(saved)});
+      } catch(e) {}
+    }
+    document.getElementById('pat-coke-stats').innerHTML = cokeWeeks.length
+      ? cokeWeeks.map(w=>{
+          const pct = Math.min((w.data.total/4)*100,100);
+          const color = w.data.total<=2?'var(--green)':w.data.total<=3?'var(--mustard)':'var(--maroon)';
+          return `<div style="margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+              <span style="color:var(--text-soft);">${w.week}</span>
+              <span style="color:${color};font-family:'Bebas Neue',sans-serif;font-size:14px;">${w.data.total} / 4 cans</span>
+            </div>
+            <div style="background:var(--bg3);border-radius:2px;height:6px;overflow:hidden;">
+              <div style="width:${pct}%;height:100%;background:${color};border-radius:2px;"></div>
+            </div>
+          </div>`;
+        }).join('')
+      : '<div style="font-size:13px;color:var(--text-muted);">No Coke Zero data yet — log from the Drinks tab.</div>';
+  }
+
+  buildChecklist(); buildWater(); buildHairToday(); buildWeekGrid();
+  renderCoke(); renderSkinLogs(); renderSleepLogs(); renderContent(); renderChores(); renderFoodLog();
+  renderPatterns(); renderRestRecommendation(); renderDataSummary();
+</script>
+</body>
+</html>
