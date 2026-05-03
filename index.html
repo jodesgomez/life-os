@@ -12,6 +12,7 @@
     --bg3:        #1e1414;
     /* teal — header + title only */
     --teal:       #0d8c8c;
+    --gold: #f0c040; --gold-glow: 0 0 16px #f0c04088;
     --teal-lt:    #10aaaa;
     --teal-glow:  0 0 14px #0d8c8c99, 0 0 32px #0d8c8c44;
     --teal-dim:   #061e1e;
@@ -103,33 +104,104 @@
   .recovery-banner .rb-body strong { color: var(--mustard); }
 
   /* ── TABS ── */
-  .tabs {
-    display: flex; gap: 6px; margin-bottom: 24px;
-    overflow-x: auto; padding-bottom: 2px;
-    -webkit-overflow-scrolling: touch; scrollbar-width: none;
-    justify-content: center;
+  /* ── TOP BAR ── */
+  .top-bar {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 14px; margin:0 0 16px;
+    border:1px solid var(--border2);
+    border-radius:10px;
+    background:var(--bg2);
+    position:sticky; top:8px; z-index:5;
   }
-  .tabs::-webkit-scrollbar { display:none; }
-  .tab {
-    flex-shrink: 0; padding: 7px 14px;
-    border-radius: 3px; border: 1px solid var(--border2);
-    background: var(--bg2); color: var(--text-muted);
-    font-size: 10px; font-weight: 500; letter-spacing: 0.1em;
-    text-transform: uppercase; cursor: pointer;
-    transition: all 0.18s; font-family: 'Inter', sans-serif;
+  .top-bar-name {
+    font-family:'Bebas Neue',sans-serif; font-size:15px;
+    letter-spacing:0.14em; color:var(--mustard);
+    text-shadow:var(--mustard-glow);
   }
-  .tab.active {
-    background: var(--mustard-dim);
-    border-color: var(--mustard);
-    color: var(--mustard);
-    box-shadow: var(--mustard-glow);
+  .menu-btn {
+    width:36px; height:36px; border-radius:9px;
+    background:var(--bg3); border:1px solid var(--border2);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:16px; color:var(--text-muted);
+    transition:all 0.15s; flex-shrink:0;
   }
-  .tab:hover:not(.active) { border-color: var(--mustard); color: var(--mustard); }
+  .menu-btn.open {
+    background:var(--maroon-dim); border-color:var(--maroon);
+    color:var(--maroon-lt); box-shadow:var(--maroon-glow);
+  }
+
+  /* ── DRAWER ── */
+  .drawer-overlay {
+    position:fixed; inset:0;
+    background:rgba(8,4,4,0.7);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    opacity:0; pointer-events:none;
+    transition:opacity 0.3s; z-index:100;
+  }
+  .drawer-overlay.visible { opacity:1; pointer-events:all; }
+
+  .drawer {
+    position:fixed; top:0; right:-100%; bottom:0;
+    width:72%; max-width:300px;
+    background:rgba(18,10,10,0.98);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    border-left:1px solid rgba(176,32,48,0.2);
+    box-shadow:-8px 0 40px rgba(176,32,48,0.12);
+    transition:right 0.35s cubic-bezier(0.32,0.72,0,1);
+    z-index:101; overflow-y:auto;
+    padding-bottom:48px;
+  }
+  .drawer.open { right:0; }
+
+  .drawer-header {
+    padding:36px 18px 16px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    margin-bottom:4px;
+  }
+  .drawer-where {
+    font-family:'Bebas Neue',sans-serif; font-size:28px;
+    letter-spacing:0.06em; line-height:1.1; color:var(--text);
+  }
+  .drawer-where span { color:var(--mustard); text-shadow:var(--mustard-glow); }
+
+  .drawer-sec {
+    font-family:'Bebas Neue',sans-serif; font-size:9px;
+    letter-spacing:0.22em; color:rgba(255,255,255,0.18);
+    padding:14px 18px 6px;
+  }
+  .drawer-row {
+    display:flex; align-items:center; gap:14px;
+    padding:10px 12px; cursor:pointer;
+    transition:all 0.15s; position:relative;
+    margin:2px 10px; border-radius:10px;
+  }
+  .drawer-row.active {
+    background: var(--maroon-dim);
+    border-radius:10px;
+    border-left: 3px solid var(--maroon-lt);
+    padding-left: 9px;
+  }
+  .drawer-row:active { background:rgba(176,32,48,0.1); }
+  .drawer-row:hover:not(.active) { background:rgba(255,255,255,0.03); }
+  .dr-em { font-size:20px; width:28px; text-align:center; flex-shrink:0; }
+  .dr-lbl {
+    font-family:'Bebas Neue',sans-serif; font-size:15px;
+    letter-spacing:0.1em; color:rgba(255,255,255,0.3);
+  }
+  .drawer-row.active .dr-lbl { color:var(--maroon-lt); }
+  .drawer-row:hover:not(.active) .dr-lbl { color:rgba(255,255,255,0.55); }
+
+  /* hide old tab bar */
+  .tabs { display:none; }
 
   /* ── SECTION ── */
   .section { display:none; }
   .section.active { display:block; animation: fadeUp 0.22s ease; }
   @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .pulse-today { animation: pulse 1.5s infinite; }
 
   /* ── CARD ── */
   .card {
@@ -428,18 +500,53 @@
   <div class="day-badge" id="day-badge">—</div>
 </div>
 
-<!-- RECOVERY BANNER (shown only during recovery period) -->
+<!-- UNIFIED TODAY'S CONTEXT BANNER -->
 <div class="recovery-banner" id="recovery-banner">
-  <div class="rb-title">⚕ POST-PROCEDURE MODE — MELLOW CLINIC · Apr 24</div>
-  <div class="rb-body">
-    <strong>Meds:</strong> 엠피디엘정 + 인데놀정 + 미노씬캡슐 · 2x daily with food (morning + evening) · 3-day course<br>
-    <strong>Skin:</strong> No actives. Minimal routine only — gentle mist, barrier cream, SPF.<br>
-    <strong>Piercings:</strong> Hypochlorous acid spray morning + night · Do not rotate jewelry · No sleeping on pierced side<br>
-    <strong>Jaw:</strong> May look bigger (swelling) until Day 7–14 — normal, not sagging
+  <div class="rb-title" id="ctx-title">⚕ TODAY'S CONTEXT</div>
+  <div class="rb-body" id="ctx-body"></div>
+</div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-bar-name" id="top-bar-name">✅ Today</div>
+  <div style="display:flex;gap:6px;">
+    <div class="menu-btn" style="background:var(--mustard-dim);border-color:var(--mustard);color:var(--mustard);box-shadow:var(--mustard-glow);" onclick="openAchievements()">🏆</div>
+    <div class="menu-btn" id="menu-btn" onclick="toggleDrawer()">☰</div>
   </div>
 </div>
 
-<!-- TABS -->
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+
+<!-- DRAWER -->
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-where">Where to,<br><span>Jodee?</span></div>
+  </div>
+
+  <div class="drawer-sec">Daily</div>
+  <div class="drawer-row active" id="dr-today" onclick="drawerNav('today','✅ Today',this)"><div class="dr-em">✅</div><div class="dr-lbl">Today</div></div>
+  <div class="drawer-row" id="dr-drinks" onclick="drawerNav('drinks','💧 Drinks',this)"><div class="dr-em">💧</div><div class="dr-lbl">Drinks</div></div>
+  <div class="drawer-row" id="dr-food" onclick="drawerNav('food','🍽 Food',this)"><div class="dr-em">🍽</div><div class="dr-lbl">Food</div></div>
+  <div class="drawer-row" id="dr-skincare" onclick="drawerNav('skincare','✨ Skincare',this)"><div class="dr-em">✨</div><div class="dr-lbl">Skincare</div></div>
+  <div class="drawer-row" id="dr-sleep" onclick="drawerNav('sleep','😴 Sleep',this)"><div class="dr-em">😴</div><div class="dr-lbl">Sleep</div></div>
+  <div class="drawer-row" id="dr-exercise" onclick="drawerNav('exercise','🏃 Exercise',this)"><div class="dr-em">🏃</div><div class="dr-lbl">Exercise</div></div>
+
+  <div class="drawer-sec">Routines</div>
+  <div class="drawer-row" id="dr-hair" onclick="drawerNav('hair','🌿 Hair',this)"><div class="dr-em">🌿</div><div class="dr-lbl">Hair</div></div>
+  <div class="drawer-row" id="dr-supplements" onclick="drawerNav('supplements','💊 Supplements',this)"><div class="dr-em">💊</div><div class="dr-lbl">Supplements</div></div>
+  <div class="drawer-row" id="dr-chores" onclick="drawerNav('chores','🧹 Chores',this)"><div class="dr-em">🧹</div><div class="dr-lbl">Chores</div></div>
+  <div class="drawer-row" id="dr-content" onclick="drawerNav('content','🎥 Content',this)"><div class="dr-em">🎥</div><div class="dr-lbl">Content</div></div>
+  <div class="drawer-row" id="dr-recovery" onclick="drawerNav('recovery','⚕ Recovery',this)"><div class="dr-em">⚕</div><div class="dr-lbl">Recovery</div></div>
+
+  <div class="drawer-sec">Review</div>
+  <div class="drawer-row" id="dr-week" onclick="drawerNav('week','📅 Week',this)"><div class="dr-em">📅</div><div class="dr-lbl">Week</div></div>
+  <div class="drawer-row" id="dr-monthly" onclick="drawerNav('monthly','🗓 Monthly',this)"><div class="dr-em">🗓</div><div class="dr-lbl">Monthly</div></div>
+  <div class="drawer-row" id="dr-patterns" onclick="drawerNav('patterns','📊 Patterns',this)"><div class="dr-em">📊</div><div class="dr-lbl">Patterns</div></div>
+  <div class="drawer-row" id="dr-focus" onclick="drawerNav('focus','🎯 Focus',this)"><div class="dr-em">🎯</div><div class="dr-lbl">Focus</div></div>
+</div>
+
+<!-- TABS (hidden, kept for switchTab compatibility) -->
 <div class="tabs">
   <button class="tab active" onclick="switchTab('today',this)">✅ Today</button>
   <button class="tab" onclick="switchTab('drinks',this)">💧 Drinks</button>
@@ -454,12 +561,24 @@
   <button class="tab" onclick="switchTab('week',this)">📅 Week</button>
   <button class="tab" onclick="switchTab('monthly',this)">🗓 Monthly</button>
   <button class="tab" onclick="switchTab('patterns',this)">📊 Patterns</button>
-  <button class="tab" onclick="switchTab('settings',this)">⚙️ Settings</button>
+  <button class="tab" onclick="switchTab('focus',this)">🎯 Focus</button>
   <button class="tab" onclick="switchTab('recovery',this)">⚕ Recovery</button>
 </div>
 
 <!-- TODAY -->
 <div class="section active" id="tab-today">
+  <!-- LIFE DASHBOARD -->
+  <div class="section-label">Life at a Glance</div>
+  <!-- STREAK TILE — top of dashboard -->
+  <div id="dash-streak-tile" style="background:var(--card);border:1px solid var(--mustard);border-radius:10px;padding:14px;margin-bottom:10px;cursor:pointer;box-shadow:0 0 12px #e8b02018;" onclick="openAchievements()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:0.14em;color:var(--mustard);">🔥 Top Streaks</div>
+      <div style="font-size:10px;color:var(--text-muted);">tap for achievements →</div>
+    </div>
+    <div id="dash-streak-rows"></div>
+  </div>
+  <div id="dashboard-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;"></div>
+
   <div class="edit-note">✏️ Customize medication names and supplement timing to match your actual schedule.</div>
   <div id="today-checklist"></div>
   <div class="progress-wrap">
@@ -517,6 +636,7 @@
         onmouseover="this.style.background='var(--mustard)';this.style.color='var(--bg)'"
         onmouseout="this.style.background='var(--mustard-dim)';this.style.color='var(--mustard)'">+ HALF CAN</button>
     </div>
+    <button id="coke-over-btn" onclick="logCokeOverage()" style="display:none;width:100%;padding:12px;border-radius:4px;background:var(--maroon-dim);border:2px dashed var(--maroon);color:var(--maroon-lt);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.1em;cursor:pointer;margin-bottom:10px;">⚠ I HAD ANOTHER (over limit)</button>
     <button onclick="undoCoke()" style="width:100%;padding:10px;border-radius:4px;background:var(--bg3);border:1px solid var(--border2);color:var(--text-muted);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:0.1em;cursor:pointer;">↺ UNDO LAST</button>
   </div>
   <div class="section-label">Coke Log This Week</div>
@@ -526,7 +646,20 @@
 
 <!-- SKINCARE -->
 <div class="section" id="tab-skincare">
-  <div class="alert-note">⚕ <strong>Recovery mode active.</strong> No actives until skin is fully healed. Morning = gentle mist + barrier + SPF only.</div>
+  <div class="alert-note" id="skincare-recovery-note">⚕ <strong>Recovery mode active.</strong> No actives until skin is fully healed. Morning = gentle mist + barrier + SPF only.</div>
+
+  <!-- ACTIVE ROTATION TRACKER -->
+  <div class="section-label">This Week's Actives</div>
+  <div class="card glow-card-m">
+    <div class="card-header">
+      <div class="card-icon icon-m">📊</div>
+      <div><div class="card-title">Active Rotation</div><div class="card-subtitle" id="active-week-label">Week tracker</div></div>
+    </div>
+    <!-- 7-day grid -->
+    <div id="active-week-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px;"></div>
+    <!-- Per-active targets -->
+    <div id="active-targets"></div>
+  </div>
 
   <!-- TONIGHT PICKER (top, like supplements) -->
   <div class="section-label">Tonight's Pick</div>
@@ -562,6 +695,26 @@
     <div class="section-label">Tonight's Routine</div>
     <div class="card" id="night-result-card"></div>
     <div class="edit-note" id="night-result-note" style="margin-top:0;margin-bottom:14px;"></div>
+    <!-- CONFIRM WHAT YOU USED -->
+    <div class="card" style="margin-bottom:14px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">After your routine — confirm what you actually used</div>
+      <div id="active-confirm-btns" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+        <button class="supp-btn" id="ca-retinol" onclick="confirmActive('retinol')">🟡 Retinol</button>
+        <button class="supp-btn" id="ca-reedle" onclick="confirmActive('reedle')">🟢 Reedle</button>
+        <button class="supp-btn" id="ca-bha" onclick="confirmActive('bha')">🟣 BHA</button>
+        <button class="supp-btn" id="ca-recovery" onclick="confirmActive('recovery')">💤 Recovery</button>
+      </div>
+      <div id="active-already-logged" style="display:none;margin-bottom:8px;">
+        <div style="font-size:12px;color:var(--mustard);padding:8px 10px;background:var(--mustard-dim);border-radius:4px;border-left:3px solid var(--mustard);">
+          ✓ Already logged tonight: <strong id="active-logged-name"></strong>
+        </div>
+      </div>
+      <button id="save-active-btn" onclick="saveActiveLog()" style="width:100%;padding:10px;border-radius:4px;background:var(--maroon-dim);border:1px solid var(--maroon);color:var(--maroon);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:0.1em;cursor:pointer;"
+        onmouseover="this.style.background='var(--maroon)';this.style.color='var(--bg)'"
+        onmouseout="this.style.background='var(--maroon-dim)';this.style.color='var(--maroon)'">✓ LOG THIS TO MY ROTATION</button>
+      <button id="undo-active-btn" onclick="undoActiveLog()" style="display:none;width:100%;padding:10px;border-radius:4px;background:var(--bg3);border:1px solid var(--border2);color:var(--text-muted);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:0.1em;cursor:pointer;margin-top:6px;">↺ UNDO TONIGHT'S LOG</button>
+      <div id="active-saved-note" style="display:none;font-size:12px;color:var(--green-lt);margin-top:8px;text-align:center;">Saved to your weekly rotation ✓</div>
+    </div>
   </div>
 
   <div class="section-label">Morning (Fixed — Always)</div>
@@ -712,39 +865,70 @@
         <button class="supp-btn" id="mt-snack" onclick="setMealType('snack')">Snack 🍿</button>
       </div>
     </div>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Had protein? (meat, egg, fish)</div>
-      <div style="display:flex;gap:6px;">
-        <button class="supp-btn" id="pr-yes" onclick="setProtein(true)">Yes 🍖</button>
-        <button class="supp-btn" id="pr-no" onclick="setProtein(false)">No</button>
+
+    <!-- Meal questions (lunch/dinner) -->
+    <div id="meal-questions">
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Had protein? (meat, egg, fish)</div>
+        <div style="display:flex;gap:6px;">
+          <button class="supp-btn" id="pr-yes" onclick="setProtein(true)">Yes 🍖</button>
+          <button class="supp-btn" id="pr-no" onclick="setProtein(false)">No</button>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Had vegetables? (kangkong, okra, corn…)</div>
+        <div style="display:flex;gap:6px;">
+          <button class="supp-btn" id="veg-yes" onclick="setVeg(true)">Yes 🥬</button>
+          <button class="supp-btn" id="veg-no" onclick="setVeg(false)">No</button>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Had rice or carbs?</div>
+        <div style="display:flex;gap:6px;">
+          <button class="supp-btn" id="carb-yes" onclick="setCarb(true)">Yes 🍚</button>
+          <button class="supp-btn" id="carb-no" onclick="setCarb(false)">No</button>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">How did you feel after?</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="supp-btn" id="f-good" onclick="setFoodFeel('good')">Good 💪</button>
+          <button class="supp-btn" id="f-full" onclick="setFoodFeel('full')">Too full 😮‍💨</button>
+          <button class="supp-btn" id="f-hungry" onclick="setFoodFeel('hungry')">Still hungry 😤</button>
+          <button class="supp-btn" id="f-heavy" onclick="setFoodFeel('heavy')">Heavy 😴</button>
+        </div>
       </div>
     </div>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Had vegetables? (kangkong, okra, corn…)</div>
-      <div style="display:flex;gap:6px;">
-        <button class="supp-btn" id="veg-yes" onclick="setVeg(true)">Yes 🥬</button>
-        <button class="supp-btn" id="veg-no" onclick="setVeg(false)">No</button>
+
+    <!-- Snack questions -->
+    <div id="snack-questions" style="display:none;">
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Sweet or salty?</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="supp-btn" id="sq-sweet" onclick="setSnackType('sweet')">Sweet 🍫</button>
+          <button class="supp-btn" id="sq-salty" onclick="setSnackType('salty')">Salty 🧂</button>
+          <button class="supp-btn" id="sq-both" onclick="setSnackType('both')">Both 🤌</button>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">What kind?</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="supp-btn" id="sk-sustaining" onclick="setSnackKind('sustaining')">Sustaining 🥜🌽</button>
+          <button class="supp-btn" id="sk-treat" onclick="setSnackKind('treat')">Treat 🍿🍫</button>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Kept to portion?</div>
+        <div style="display:flex;gap:6px;">
+          <button class="supp-btn" id="sp-yes" onclick="setSnackPortion(true)">Yes · small bowl/cup ✓</button>
+          <button class="supp-btn" id="sp-no" onclick="setSnackPortion(false)">Went over</button>
+        </div>
       </div>
     </div>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Had rice or carbs?</div>
-      <div style="display:flex;gap:6px;">
-        <button class="supp-btn" id="carb-yes" onclick="setCarb(true)">Yes 🍚</button>
-        <button class="supp-btn" id="carb-no" onclick="setCarb(false)">No</button>
-      </div>
-    </div>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">How did you feel after?</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">
-        <button class="supp-btn" id="f-good" onclick="setFoodFeel('good')">Good 💪</button>
-        <button class="supp-btn" id="f-full" onclick="setFoodFeel('full')">Too full 😮‍💨</button>
-        <button class="supp-btn" id="f-hungry" onclick="setFoodFeel('hungry')">Still hungry 😤</button>
-        <button class="supp-btn" id="f-heavy" onclick="setFoodFeel('heavy')">Heavy 😴</button>
-      </div>
-    </div>
+
     <div style="margin-bottom:14px;">
       <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">What did you eat? (optional)</div>
-      <input id="food-note-input" placeholder="e.g. adobo, rice, chips" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;">
+      <input id="food-note-input" placeholder="e.g. adobo, rice · or chips, Buncha Crunch" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;">
     </div>
     <button onclick="saveFood()" style="width:100%;padding:11px;border-radius:4px;background:var(--maroon-dim);border:1px solid var(--maroon);color:var(--maroon);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--maroon-glow);"
       onmouseover="this.style.background='var(--maroon)';this.style.color='var(--bg)'"
@@ -904,25 +1088,27 @@
     </div>
     <div class="hair-step"><div class="h-num">01</div><div><strong>Pre-wash scalp massage</strong><div class="h-sub">2–3 min · dry or with oil</div></div></div>
     <div class="hair-step"><div class="h-num">02</div><div><strong>Aromatica Quinoa Protein Shampoo</strong><div class="h-sub">Gentle, color-safe · main shampoo</div></div></div>
-    <div class="hair-step"><div class="h-num">03</div><div><strong>Unove Deep Damage Treatment EX</strong><div class="h-sub">Mid-lengths to ends only · leave 2–3 min</div></div></div>
+    <div class="hair-step"><div class="h-num">03</div><div><strong>Conditioner OR Unove Deep Damage Treatment EX</strong><div class="h-sub">Pick one — not both · conditioner = lighter day · Unove = when hair needs more repair · mid-lengths to ends only · 2–3 min</div></div></div>
     <div class="hair-step"><div class="h-num">04</div><div><strong>Cold rinse</strong><div class="h-sub">Seals cuticle, preserves color</div></div></div>
-    <div class="hair-step"><div class="h-num">05</div><div><strong>Labo-H Hairline Ampoule</strong><div class="h-sub">After drying · apply to hairline daily</div></div></div>
+    <div class="hair-step"><div class="h-num">05</div><div><strong>Ayunche Enrich Bonding Care Cream</strong><div class="h-sub">On towel-dried hair · mid-lengths to ends · small amount · avoid roots</div></div></div>
+    <div class="hair-step"><div class="h-num">06</div><div><strong>Labo-H Hairline Ampoule</strong><div class="h-sub">After drying · apply to hairline daily</div></div></div>
   </div>
 
-  <div class="section-label">Deep Clean Wash (1x / week)</div>
+  <div class="section-label">Deep Clean Wash (1x / week · Tuesday)</div>
   <div class="card glow-card-m">
     <div class="card-header">
       <div class="card-icon icon-m">🧴</div>
       <div>
         <div class="card-title">Deep Clean Wash</div>
-        <div class="card-subtitle">Dr. For Hair · scalp reset · once weekly max</div>
+        <div class="card-subtitle">Dr. For Hair · scalp reset · after pilates</div>
       </div>
     </div>
     <div class="hair-step"><div class="h-num">01</div><div><strong>Pre-wash scalp massage</strong><div class="h-sub">2–3 min</div></div></div>
     <div class="hair-step"><div class="h-num">02</div><div><strong>Dr. For Hair Folligen Shampoo</strong><div class="h-sub">Deep cleanse · scalp health · once/week only</div></div></div>
-    <div class="hair-step"><div class="h-num">03</div><div><strong>Unove Deep Damage Treatment EX</strong><div class="h-sub">Mid-lengths to ends only · leave 2–3 min</div></div></div>
+    <div class="hair-step"><div class="h-num">03</div><div><strong>Conditioner OR Unove Deep Damage Treatment EX</strong><div class="h-sub">Pick one · mid-lengths to ends · 2–3 min</div></div></div>
     <div class="hair-step"><div class="h-num">04</div><div><strong>Cold rinse</strong></div></div>
-    <div class="hair-step"><div class="h-num">05</div><div><strong>Labo-H Hairline Ampoule</strong><div class="h-sub">After drying · daily use</div></div></div>
+    <div class="hair-step"><div class="h-num">05</div><div><strong>Ayunche Enrich Bonding Care Cream</strong><div class="h-sub">On towel-dried hair · mid-lengths to ends · small amount · avoid roots</div></div></div>
+    <div class="hair-step"><div class="h-num">06</div><div><strong>Labo-H Hairline Ampoule</strong><div class="h-sub">After drying · daily use</div></div></div>
   </div>
 
   <div class="section-label">No-Wash Day (Refresh)</div>
@@ -936,15 +1122,60 @@
     </div>
     <div class="hair-step"><div class="h-num">01</div><div><strong>Labo-H Hairline Ampoule</strong><div class="h-sub">Daily regardless of wash day</div></div></div>
     <div class="hair-step"><div class="h-num">02</div><div><strong>Dry shampoo at roots if needed</strong><div class="h-sub">Roots only · brush through after</div></div></div>
-    <div class="hair-step"><div class="h-num">03</div><div><strong>Aromatica Rosemary Root Enhancer</strong><div class="h-sub">Optional · volume + styling</div></div></div>
-    <div class="hair-step"><div class="h-num">04</div><div><strong>Style or protect ends</strong><div class="h-sub">Loose styles protect length and color</div></div></div>
+    <div class="hair-step"><div class="h-num">03</div><div><strong>Ayunche Bonding Cream on ends (optional)</strong><div class="h-sub">Small amount on dry ends only · if hair feels dry or rough</div></div></div>
+    <div class="hair-step"><div class="h-num">04</div><div><strong>Aromatica Rosemary Root Enhancer</strong><div class="h-sub">Optional · volume + styling</div></div></div>
+    <div class="hair-step"><div class="h-num">05</div><div><strong>Style or protect ends</strong><div class="h-sub">Loose styles protect length and color</div></div></div>
   </div>
 </div>
 
 <!-- EXERCISE -->
 <div class="section" id="tab-exercise">
-  <div class="edit-note">✏️ Pilates is your anchor. Everything else is optional — add movement when it feels right, not because a schedule says so.</div>
+  <div class="edit-note">✏️ Pilates is your anchor. Everything else is optional — log it when you do it, don't stress when you don't.</div>
+
+  <!-- Movement Log -->
+  <div class="section-label">Log Movement</div>
   <div class="card glow-card-m">
+    <div class="card-header">
+      <div class="card-icon icon-m">📝</div>
+      <div><div class="card-title">Log Today's Movement</div><div class="card-subtitle">Tap what you did · it counts</div></div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">What did you do?</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="supp-btn" id="mv-pilates" onclick="setMovement('pilates')">Pilates 🧘</button>
+        <button class="supp-btn" id="mv-walk" onclick="setMovement('walk')">Walk 🚶</button>
+        <button class="supp-btn" id="mv-bike" onclick="setMovement('bike')">Bike 🚴</button>
+        <button class="supp-btn" id="mv-stretch" onclick="setMovement('stretch')">Stretch 🤸</button>
+        <button class="supp-btn" id="mv-other" onclick="setMovement('other')">Other 💪</button>
+      </div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">How long?</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="supp-btn" id="md-20" onclick="setMoveDur('20 min')">20 min</button>
+        <button class="supp-btn" id="md-30" onclick="setMoveDur('30 min')">30 min</button>
+        <button class="supp-btn" id="md-45" onclick="setMoveDur('45 min')">45 min</button>
+        <button class="supp-btn" id="md-60" onclick="setMoveDur('1hr+')">1hr+</button>
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">How did it feel?</div>
+      <div style="display:flex;gap:6px;">
+        <button class="supp-btn" id="mf-easy" onclick="setMoveFeel('easy')">Easy 😌</button>
+        <button class="supp-btn" id="mf-good" onclick="setMoveFeel('good')">Good 💪</button>
+        <button class="supp-btn" id="mf-tough" onclick="setMoveFeel('tough')">Tough 🔥</button>
+      </div>
+    </div>
+    <button onclick="saveMovement()" style="width:100%;padding:11px;border-radius:4px;background:var(--maroon-dim);border:1px solid var(--maroon);color:var(--maroon);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--maroon-glow);"
+      onmouseover="this.style.background='var(--maroon)';this.style.color='var(--bg)'"
+      onmouseout="this.style.background='var(--maroon-dim)';this.style.color='var(--maroon)'">+ LOG MOVEMENT</button>
+  </div>
+
+  <div class="section-label">This Week</div>
+  <div id="movement-log-list"><div style="font-size:13px;color:var(--text-muted);padding:8px 0;">No movement logged yet this week.</div></div>
+
+  <div class="section-label" style="margin-top:16px;">Weekly Schedule</div>
+  <div class="card">
     <div class="card-header">
       <div class="card-icon icon-m">🏃</div>
       <div>
@@ -1004,6 +1235,50 @@
     <div class="month-row"><div class="month-row-label">Schedule one solo outing</div><div class="month-row-pills"><span class="pill pill-g">Anytime</span></div></div>
     <div class="month-row"><div class="month-row-label">Review CV / career goals</div><div class="month-row-pills"><span class="pill pill-y">Last Sunday</span></div></div>
   </div>
+
+  <!-- SETTINGS — tucked at the bottom of Monthly -->
+  <div class="section-label" style="margin-top:28px;">⚙️ Settings</div>
+
+  <div class="section-label" style="margin-top:0;">Export Data</div>
+  <div class="card glow-card-y">
+    <div class="card-header">
+      <div class="card-icon icon-y">📤</div>
+      <div>
+        <div class="card-title">Export Your Data</div>
+        <div class="card-subtitle">Copy this code before updating the file</div>
+      </div>
+    </div>
+    <div class="edit-note" style="margin-bottom:12px;">Before installing a new version of the file, tap Export, copy the code, then paste it into the new file using Import. This saves all your logs.</div>
+    <button onclick="exportData()" style="width:100%;padding:12px;border-radius:4px;background:var(--mustard-dim);border:1px solid var(--mustard);color:var(--mustard);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--mustard-glow);margin-bottom:10px;"
+      onmouseover="this.style.background='var(--mustard)';this.style.color='var(--bg)'"
+      onmouseout="this.style.background='var(--mustard-dim)';this.style.color='var(--mustard)'">📤 EXPORT ALL DATA</button>
+    <textarea id="export-box" placeholder="Your data code will appear here — copy it all" readonly style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:12px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;resize:none;height:100px;display:none;"></textarea>
+    <div id="export-copy-btn" style="display:none;margin-top:8px;">
+      <button onclick="copyExport()" style="width:100%;padding:10px;border-radius:4px;background:var(--green-dim);border:1px solid var(--green);color:var(--green-lt);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:0.1em;cursor:pointer;">✓ COPY TO CLIPBOARD</button>
+    </div>
+    <div id="export-success" style="display:none;font-size:12px;color:var(--green-lt);margin-top:8px;text-align:center;">Copied! Paste this into the new file's Import box.</div>
+  </div>
+
+  <div class="section-label">Import Data</div>
+  <div class="card glow-card-m">
+    <div class="card-header">
+      <div class="card-icon icon-m">📥</div>
+      <div>
+        <div class="card-title">Import Your Data</div>
+        <div class="card-subtitle">Paste your export code into a new file</div>
+      </div>
+    </div>
+    <div class="alert-note" style="margin-bottom:12px;">⚠ This will overwrite any existing data in this file. Only do this when setting up a freshly downloaded update.</div>
+    <textarea id="import-box" placeholder="Paste your export code here..." style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:12px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;resize:none;height:100px;margin-bottom:10px;"></textarea>
+    <button onclick="importData()" style="width:100%;padding:12px;border-radius:4px;background:var(--maroon-dim);border:1px solid var(--maroon);color:var(--maroon);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--maroon-glow);"
+      onmouseover="this.style.background='var(--maroon)';this.style.color='var(--bg)'"
+      onmouseout="this.style.background='var(--maroon-dim)';this.style.color='var(--maroon)'">📥 IMPORT & RESTORE</button>
+    <div id="import-success" style="display:none;font-size:12px;color:var(--green-lt);margin-top:8px;text-align:center;">Data restored successfully! Reload the page to see everything.</div>
+    <div id="import-error" style="display:none;font-size:12px;color:var(--maroon);margin-top:8px;text-align:center;">Something went wrong — make sure you pasted the full code.</div>
+  </div>
+
+  <div class="section-label">Data Summary</div>
+  <div class="card" id="data-summary"></div>
 </div>
 
 <!-- SUPPLEMENTS -->
@@ -1090,6 +1365,21 @@
     <div id="supp-rules-note" class="edit-note" style="margin-top:10px;"></div>
   </div>
 
+  <!-- Daily Supplement Log -->
+  <div class="section-label" style="margin-top:8px;">Did You Take These Today?</div>
+  <div class="card glow-card-g" id="supp-log-card">
+    <div class="card-header">
+      <div class="card-icon icon-g">✅</div>
+      <div><div class="card-title">Daily Log</div><div class="card-subtitle">One tap · builds your consistency pattern</div></div>
+    </div>
+    <div id="supp-daily-ticks"></div>
+    <button onclick="saveSuppLog()" style="width:100%;padding:11px;border-radius:4px;background:var(--green-dim);border:1px solid var(--green);color:var(--green-lt);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;margin-top:12px;box-shadow:var(--green-glow);"
+      onmouseover="this.style.background='var(--green)';this.style.color='var(--bg)'"
+      onmouseout="this.style.background='var(--green-dim)';this.style.color='var(--green-lt)'">✓ SAVE TODAY'S LOG</button>
+    <div id="supp-log-saved" style="display:none;font-size:12px;color:var(--green-lt);text-align:center;margin-top:8px;">Logged ✓</div>
+    <div id="supp-log-locked" style="display:none;font-size:12px;color:var(--text-muted);text-align:center;margin-top:8px;font-style:italic;">Already logged today · come back tomorrow</div>
+  </div>
+
   <!-- Reference -->
   <div class="section-label" style="margin-top:4px;">Full Inventory</div>
 
@@ -1146,52 +1436,6 @@
   </div>
 </div>
 
-<!-- SETTINGS -->
-<div class="section" id="tab-settings">
-
-  <div class="section-label">Export Data</div>
-  <div class="card glow-card-y">
-    <div class="card-header">
-      <div class="card-icon icon-y">📤</div>
-      <div>
-        <div class="card-title">Export Your Data</div>
-        <div class="card-subtitle">Copy this code before updating the file</div>
-      </div>
-    </div>
-    <div class="edit-note" style="margin-bottom:12px;">Before installing a new version of the file, tap Export, copy the code, then paste it into the new file using Import. This saves all your logs.</div>
-    <button onclick="exportData()" style="width:100%;padding:12px;border-radius:4px;background:var(--mustard-dim);border:1px solid var(--mustard);color:var(--mustard);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--mustard-glow);margin-bottom:10px;"
-      onmouseover="this.style.background='var(--mustard)';this.style.color='var(--bg)'"
-      onmouseout="this.style.background='var(--mustard-dim)';this.style.color='var(--mustard)'">📤 EXPORT ALL DATA</button>
-    <textarea id="export-box" placeholder="Your data code will appear here — copy it all" readonly style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:12px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;resize:none;height:100px;display:none;"></textarea>
-    <div id="export-copy-btn" style="display:none;margin-top:8px;">
-      <button onclick="copyExport()" style="width:100%;padding:10px;border-radius:4px;background:var(--green-dim);border:1px solid var(--green);color:var(--green-lt);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:0.1em;cursor:pointer;">✓ COPY TO CLIPBOARD</button>
-    </div>
-    <div id="export-success" style="display:none;font-size:12px;color:var(--green-lt);margin-top:8px;text-align:center;">Copied! Paste this into the new file's Import box.</div>
-  </div>
-
-  <div class="section-label">Import Data</div>
-  <div class="card glow-card-m">
-    <div class="card-header">
-      <div class="card-icon icon-m">📥</div>
-      <div>
-        <div class="card-title">Import Your Data</div>
-        <div class="card-subtitle">Paste your export code into a new file</div>
-      </div>
-    </div>
-    <div class="alert-note" style="margin-bottom:12px;">⚠ This will overwrite any existing data in this file. Only do this when setting up a freshly downloaded update.</div>
-    <textarea id="import-box" placeholder="Paste your export code here..." style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:12px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;resize:none;height:100px;margin-bottom:10px;"></textarea>
-    <button onclick="importData()" style="width:100%;padding:12px;border-radius:4px;background:var(--maroon-dim);border:1px solid var(--maroon);color:var(--maroon);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--maroon-glow);"
-      onmouseover="this.style.background='var(--maroon)';this.style.color='var(--bg)'"
-      onmouseout="this.style.background='var(--maroon-dim)';this.style.color='var(--maroon)'">📥 IMPORT & RESTORE</button>
-    <div id="import-success" style="display:none;font-size:12px;color:var(--green-lt);margin-top:8px;text-align:center;">Data restored successfully! Reload the page to see everything.</div>
-    <div id="import-error" style="display:none;font-size:12px;color:var(--maroon);margin-top:8px;text-align:center;">Something went wrong — make sure you pasted the full code.</div>
-  </div>
-
-  <div class="section-label">Data Summary</div>
-  <div class="card" id="data-summary"></div>
-
-</div>
-
 <!-- PATTERNS -->
 <div class="section" id="tab-patterns">
 
@@ -1229,48 +1473,188 @@
     <div id="pat-food-feels" style="margin-top:4px;"></div>
   </div>
 
-  <!-- Coke -->
+  <!-- Water -->
+  <div class="card" id="pat-water-card" style="margin-bottom:12px;">
+    <div class="card-header">
+      <div class="card-icon" style="background:var(--green-dim);width:36px;height:36px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">💧</div>
+      <div><div class="card-title">Water This Week</div><div class="card-subtitle">Daily glasses · goal is 8 · green = hit it</div></div>
+    </div>
+    <div id="pat-water-bars" style="margin-bottom:8px;"></div>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;">
+      <div style="flex:1;height:1px;border-top:1px dashed var(--border2);"></div>
+      <div style="font-size:10px;color:var(--text-muted);">goal: 8 glasses</div>
+      <div style="flex:1;height:1px;border-top:1px dashed var(--border2);"></div>
+    </div>
+    <div id="pat-water-stats" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;"></div>
+    <div id="pat-water-nudge" style="display:none;font-size:12px;font-style:italic;padding-top:10px;border-top:1px solid var(--border);"></div>
+  </div>
+
+  <!-- Supplement Consistency -->
   <div class="card" style="margin-bottom:12px;">
     <div class="card-header">
-      <div class="card-icon icon-m">🥤</div>
-      <div><div class="card-title">Coke Zero</div><div class="card-subtitle">Weekly average vs your 4-can limit</div></div>
+      <div class="card-icon icon-y">💊</div>
+      <div><div class="card-title">Supplement Consistency</div><div class="card-subtitle">Daily tick · see what you're consistent with</div></div>
     </div>
-    <div id="pat-coke-stats"></div>
+    <div id="pat-supp-grid"></div>
+    <div id="pat-supp-nudge" style="display:none;margin-top:10px;font-size:12px;font-style:italic;color:var(--mustard);padding-top:10px;border-top:1px solid var(--border);"></div>
   </div>
 
   <div class="edit-note">📊 Patterns build up over time — the more you log, the more useful this gets. Check back after a week of consistent logging.</div>
 
 </div>
 
-<!-- RECOVERY -->
-<div class="section" id="tab-recovery">
-  <div class="alert-note">⚕ Procedures done April 24, 2026 at Mellow Clinic, Seoul. Meds are a 3-day course — check if still ongoing.</div>
-
-  <div class="section-label">Medications</div>
-  <div class="card glow-card-m">
-    <div class="card-header">
-      <div class="card-icon icon-m">💊</div>
-      <div>
-        <div class="card-title">Prescribed Meds</div>
-        <div class="card-subtitle">2x daily · morning + evening · always after food</div>
-      </div>
-    </div>
-    <div class="med-row">
-      <div class="med-name">엠피디엘정 — Corticosteroid</div>
-      <div class="med-type">Anti-inflammatory / immune suppressant</div>
-      <div class="med-warn">⚠ Take with food — can cause stomach irritation</div>
-    </div>
-    <div class="med-row">
-      <div class="med-name">인데놀정 10mg — Inderal / Propranolol</div>
-      <div class="med-type">Beta-blocker</div>
-      <div class="med-warn">⚠ May cause dizziness — don't stand up fast</div>
-    </div>
-    <div class="med-row">
-      <div class="med-name">미노씬캡슐 50mg — Minocycline</div>
-      <div class="med-type">Tetracycline antibiotic</div>
-      <div class="med-warn">⚠ Take with food — notorious for nausea on empty stomach</div>
+<!-- ACHIEVEMENT MODAL -->
+<div class="drawer-overlay" id="ach-overlay" onclick="closeAchievements()" style="z-index:200;"></div>
+<div id="ach-sheet" style="position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;background:rgba(18,10,10,0.98);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-radius:18px 18px 0 0;border-top:1px solid rgba(240,192,64,0.15);box-shadow:0 -6px 40px rgba(240,192,64,0.08);z-index:201;height:85%;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.32,0.72,0,1);display:flex;flex-direction:column;">
+  <div style="flex-shrink:0;padding:10px 18px 12px;border-bottom:1px solid rgba(255,255,255,0.05);">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin:0 auto 12px;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.06em;">Your <span style="color:var(--gold);text-shadow:var(--gold-glow);">Achievements</span></div>
+      <div onclick="closeAchievements()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:var(--text-muted);">✕</div>
     </div>
   </div>
+  <div id="ach-body" style="flex:1;overflow-y:auto;padding-bottom:40px;overscroll-behavior:contain;">
+    <!-- Level -->
+    <div id="ach-level" style="margin:12px 14px 4px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--mustard);" id="ach-level-name">👑 Level 1 · Beginner</div>
+        <div style="font-size:10px;color:var(--text-muted);align-self:flex-end;" id="ach-level-pts">0 / 100 pts</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:3px;height:5px;overflow:hidden;">
+        <div id="ach-level-bar" style="height:100%;border-radius:3px;background:linear-gradient(to right,var(--maroon),var(--mustard));box-shadow:0 0 6px #e8b02055;width:0%;transition:width 0.6s;"></div>
+      </div>
+    </div>
+    <!-- Streaks -->
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:9px;letter-spacing:0.22em;color:rgba(255,255,255,0.18);padding:14px 18px 6px;">Streaks</div>
+    <div id="ach-streaks"></div>
+    <!-- Badges -->
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:9px;letter-spacing:0.22em;color:rgba(255,255,255,0.18);padding:14px 18px 6px;">Badges</div>
+    <div id="ach-badges" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:4px 14px 8px;"></div>
+  </div>
+</div>
+
+<!-- FOCUS TAB -->
+<div class="section" id="tab-focus">
+  <div class="edit-note">🎯 Two things you're working on right now. No pressure — just keeping them visible so they don't get forgotten.</div>
+
+  <!-- Toggle -->
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <button class="supp-btn active-m" id="focus-tab-workout" onclick="setFocusTab('workout')" style="flex:1;padding:12px;">💪 Workout</button>
+    <button class="supp-btn" id="focus-tab-korean" onclick="setFocusTab('korean')" style="flex:1;padding:12px;">🇰🇷 Korean</button>
+  </div>
+
+  <!-- Workout Focus -->
+  <div id="focus-workout">
+    <div class="section-label">Workout Focus</div>
+    <div class="card glow-card-m">
+      <div class="card-header">
+        <div class="card-icon icon-m">💪</div>
+        <div><div class="card-title">Building the Habit</div><div class="card-subtitle">Observation phase · no pressure · just notice</div></div>
+      </div>
+      <div class="edit-note" style="margin-bottom:14px;">You're figuring out your schedule and seeing how ginseng helps. The goal right now is just showing up when you can and noticing how you feel.</div>
+
+      <!-- Phase roadmap -->
+      <div style="margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border);">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Your Roadmap</div>
+        <div class="hair-step" style="border-left:3px solid var(--maroon);padding-left:10px;margin-bottom:10px;">
+          <div class="h-num" style="color:var(--maroon);">NOW</div>
+          <div><div style="font-size:13px;font-weight:500;">Observation Phase</div><div class="h-sub">Log energy daily · test ginseng · show up to Pilates · no pressure on anything else</div></div>
+        </div>
+        <div class="hair-step" style="opacity:0.5;margin-bottom:10px;">
+          <div class="h-num">M1</div>
+          <div><div style="font-size:13px;">Spot the patterns</div><div class="h-sub">After 3–4 weeks of logs · look at energy vs ginseng vs movement · decide if ginseng is helping</div></div>
+        </div>
+        <div class="hair-step" style="opacity:0.5;margin-bottom:10px;">
+          <div class="h-num">M1–2</div>
+          <div><div style="font-size:13px;">Add a second session</div><div class="h-sub">When energy and schedule align · try adding one more session per week beyond Pilates</div></div>
+        </div>
+        <div class="hair-step" style="opacity:0.5;">
+          <div class="h-num">M2+</div>
+          <div><div style="font-size:13px;">Build a real schedule</div><div class="h-sub">Once patterns are clear · commit to a weekly routine that actually fits your life</div></div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">How's your energy today?</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="supp-btn" id="we-low" onclick="setWorkoutEnergy('low')">Low 😩</button>
+          <button class="supp-btn" id="we-ok" onclick="setWorkoutEnergy('ok')">Okay 😐</button>
+          <button class="supp-btn" id="we-good" onclick="setWorkoutEnergy('good')">Good 💪</button>
+          <button class="supp-btn" id="we-great" onclick="setWorkoutEnergy('great')">Great ⚡</button>
+        </div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Did ginseng seem to help today?</div>
+        <div style="display:flex;gap:6px;">
+          <button class="supp-btn" id="wg-yes" onclick="setGinsengHelp('yes')">Yes 🌿</button>
+          <button class="supp-btn" id="wg-no" onclick="setGinsengHelp('no')">Not really</button>
+          <button class="supp-btn" id="wg-na" onclick="setGinsengHelp('na')">Didn't take it</button>
+        </div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">Notes (optional)</div>
+        <input id="workout-note" placeholder="e.g. felt tired by 8PM, skipped pilates" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;">
+      </div>
+      <button onclick="saveWorkoutLog()" style="width:100%;padding:11px;border-radius:4px;background:var(--maroon-dim);border:1px solid var(--maroon);color:var(--maroon);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--maroon-glow);"
+        onmouseover="this.style.background='var(--maroon)';this.style.color='var(--bg)'"
+        onmouseout="this.style.background='var(--maroon-dim)';this.style.color='var(--maroon)'">+ LOG TODAY</button>
+    </div>
+    <div class="section-label">Recent Observations</div>
+    <div id="workout-log-list"><div style="font-size:13px;color:var(--text-muted);padding:8px 0;">Nothing logged yet — start noticing.</div></div>
+  </div>
+
+  <!-- Korean Focus -->
+  <div id="focus-korean" style="display:none;">
+    <div class="section-label">Korean Focus</div>
+    <div class="card glow-card-y">
+      <div class="card-header">
+        <div class="card-icon icon-y">🇰🇷</div>
+        <div><div class="card-title">Language Learning</div><div class="card-subtitle">Tutor sessions + self study</div></div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Next tutor session</div>
+        <div id="tutor-session-display" style="background:var(--bg3);border-radius:4px;padding:12px;border-left:3px solid var(--mustard);margin-bottom:8px;cursor:pointer;" onclick="editTutorSession()">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--mustard);" id="tutor-session-label">Loading...</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">tap to update</div>
+        </div>
+        <div id="tutor-session-edit" style="display:none;">
+          <input id="tutor-session-input" type="date" style="width:100%;background:var(--bg3);border:1px solid var(--mustard);border-radius:4px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;margin-bottom:6px;">
+          <button onclick="saveTutorSession()" style="width:100%;padding:9px;border-radius:4px;background:var(--mustard-dim);border:1px solid var(--mustard);color:var(--mustard);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:0.1em;cursor:pointer;">SAVE SESSION DATE</button>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Did you study today?</div>
+        <div style="display:flex;gap:6px;">
+          <button class="supp-btn" id="ks-yes" onclick="setKoreanStudy('yes')">Yes 📖</button>
+          <button class="supp-btn" id="ks-no" onclick="setKoreanStudy('no')">Not today</button>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">What did you work on?</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="supp-btn" id="kt-vocab" onclick="setKoreanType('vocab')">Vocab 📝</button>
+          <button class="supp-btn" id="kt-grammar" onclick="setKoreanType('grammar')">Grammar 🧩</button>
+          <button class="supp-btn" id="kt-listening" onclick="setKoreanType('listening')">Listening 🎧</button>
+          <button class="supp-btn" id="kt-speaking" onclick="setKoreanType('speaking')">Speaking 🗣</button>
+          <button class="supp-btn" id="kt-tutor" onclick="setKoreanType('tutor')">Tutor session 👩‍🏫</button>
+        </div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">What did you learn? (optional)</div>
+        <input id="korean-note" placeholder="e.g. 10 new words, practiced 안녕하세요" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;">
+      </div>
+      <button onclick="saveKoreanLog()" style="width:100%;padding:11px;border-radius:4px;background:var(--mustard-dim);border:1px solid var(--mustard);color:var(--mustard);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.14em;cursor:pointer;box-shadow:var(--mustard-glow);"
+        onmouseover="this.style.background='var(--mustard)';this.style.color='var(--bg)'"
+        onmouseout="this.style.background='var(--mustard-dim)';this.style.color='var(--mustard)'">+ LOG TODAY</button>
+    </div>
+    <div class="section-label">Study Log</div>
+    <div id="korean-log-list"><div style="font-size:13px;color:var(--text-muted);padding:8px 0;">Nothing logged yet — 첫 번째 수업 화이팅! 🌸</div></div>
+  </div>
+</div>
+
+<!-- RECOVERY -->
+<div class="section" id="tab-recovery">
+  <div class="alert-note">⚕ Procedures done April 24, 2026 at Mellow Clinic, Seoul. Skin healed ✓ · Still monitoring results over 3–4 months · Piercings healing 6 months.</div>
 
   <div class="section-label">Procedures & Recovery Timeline</div>
   <div class="card">
@@ -1283,33 +1667,33 @@
     <div class="hair-step"><div class="h-num">M3–4</div><div>Full masseter botox result · jaw at slimmest</div></div>
   </div>
 
-  <div class="section-label">Skincare During Recovery</div>
+  <div class="section-label">Skincare — Reintroduction Phase</div>
   <div class="card">
+    <div class="card-header"><div class="card-icon icon-g">✨</div><div><div class="card-title">Actives Reintroduction</div><div class="card-subtitle">Skin is healed · slowly bring actives back</div></div></div>
     <ul class="checklist" style="pointer-events:none;">
-      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">No BHA, AHA, retinol, niacinamide</div><div class="item-note">Until fully healed</div></div></li>
-      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">No face wash in the morning (per doctor's instruction)</div></div></li>
-      <li><div class="check-box" style="border-color:var(--green);color:var(--green);">✓</div><div><div class="item-text">Gentle mist / spray + barrier cream + SPF only</div></div></li>
-      <li style="border:none;padding-bottom:0;"><div class="check-box" style="border-color:var(--green);color:var(--green);">✓</div><div><div class="item-text">Hypochlorous acid spray — piercings morning + night</div></div></li>
+      <li><div class="check-box" style="border-color:var(--green);color:var(--green);">✓</div><div><div class="item-text">Full AM routine resumed</div><div class="item-note">Tower 28 → d'Alba → Dr. Althea → Dr. G → SPF</div></div></li>
+      <li><div class="check-box" style="border-color:var(--green);color:var(--green);">✓</div><div><div class="item-text">PM actives rotation back on</div><div class="item-note">Retinol / Reedle / BHA — check Skincare tab for rotation</div></div></li>
+      <li><div class="check-box" style="border-color:var(--mustard);color:var(--mustard);">→</div><div><div class="item-text">Azelaic acid — continue as AM base</div><div class="item-note">Still gentle enough during this phase</div></div></li>
+      <li style="border:none;padding-bottom:0;"><div class="check-box" style="border-color:var(--mustard);color:var(--mustard);">→</div><div><div class="item-text">Watch for sensitivity when combining actives</div><div class="item-note">If skin reacts, drop back to recovery night and resume next day</div></div></li>
     </ul>
   </div>
 
-  <div class="section-label">Piercings (3 days old · Apr 24)</div>
+  <div class="section-label">Piercings (Healing · Apr 24 → ~Oct 24)</div>
   <div class="card">
     <ul class="checklist" style="pointer-events:none;">
-      <li><div class="check-box" style="border-color:var(--green);color:var(--green);">✓</div><div><div class="item-text">Clean with hypochlorous acid spray AM + PM</div></div></li>
+      <li><div class="check-box" style="border-color:var(--green);color:var(--green);">✓</div><div><div class="item-text">Clean with hypochlorous acid spray AM + PM</div><div class="item-note">Both piercings · 6 month healing timeline</div></div></li>
       <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">Do not rotate jewelry</div></div></li>
-      <li style="border:none;padding-bottom:0;"><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">Avoid sleeping on pierced side</div><div class="item-note">Occasional bleeding from movement is normal</div></div></li>
+      <li style="border:none;padding-bottom:0;"><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">✕</div><div><div class="item-text">Avoid sleeping on pierced side</div><div class="item-note">Occasional dried blood from movement is normal</div></div></li>
     </ul>
   </div>
 
   <div class="section-label">Red Flags — Contact Mellow Clinic if:</div>
   <div class="card glow-card-m">
     <ul class="checklist" style="pointer-events:none;">
-      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">!</div><div><div class="item-text">Increasing swelling or pain beyond Day 5</div></div></li>
-      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">!</div><div><div class="item-text">Pus or warmth around injection sites</div></div></li>
-      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">!</div><div><div class="item-text">Fever</div></div></li>
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">!</div><div><div class="item-text">Unusual swelling or pain returning</div></div></li>
+      <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">!</div><div><div class="item-text">Pus or warmth around any injection site</div></div></li>
       <li><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">!</div><div><div class="item-text">Piercing signs of infection (not just dried blood)</div></div></li>
-      <li style="border:none;padding-bottom:0;"><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">!</div><div><div class="item-text">Smile asymmetry not improving by Week 2</div></div></li>
+      <li style="border:none;padding-bottom:0;"><div class="check-box" style="border-color:var(--maroon);color:var(--maroon);">!</div><div><div class="item-text">Smile asymmetry not resolving</div></div></li>
     </ul>
   </div>
 </div>
@@ -1430,7 +1814,7 @@
 
   function logCoke(amount) {
     const data = loadCokeData();
-    if (data.total >= COKE_MAX) return;
+    if (data.total >= COKE_MAX) return; // normal buttons blocked at limit — overage uses separate fn
     const actual = Math.round(Math.min(amount, COKE_MAX - data.total) * 10) / 10;
     data.total = Math.round((data.total + actual) * 10) / 10;
     const label = actual === 1 ? 'Full can' : 'Half can';
@@ -1439,6 +1823,7 @@
     data.log.unshift({ label, time, date, amount: actual });
     saveCokeData(data);
     renderCoke();
+    renderDashboard();
   }
 
   function undoCoke() {
@@ -1448,27 +1833,47 @@
     data.total = Math.round(Math.max(0, data.total - last.amount) * 10) / 10;
     saveCokeData(data);
     renderCoke();
+    renderDashboard();
+  }
+
+  function logCokeOverage() {
+    const data = loadCokeData();
+    const now2 = new Date();
+    const timeStr = now2.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});
+    const dateStr = now2.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    data.log.unshift({amount:1, label:'Full Can (over limit ⚠)', date:dateStr, time:timeStr, overage:true});
+    data.total = Math.round((data.total + 1) * 10) / 10;
+    saveCokeData(data);
+    renderCoke();
+    renderDashboard();
   }
 
   function renderCoke() {
     const data = loadCokeData();
+    const overLimit = data.total > COKE_MAX;
+    const overage = Math.max(0, Math.round((data.total - COKE_MAX) * 10) / 10);
     const pct = Math.min((data.total / COKE_MAX) * 100, 100);
-    const remaining = Math.round((COKE_MAX - data.total) * 10) / 10;
+    const remaining = Math.max(0, Math.round((COKE_MAX - data.total) * 10) / 10);
     const atMax = data.total >= COKE_MAX;
 
-    // bar color shifts from green → mustard → maroon as it fills
-    let barColor;
-    if (pct < 50) barColor = 'linear-gradient(90deg,var(--green),var(--green-lt))';
-    else if (pct < 85) barColor = 'linear-gradient(90deg,var(--mustard),var(--mustard-lt))';
-    else barColor = 'linear-gradient(90deg,var(--maroon-lt),var(--maroon))';
-
+    // bar — goes red+overflow indicator when over
     document.getElementById('coke-bar').style.width = pct + '%';
-    document.getElementById('coke-bar').style.background = barColor;
-    document.getElementById('coke-label').textContent = `${data.total} / ${COKE_MAX} cans this week`;
+    document.getElementById('coke-bar').style.background = overLimit
+      ? 'var(--maroon)'
+      : pct < 50 ? 'linear-gradient(90deg,var(--green),var(--green-lt))'
+      : pct < 85 ? 'linear-gradient(90deg,var(--mustard),var(--mustard-lt))'
+      : 'linear-gradient(90deg,var(--maroon-lt),var(--maroon))';
+
+    document.getElementById('coke-label').textContent = overLimit
+      ? `${data.total} / ${COKE_MAX} · ${overage} over limit`
+      : `${data.total} / ${COKE_MAX} cans this week`;
 
     const statusEl = document.getElementById('coke-status');
-    if (atMax) {
-      statusEl.textContent = 'LIMIT REACHED 🚫';
+    if (overLimit) {
+      statusEl.textContent = `⚠ ${overage} over · still tracking`;
+      statusEl.style.color = 'var(--maroon)';
+    } else if (atMax) {
+      statusEl.textContent = 'Limit reached · tap below to log more';
       statusEl.style.color = 'var(--maroon)';
     } else if (remaining <= 0.5) {
       statusEl.textContent = 'Last half can ⚠';
@@ -1478,27 +1883,39 @@
       statusEl.style.color = 'var(--text-muted)';
     }
 
-    // can icons — each full can = 1, shown as segments
+    // can icons — 4 normal slots + overflow indicator
     const cansEl = document.getElementById('coke-cans');
     cansEl.innerHTML = '';
     for (let i = 0; i < COKE_MAX; i++) {
       const filled = data.total >= i + 1 ? 1 : data.total > i ? data.total - i : 0;
+      const isOverage = overLimit && i < Math.floor(data.total) - COKE_MAX;
       const div = document.createElement('div');
       div.style.cssText = `flex:1;height:36px;border-radius:4px;border:1.5px solid ${filled > 0 ? 'var(--maroon)' : 'var(--border2)'};background:${filled >= 1 ? 'var(--maroon)' : filled > 0 ? 'linear-gradient(90deg,var(--maroon) 50%,var(--bg3) 50%)' : 'var(--bg3)'};box-shadow:${filled > 0 ? 'var(--maroon-glow)' : 'none'};transition:all 0.3s;`;
       cansEl.appendChild(div);
     }
+    // overage cans — shown as dark red extras
+    if (overLimit) {
+      const overEl = document.createElement('div');
+      overEl.style.cssText = `display:flex;gap:6px;margin-top:6px;`;
+      for (let i = 0; i < overage; i++) {
+        const d = document.createElement('div');
+        d.style.cssText = `width:36px;height:36px;border-radius:4px;border:1.5px dashed var(--maroon-lt);background:rgba(176,32,48,0.3);box-shadow:var(--maroon-glow);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--maroon-lt);`;
+        d.textContent = '+1';
+        overEl.appendChild(d);
+      }
+      cansEl.appendChild(overEl);
+    }
 
-    // disable buttons at max
+    // show/hide buttons
     ['coke-full-btn','coke-half-btn'].forEach(id => {
       const btn = document.getElementById(id);
-      if (atMax) {
-        btn.style.opacity = '0.3';
-        btn.style.pointerEvents = 'none';
-      } else {
-        btn.style.opacity = '1';
-        btn.style.pointerEvents = 'auto';
+      if (btn) {
+        btn.style.opacity = atMax ? '0.3' : '1';
+        btn.style.pointerEvents = atMax ? 'none' : 'auto';
       }
     });
+    const overBtn = document.getElementById('coke-over-btn');
+    if (overBtn) overBtn.style.display = atMax ? 'block' : 'none';
 
     // log
     const logEl = document.getElementById('coke-log-list');
@@ -1507,12 +1924,12 @@
       return;
     }
     logEl.innerHTML = data.log.map(e => `
-      <div class="card" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
+      <div class="card" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;${e.overage?'border-color:var(--maroon);':''}">
         <div>
-          <div style="font-size:13px;font-weight:500;">${e.label}</div>
+          <div style="font-size:13px;font-weight:500;${e.overage?'color:var(--maroon-lt);':''}">${e.label}</div>
           <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${e.date} · ${e.time}</div>
         </div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--maroon);">+${e.amount}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${e.overage?'var(--maroon)':'var(--maroon)'};">+${e.amount}</div>
       </div>`).join('');
   }
 
@@ -1521,7 +1938,33 @@
   // ── FOOD TAB ──
   let hungerLevel='moderate', cravingType='both', hadCokeToday=false;
   let mealType='snack', hadVeg=null, hadProtein=null, hadCarb=null, foodFeel=null;
+  let snackType=null, snackKind=null, snackPortion=null;
   const foodLogs = lsGet('jodee-foodlogs', []);
+
+  function setMealType(v){
+    mealType=v;
+    ['lunch','dinner','snack'].forEach(k=>document.getElementById('mt-'+k).className='supp-btn');
+    document.getElementById('mt-'+v).classList.add('active-y');
+    // toggle question sections
+    const isSnack = v==='snack';
+    document.getElementById('meal-questions').style.display = isSnack ? 'none' : 'block';
+    document.getElementById('snack-questions').style.display = isSnack ? 'block' : 'none';
+  }
+  function setSnackType(v){
+    snackType=v;
+    ['sweet','salty','both'].forEach(k=>document.getElementById('sq-'+k).className='supp-btn');
+    document.getElementById('sq-'+v).classList.add('active-y');
+  }
+  function setSnackKind(v){
+    snackKind=v;
+    ['sustaining','treat'].forEach(k=>document.getElementById('sk-'+k).className='supp-btn');
+    document.getElementById('sk-'+v).classList.add(v==='sustaining'?'active-g':'active-y');
+  }
+  function setSnackPortion(v){
+    snackPortion=v;
+    ['yes','no'].forEach(k=>document.getElementById('sp-'+k).className='supp-btn');
+    document.getElementById(v?'sp-yes':'sp-no').classList.add(v?'active-g':'active-m');
+  }
 
   // ── DAILY FUEL SUGGESTION ENGINE ──
   function getDailyFuelPlan() {
@@ -1580,11 +2023,30 @@
 
     const plan = plans[d];
 
-    // yesterday nudge
+    // single most relevant nudge — priority: urgent today > forward-looking > yesterday gap > all good
+    const todayDate = now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    const todayLogs2 = foodLogs.filter(e=>e.date===todayDate&&!e.isSnack);
+    const gotVegToday = todayLogs2.some(e=>e.hadVeg);
+    const gotProteinToday = todayLogs2.some(e=>e.hadProtein);
+    const gotCarbToday = todayLogs2.some(e=>e.hadCarb);
+    const mealCount = todayLogs2.length;
+    const h = now.getHours();
+
     let yNote = '';
-    if(!yHadVeg && yLogs.length > 0) yNote = '🥬 You didn\'t have vegetables yesterday — try to add kangkong, okra, or corn to at least one meal today.';
+    // 1. URGENT TODAY
+    if(d===2 && mealCount===0 && h>=10) yNote = '🧘 Pilates day — eat something before 11AM, even just a small snack. Don\'t go to class on empty.';
+    else if(d===1 && mealCount>=1 && !gotCarbToday && h>=18) yNote = '🍚 No carbs logged tonight — pilates is tomorrow morning. Have rice with dinner so your body has fuel overnight.';
+    else if(mealCount>=1 && h>=19 && !gotProteinToday) yNote = '🍖 No protein yet today and your shift is starting — make sure dinner has a proper protein source.';
+    // 2. FORWARD-LOOKING
+    else if(d===1 && h<18) yNote = '⚡ Tomorrow is pilates day — make sure dinner tonight has rice. Your body stores glycogen overnight.';
+    else if(d===2 && mealCount>=1 && !gotCarbToday) yNote = '🍚 Pilates day — you haven\'t had carbs yet. Have rice at your next meal to recover from this morning.';
+    else if((d===4||d===5) && h>=14) yNote = '💪 End of week — eat well tonight so you finish the shift strong and wake up Saturday feeling good.';
+    else if((d===6||d===0) && mealCount===0) yNote = '🌸 Rest day — no pressure on carbs. Eat what feels good and enjoyable today.';
+    // 3. YESTERDAY GAP
+    else if(!yHadVeg && yLogs.length > 0) yNote = '🥬 No vegetables yesterday — try to add kangkong, okra, or corn to at least one meal today.';
     else if(!yHadProtein && yLogs.length > 0) yNote = '🍖 Light on protein yesterday — make sure today\'s meals have a proper protein source.';
-    else if(d===2 && !yHadCarb) yNote = '⚡ You didn\'t log carbs yesterday — today\'s pilates day so make sure you ate enough. Have rice at lunch to compensate.';
+    // 4. ALL GOOD
+    else if(gotVegToday && gotProteinToday && mealCount>=2) yNote = '✅ Looking well fueled today — protein and vegetables covered. You\'re on track.';
 
     return { ...plan, yNote };
   }
@@ -1633,11 +2095,6 @@
     hadCokeToday=v;
     ['yes','no'].forEach(k=>document.getElementById('ck-'+k).className='supp-btn');
     document.getElementById(v?'ck-yes':'ck-no').classList.add(v?'active-m':'active-g');
-  }
-  function setMealType(v){
-    mealType=v;
-    ['lunch','dinner','snack'].forEach(k=>document.getElementById('mt-'+k).className='supp-btn');
-    document.getElementById('mt-'+v).classList.add('active-y');
   }
   function setVeg(v){
     hadVeg=v;
@@ -1690,41 +2147,46 @@
     const note = document.getElementById('food-note-input').value.trim();
     const time = new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});
     const date = now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
-    const entry = { mealType, hadVeg, hadProtein, hadCarb, foodFeel, note, time, date, id: Date.now() };
+    const isSnack = mealType==='snack';
+    const entry = isSnack
+      ? { mealType, snackType, snackKind, snackPortion, note, time, date, id: Date.now(), isSnack:true }
+      : { mealType, hadVeg, hadProtein, hadCarb, foodFeel, note, time, date, id: Date.now(), isSnack:false };
     foodLogs.unshift(entry);
     lsSet('jodee-foodlogs', foodLogs);
 
-    // smart feedback
-    const todayLogs = foodLogs.filter(e=>e.date===date);
-    const gotVeg = todayLogs.some(e=>e.hadVeg);
-    const gotProtein = todayLogs.some(e=>e.hadProtein);
-    const gotCarb = todayLogs.some(e=>e.hadCarb);
-    const d = now.getDay();
-    const msgs = [];
-
-    if(!gotVeg && todayLogs.length>=2) msgs.push('🥬 No vegetables yet today — try adding kangkong, okra, or corn to your next meal.');
-    if(!gotProtein && todayLogs.length>=2) msgs.push('🍖 Light on protein so far — make sure dinner has a proper meat or egg dish.');
-    if(d===1 && !gotCarb && todayLogs.filter(e=>e.mealType==='dinner').length>0) msgs.push('🍚 No carbs logged tonight — remember this is your pre-pilates night. Rice at dinner helps.');
-    if(d===2 && !gotCarb && mealType==='lunch') msgs.push('🧘 Pilates day — make sure you have some carbs at lunch to recover from this morning.');
-    if(foodFeel==='hungry' && mealType!=='snack') msgs.push('😤 Still hungry after that meal — next time try adding more protein or a vegetable side to stay fuller longer.');
-    if(foodFeel==='heavy') msgs.push('😴 Felt heavy after eating — maybe a lighter portion next time, or less fried food if that was in the mix.');
-    if(gotVeg && gotProtein && todayLogs.length>=2) msgs.push('✅ Looking well fueled today — protein and vegetables covered.');
-
     const fbEl = document.getElementById('food-feedback');
-    if(msgs.length){
-      fbEl.style.display='block';
-      fbEl.innerHTML = msgs.map(m=>`<div class="edit-note" style="margin-bottom:6px;">${m}</div>`).join('');
-    } else fbEl.style.display='none';
+    if(!isSnack){
+      const todayLogs = foodLogs.filter(e=>e.date===date&&!e.isSnack);
+      const gotVeg = todayLogs.some(e=>e.hadVeg);
+      const gotProtein = todayLogs.some(e=>e.hadProtein);
+      const gotCarb = todayLogs.some(e=>e.hadCarb);
+      const d = now.getDay();
+      const msgs = [];
+      if(!gotVeg && todayLogs.length>=2) msgs.push('🥬 No vegetables yet today — try adding kangkong, okra, or corn to your next meal.');
+      if(!gotProtein && todayLogs.length>=2) msgs.push('🍖 Light on protein so far — make sure dinner has a proper meat or egg dish.');
+      if(d===1 && !gotCarb && todayLogs.filter(e=>e.mealType==='dinner').length>0) msgs.push('🍚 No carbs logged tonight — remember this is your pre-pilates night. Rice at dinner helps.');
+      if(d===2 && !gotCarb && mealType==='lunch') msgs.push('🧘 Pilates day — make sure you have some carbs at lunch to recover.');
+      if(foodFeel==='hungry') msgs.push('😤 Still hungry after that meal — next time try adding more protein or a vegetable side.');
+      if(foodFeel==='heavy') msgs.push('😴 Felt heavy after eating — maybe a lighter portion next time.');
+      if(gotVeg && gotProtein && todayLogs.length>=2) msgs.push('✅ Looking well fueled today — protein and vegetables covered.');
+      if(msgs.length){ fbEl.style.display='block'; fbEl.innerHTML=msgs.map(m=>`<div class="edit-note" style="margin-bottom:6px;">${m}</div>`).join(''); }
+      else fbEl.style.display='none';
+    } else {
+      if(snackPortion===false){ fbEl.style.display='block'; fbEl.innerHTML='<div class="edit-note">🍿 Went over on portion — happens! Just keep the small bowl habit going tomorrow.</div>'; }
+      else if(snackKind==='sustaining'){ fbEl.style.display='block'; fbEl.innerHTML='<div class="edit-note" style="border-left-color:var(--green);">✅ Good snack choice — sustaining ones keep energy steadier through your shift.</div>'; }
+      else fbEl.style.display='none';
+    }
 
     // reset form
     document.getElementById('food-note-input').value='';
     foodFeel=null; hadVeg=null; hadProtein=null; hadCarb=null;
+    snackType=null; snackKind=null; snackPortion=null;
     ['mt-lunch','mt-dinner','mt-snack'].forEach(id=>document.getElementById(id).className='supp-btn');
-    ['veg-yes','veg-no','pr-yes','pr-no','carb-yes','carb-no'].forEach(id=>document.getElementById(id).className='supp-btn');
-    ['f-good','f-full','f-hungry','f-heavy'].forEach(id=>document.getElementById(id).className='supp-btn');
-
-    renderFoodLog();
-    renderFuelPlan(); // update pillar checkmarks
+    ['veg-yes','veg-no','pr-yes','pr-no','carb-yes','carb-no','f-good','f-full','f-hungry','f-heavy'].forEach(id=>document.getElementById(id).className='supp-btn');
+    ['sq-sweet','sq-salty','sq-both','sk-sustaining','sk-treat','sp-yes','sp-no'].forEach(id=>{const el=document.getElementById(id);if(el)el.className='supp-btn';});
+    document.getElementById('meal-questions').style.display='block';
+    document.getElementById('snack-questions').style.display='none';
+    renderFoodLog(); renderFuelPlan();
   }
 
   function renderFoodLog(){
@@ -1741,10 +2203,16 @@
           <span style="font-size:11px;color:var(--text-muted);">${e.time}</span>
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;">
-          ${e.hadProtein?'<span class="pill pill-m">🍖 protein</span>':''}
-          ${e.hadVeg?'<span class="pill pill-g">🥬 veg</span>':''}
-          ${e.hadCarb?'<span class="pill pill-y">🍚 carbs</span>':''}
-          ${e.foodFeel?`<span class="pill pill-y">${feelEmoji[e.foodFeel]||''} ${e.foodFeel}</span>`:''}
+          ${e.isSnack?(
+            (e.snackType?`<span class="pill pill-y">${e.snackType}</span>`:'') +
+            (e.snackKind?`<span class="pill ${e.snackKind==='sustaining'?'pill-g':'pill-m'}">${e.snackKind}</span>`:'') +
+            (e.snackPortion!==null?`<span class="pill ${e.snackPortion?'pill-g':'pill-m'}">${e.snackPortion?'✓ portioned':'went over'}</span>`:'')
+          ):(
+            (e.hadProtein?'<span class="pill pill-m">🍖 protein</span>':'') +
+            (e.hadVeg?'<span class="pill pill-g">🥬 veg</span>':'') +
+            (e.hadCarb?'<span class="pill pill-y">🍚 carbs</span>':'') +
+            (e.foodFeel?`<span class="pill pill-y">${feelEmoji[e.foodFeel]||''} ${e.foodFeel}</span>`:'')
+          )}
         </div>
         ${e.note?`<div style="font-size:12px;color:var(--text-soft);font-style:italic;">${e.note}</div>`:''}
       </div>`).join('');
@@ -1753,6 +2221,705 @@
   setHunger('moderate'); setCraving('both'); setHadCoke(false); setMealType('snack');
   renderFuelPlan();
   renderFoodLog();
+
+  function goTab(id){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    const sec=document.getElementById('tab-'+id); if(sec) sec.classList.add('active');
+    const btn=document.querySelector(`.tab[onclick*="${id}"]`); if(btn) btn.classList.add('active');
+    const todayBtn=document.getElementById('today-btn');
+    if(id==='today') todayBtn.classList.remove('visible');
+    else todayBtn.classList.add('visible');
+  }
+
+  // ── ACHIEVEMENTS ──
+  const achSheet = document.getElementById('ach-sheet');
+  const achOverlay = document.getElementById('ach-overlay');
+  const achBody = document.getElementById('ach-body');
+
+  function openAchievements(){
+    achSheet.style.transform='translateY(0)';
+    achOverlay.classList.add('visible');
+    achBody.scrollTop=0;
+    renderAchievements();
+  }
+  function closeAchievements(){
+    achSheet.style.transform='translateY(100%)';
+    achOverlay.classList.remove('visible');
+  }
+
+  // ── STREAKS ──
+  const STREAK_DEFS=[
+    {id:'probiotic',label:'Probiotic',emoji:'💊',color:'var(--green)',source:'supplogs'},
+    {id:'skincare', label:'Skincare', emoji:'✨',color:'var(--mustard)',source:'skinlogs'},
+    {id:'pilates',  label:'Pilates',  emoji:'🧘',color:'var(--green)',source:'movement'},
+    {id:'water',    label:'Water Goal',emoji:'💧',color:'var(--mustard)',source:'water'},
+  ];
+
+  function checkStreakDay(def,iso,datePH){
+    if(def.source==='supplogs'){ const logs=lsGet('jodee-supplogs',[]); const l=logs.find(e=>e.date===iso); return l&&l.taken&&l.taken.probiotic; }
+    if(def.source==='skinlogs'){ const logs=lsGet('jodee-skinlogs',[]); return logs.some(e=>e.date===datePH); }
+    if(def.source==='movement'){ const logs=lsGet('jodee-movement',[]); return logs.some(e=>e.date===datePH&&e.moveType==='pilates'); }
+    if(def.source==='water'){ return lsGet('jodee-water-'+iso,[]).length>=8; }
+    return false;
+  }
+
+  function getStreak(def){
+    let streak=0, best=lsGet('jodee-streak-best-'+def.id,0);
+    for(let i=0;i<30;i++){
+      const d=new Date(now); d.setDate(now.getDate()-i);
+      const iso=d.toISOString().slice(0,10);
+      const datePH=d.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+      const hit=checkStreakDay(def,iso,datePH);
+      if(hit) streak++;
+      else if(i>0) break;
+    }
+    if(streak>best){ best=streak; lsSet('jodee-streak-best-'+def.id,best); }
+    return {streak,best};
+  }
+
+  function getTotalPoints(){
+    let pts=0;
+    STREAK_DEFS.forEach(d=>{ const {streak}=getStreak(d); pts+=streak*5; });
+    pts+=(lsGet('jodee-supplogs',[]).length+lsGet('jodee-skinlogs',[]).length+lsGet('jodee-sleeplogs',[]).length+lsGet('jodee-foodlogs',[]).filter(e=>!e.isSnack).length);
+    return pts;
+  }
+
+  const LEVELS=[
+    {name:'Beginner',pts:0},{name:'Building',pts:50},{name:'Consistent',pts:150},
+    {name:'On Track',pts:300},{name:'Thriving',pts:500},{name:'Life OS Pro',pts:800}
+  ];
+  function getLevel(pts){
+    let lvl=0;
+    for(let i=0;i<LEVELS.length;i++){ if(pts>=LEVELS[i].pts) lvl=i; }
+    return {level:lvl+1,name:LEVELS[lvl].name,pts,next:LEVELS[lvl+1]||null,current:LEVELS[lvl]};
+  }
+
+  const BADGES_DEF=[
+    {id:'first_log',emoji:'🌟',name:'First Step',gold:true,check:()=>lsGet('jodee-supplogs',[]).length+lsGet('jodee-skinlogs',[]).length+lsGet('jodee-sleeplogs',[]).length>0},
+    {id:'pilates3', emoji:'🧘',name:'Pilates 3x', green:true,check:()=>getStreak(STREAK_DEFS[2]).streak>=3},
+    {id:'hydrated', emoji:'💧',name:'Hydrated',   check:()=>{let c=0;for(let i=0;i<7;i++){const d=new Date(now);d.setDate(now.getDate()-i);if(lsGet('jodee-water-'+d.toISOString().slice(0,10),[]).length>=8)c++;}return c>=5;}},
+    {id:'probiotic7',emoji:'🔥',name:'On Fire',   check:()=>getStreak(STREAK_DEFS[0]).streak>=7},
+    {id:'skin5',    emoji:'✨',name:'Glow Up',    check:()=>lsGet('jodee-skinlogs',[]).filter(e=>e.score>=4).length>=5},
+    {id:'level5',   emoji:'👑',name:'Level 5',    gold:true,check:()=>getTotalPoints()>=500},
+    {id:'sleep5',   emoji:'😴',name:'Sleep Queen',check:()=>lsGet('jodee-sleeplogs',[]).filter(e=>e.hrs>=7).length>=5},
+    {id:'30days',   emoji:'🌸',name:'30 Days',    check:()=>lsGet('jodee-skinlogs',[]).length>=30||lsGet('jodee-supplogs',[]).length>=30},
+    {id:'coke4wk',  emoji:'🥤',name:'Coke Zero',  check:()=>false},
+  ];
+
+  function renderAchievements(){
+    const pts=getTotalPoints();
+    const {level,name,next,current}=getLevel(pts);
+    const pct=next?Math.min(((pts-current.pts)/(next.pts-current.pts))*100,100):100;
+    document.getElementById('ach-level-name').textContent=`👑 Level ${level} · ${name}`;
+    document.getElementById('ach-level-pts').textContent=next?`${pts} / ${next.pts} pts`:`${pts} pts · MAX`;
+    document.getElementById('ach-level-bar').style.width=pct+'%';
+
+    document.getElementById('ach-streaks').innerHTML=STREAK_DEFS.map(def=>{
+      const {streak,best}=getStreak(def);
+      const dots=Array.from({length:7},(_,i)=>{
+        const d=new Date(now);d.setDate(now.getDate()-(6-i));
+        const iso=d.toISOString().slice(0,10);
+        const datePH=d.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+        const isToday=i===6;
+        const hit=checkStreakDay(def,iso,datePH);
+        return `<div style="width:11px;height:11px;border-radius:2px;background:${hit?def.color:'var(--bg3)'};border:1px solid ${hit?def.color:'var(--border2)'};${isToday&&!hit?'border-color:var(--mustard);animation:pulse 1.5s infinite;':''}${hit?'box-shadow:0 0 4px '+def.color+';':''}"></div>`;
+      }).join('');
+      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;margin:2px 8px;border-radius:8px;">
+        <div style="font-size:17px;width:22px;text-align:center;">${def.emoji}</div>
+        <div style="flex:1;"><div style="font-size:12px;font-weight:500;margin-bottom:3px;">${def.label}</div>
+        <div style="display:flex;gap:2px;margin-bottom:2px;">${dots}</div>
+        <div style="font-size:9px;color:var(--text-muted);">best: ${best} ${def.id==='pilates'?'weeks':'days'}</div></div>
+        <div style="text-align:right;"><div style="font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1;color:${def.color};">${streak}</div>
+        <div style="font-size:9px;color:var(--text-muted);">${def.id==='pilates'?'wks':'days'}</div></div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('ach-badges').innerHTML=BADGES_DEF.map(b=>{
+      const u=b.check();
+      const bg=!u?'rgba(255,255,255,0.03)':b.gold?'#1a1200':b.green?'var(--green-dim)':'var(--mustard-dim)';
+      const border=!u?'rgba(255,255,255,0.07)':b.gold?'rgba(240,192,64,0.5)':b.green?'rgba(13,138,122,0.4)':'rgba(232,176,32,0.4)';
+      const nc=!u?'rgba(255,255,255,0.3)':b.gold?'var(--gold)':b.green?'var(--green-lt)':'var(--mustard)';
+      return `<div style="background:${bg};border:1px solid ${border};border-radius:10px;padding:12px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;opacity:${u?1:0.3};">
+        ${u?'<div style="position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:var(--green-glow);"></div>':''}
+        <div style="font-size:20px;">${b.emoji}</div>
+        <div style="font-family:\'Bebas Neue\',sans-serif;font-size:9px;letter-spacing:0.06em;color:${nc};text-align:center;line-height:1.2;">${b.name}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── FOCUS TAB ──
+  let focusTab='workout', workoutEnergy=null, ginsengHelp=null, koreanStudy=null, koreanType=null;
+  const workoutLogs=lsGet('jodee-workoutlogs',[]);
+  const koreanLogs=lsGet('jodee-koreanlogs',[]);
+
+  function setFocusTab(t){
+    focusTab=t;
+    document.getElementById('focus-tab-workout').className='supp-btn'+(t==='workout'?' active-m':'');
+    document.getElementById('focus-tab-korean').className='supp-btn'+(t==='korean'?' active-y':'');
+    document.getElementById('focus-workout').style.display=t==='workout'?'block':'none';
+    document.getElementById('focus-korean').style.display=t==='korean'?'block':'none';
+  }
+  function setWorkoutEnergy(v){workoutEnergy=v;['low','ok','good','great'].forEach(k=>document.getElementById('we-'+k).className='supp-btn');document.getElementById('we-'+v).classList.add({low:'active-m',ok:'active-y',good:'active-g',great:'active-g'}[v]);}
+  function setGinsengHelp(v){ginsengHelp=v;['yes','no','na'].forEach(k=>document.getElementById('wg-'+k).className='supp-btn');document.getElementById('wg-'+v).classList.add(v==='yes'?'active-g':'active-y');}
+  function setKoreanStudy(v){koreanStudy=v;['yes','no'].forEach(k=>document.getElementById('ks-'+k).className='supp-btn');document.getElementById('ks-'+v).classList.add(v==='yes'?'active-g':'active-m');}
+  function setKoreanType(v){koreanType=v;['vocab','grammar','listening','speaking','tutor'].forEach(k=>document.getElementById('kt-'+k).className='supp-btn');document.getElementById('kt-'+v).classList.add('active-y');}
+
+  function saveWorkoutLog(){
+    const note=document.getElementById('workout-note').value.trim();
+    const date=now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    workoutLogs.unshift({date,energy:workoutEnergy,ginseng:ginsengHelp,note,id:Date.now()});
+    lsSet('jodee-workoutlogs',workoutLogs);
+    document.getElementById('workout-note').value='';
+    workoutEnergy=null;ginsengHelp=null;
+    ['low','ok','good','great','yes','no','na'].forEach(k=>{const el=document.getElementById('we-'+k)||document.getElementById('wg-'+k);if(el)el.className='supp-btn';});
+    renderWorkoutLog();
+  }
+  function saveKoreanLog(){
+    const note=document.getElementById('korean-note').value.trim();
+    const date=now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    koreanLogs.unshift({date,studied:koreanStudy,type:koreanType,note,id:Date.now()});
+    lsSet('jodee-koreanlogs',koreanLogs);
+    document.getElementById('korean-note').value='';
+    koreanStudy=null;koreanType=null;
+    ['yes','no'].forEach(k=>document.getElementById('ks-'+k).className='supp-btn');
+    ['vocab','grammar','listening','speaking','tutor'].forEach(k=>document.getElementById('kt-'+k).className='supp-btn');
+    renderKoreanLog();
+  }
+  function renderWorkoutLog(){
+    const el=document.getElementById('workout-log-list');
+    if(!workoutLogs.length){el.innerHTML='<div style="font-size:13px;color:var(--text-muted);padding:8px 0;">Nothing logged yet.</div>';return;}
+    const eE={low:'😩',ok:'😐',good:'💪',great:'⚡'};
+    const gL={yes:'Ginseng helped 🌿',no:"Didn't help",'na':'No ginseng'};
+    el.innerHTML=workoutLogs.slice(0,7).map(e=>`<div class="card" style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--text-muted);">${e.date}</span>${e.energy?`<span style="font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--maroon);">${eE[e.energy]} ${e.energy}</span>`:''}</div>
+      ${e.ginseng?`<div style="font-size:11px;color:var(--text-muted);margin-bottom:3px;">${gL[e.ginseng]||''}</div>`:''}
+      ${e.note?`<div style="font-size:12px;color:var(--text-soft);font-style:italic;">${e.note}</div>`:''}</div>`).join('');
+  }
+  function renderKoreanLog(){
+    const el=document.getElementById('korean-log-list');
+    if(!koreanLogs.length){el.innerHTML='<div style="font-size:13px;color:var(--text-muted);padding:8px 0;">Nothing logged yet — 화이팅! 🌸</div>';return;}
+    const tE={vocab:'📝',grammar:'🧩',listening:'🎧',speaking:'🗣',tutor:'👩‍🏫'};
+    el.innerHTML=koreanLogs.slice(0,7).map(e=>`<div class="card" style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--text-muted);">${e.date}</span>${e.type?`<span style="font-size:14px;">${tE[e.type]||''}</span>`:''}</div>
+      <div style="font-size:12px;color:var(--mustard);margin-bottom:3px;">${e.studied==='yes'?'✓ Studied today':'— Rest day'}</div>
+      ${e.note?`<div style="font-size:12px;color:var(--text-soft);font-style:italic;">${e.note}</div>`:''}</div>`).join('');
+  }
+
+  function editTutorSession(){
+    document.getElementById('tutor-session-edit').style.display='block';
+    const saved=lsGet('jodee-tutor-session',null);
+    if(saved) document.getElementById('tutor-session-input').value=saved;
+  }
+  function saveTutorSession(){
+    const val=document.getElementById('tutor-session-input').value;
+    if(!val) return;
+    lsSet('jodee-tutor-session',val);
+    document.getElementById('tutor-session-edit').style.display='none';
+    renderTutorSessionDisplay();
+    renderDayContextNotes();
+  }
+  function renderTutorSessionDisplay(){
+    const saved=lsGet('jodee-tutor-session','2026-05-09');
+    const d=new Date(saved+'T12:00:00');
+    const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const label=`${days[d.getDay()]} · ${months[d.getMonth()]} ${d.getDate()}`;
+    const diffDays=Math.round((d-now)/(1000*60*60*24));
+    const sub=diffDays===0?'Today! 🎉':diffDays===1?'Tomorrow!':diffDays>0?`In ${diffDays} days`:'Past — update to next session';
+    document.getElementById('tutor-session-label').textContent=label;
+    const subEl=document.getElementById('tutor-session-display').querySelector('div:last-child');
+    if(subEl) subEl.textContent=sub+' · tap to update';
+  }
+
+  function renderDayContextNotes(){
+    const PROCEDURE_DATE = new Date('2026-04-24');
+    const daysSince = Math.floor((now - PROCEDURE_DATE)/(1000*60*60*24));
+    const weeksSince = Math.floor(daysSince/7);
+    const todayDate = now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    const lines = [];
+
+    // ── PROCEDURE PHASE (dynamic) ──
+    let skinPhase='', jawPhase='';
+    if(daysSince<=5){
+      skinPhase='Redness and sensitivity normal · no actives yet';
+      jawPhase='May look bigger from swelling — not sagging · normal';
+    } else if(weeksSince<=2){
+      skinPhase='Redness fading · reintroducing actives gently · check Skincare tab';
+      jawPhase='Smile may feel slightly different — botox settling (7–14 days)';
+    } else if(weeksSince<=4){
+      skinPhase='Rejuran healing becoming visible · texture improving · actives rotation active';
+      jawPhase='Botox fully settled · smile normal · slimming effect starting';
+    } else if(weeksSince<=8){
+      skinPhase='Clarity and texture more visible · continue actives rotation';
+      jawPhase='W4–6: Jaw slimming effect showing as muscle reduces';
+    } else if(weeksSince<=16){
+      skinPhase='Rejuran glow in full effect · skin at its best';
+      jawPhase='M3–4: Full masseter result developing · jaw at slimmest';
+    } else {
+      skinPhase='Full procedure results reached · maintain with SPF and actives';
+      jawPhase='Jaw slimming complete';
+    }
+    lines.push(`<strong>Skin (${weeksSince<1?'D'+daysSince:'W'+weeksSince}):</strong> ${skinPhase}`);
+    lines.push(`<strong>Jaw:</strong> ${jawPhase}`);
+    lines.push(`<strong>Piercings:</strong> Hypochlorous acid AM + PM · do not rotate · avoid sleeping on pierced side`);
+
+    // ── MOVEMENT ──
+    const mvLogs = lsGet('jodee-movement',[]);
+    const movedToday = mvLogs.some(e=>e.date===todayDate);
+    if(!movedToday){
+      lines.push(`<strong>🏃 Movement:</strong> Nothing logged yet · observation phase · even a walk counts`);
+    } else {
+      lines.push(`<strong>🏃 Movement:</strong> ✓ Logged today`);
+    }
+
+    // ── GINSENG ──
+    lines.push(`<strong>🌿 Ginseng:</strong> Notice how your energy feels today · log observations in Focus`);
+
+    // ── KOREAN TUTOR SESSION ──
+    const tutorISO = lsGet('jodee-tutor-session','2026-05-09');
+    const tutorDate = new Date(tutorISO+'T12:00:00');
+    const diffDays = Math.round((tutorDate - now)/(1000*60*60*24));
+    const krLogs = lsGet('jodee-koreanlogs',[]);
+    const studiedToday = krLogs.some(e=>e.date===todayDate);
+    if(diffDays===0){
+      lines.push(`<strong>🇰🇷 Korean:</strong> Tutor session TODAY — 화이팅! 🌸`);
+    } else if(diffDays===1){
+      lines.push(`<strong>🇰🇷 Korean:</strong> Tutor session TOMORROW · review something today`);
+    } else if(diffDays>1 && diffDays<=7){
+      if(!studiedToday) lines.push(`<strong>🇰🇷 Korean:</strong> ${diffDays} days to next session · study something today`);
+      else lines.push(`<strong>🇰🇷 Korean:</strong> ${diffDays} days to next session · ✓ studied today`);
+    } else if(diffDays>7){
+      lines.push(`<strong>🇰🇷 Korean:</strong> Next session ${diffDays} days away · ${studiedToday?'✓ studied today':'keep the habit going'}`);
+    }
+
+    document.getElementById('ctx-body').innerHTML = lines.join('<br>');
+  }
+
+  // ── MOVEMENT LOG ──
+  let moveType=null, moveDur=null, moveFeel=null;
+  const movementLogs = lsGet('jodee-movement', []);
+
+  function setMovement(v){
+    moveType=v;
+    ['pilates','walk','bike','stretch','other'].forEach(k=>{const el=document.getElementById('mv-'+k);if(el)el.className='supp-btn';});
+    const el=document.getElementById('mv-'+v); if(el) el.classList.add('active-m');
+  }
+  function setMoveDur(v){
+    moveDur=v;
+    ['20','30','45','60'].forEach(k=>{const el=document.getElementById('md-'+k);if(el)el.className='supp-btn';});
+    const map={'20 min':'20','30 min':'30','45 min':'45','1hr+':'60'};
+    const el=document.getElementById('md-'+map[v]); if(el) el.classList.add('active-y');
+  }
+  function setMoveFeel(v){
+    moveFeel=v;
+    ['easy','good','tough'].forEach(k=>{const el=document.getElementById('mf-'+k);if(el)el.className='supp-btn';});
+    const cls={easy:'active-g',good:'active-g',tough:'active-m'}[v];
+    const el=document.getElementById('mf-'+v); if(el) el.classList.add(cls);
+  }
+  function saveMovement(){
+    if(!moveType) return;
+    const date=now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    const entry={moveType,moveDur,moveFeel,date,dow,id:Date.now()};
+    movementLogs.unshift(entry);
+    lsSet('jodee-movement',movementLogs);
+    moveType=null; moveDur=null; moveFeel=null;
+    ['pilates','walk','bike','stretch','other'].forEach(k=>{const el=document.getElementById('mv-'+k);if(el)el.className='supp-btn';});
+    ['20','30','45','60'].forEach(k=>{const el=document.getElementById('md-'+k);if(el)el.className='supp-btn';});
+    ['easy','good','tough'].forEach(k=>{const el=document.getElementById('mf-'+k);if(el)el.className='supp-btn';});
+    renderMovementLog();
+    renderDashboard();
+    renderDayContextNotes();
+  }
+  function getWeekMovements(){
+    const start=new Date(now); start.setDate(now.getDate()-(dow===0?6:dow-1));
+    const days=Array.from({length:7},(_,i)=>{const d=new Date(start);d.setDate(start.getDate()+i);return d.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});});
+    return days.map(d=>movementLogs.filter(e=>e.date===d));
+  }
+  function renderMovementLog(){
+    const el=document.getElementById('movement-log-list');
+    if(!el) return;
+    const moveEmoji={pilates:'🧘',walk:'🚶',bike:'🚴',stretch:'🤸',other:'💪'};
+    const feelEmoji={easy:'😌',good:'💪',tough:'🔥'};
+    const weekMoves=movementLogs.filter(e=>{
+      const d=new Date(now); d.setDate(now.getDate()-(dow===0?6:dow-1));
+      return new Date(e.id)>=d;
+    });
+    if(!weekMoves.length){el.innerHTML='<div style="font-size:13px;color:var(--text-muted);padding:8px 0;">No movement logged yet this week.</div>';return;}
+    el.innerHTML=weekMoves.map(e=>`
+      <div class="card" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;">
+        <div style="font-size:24px;">${moveEmoji[e.moveType]||'💪'}</div>
+        <div style="flex:1;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.08em;color:var(--maroon);">${e.moveType} ${e.moveDur?'· '+e.moveDur:''}</div>
+          <div style="font-size:11px;color:var(--text-muted);">${e.date} ${e.moveFeel?'· '+feelEmoji[e.moveFeel]+' '+e.moveFeel:''}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  // ── ACTIVE ROTATION TRACKER ──
+  let confirmedActive = null;
+  const activeLogs = lsGet('jodee-actives', []);
+  const ACTIVE_TARGETS = {
+    retinol: {min:2, max:3, label:'Retinol', color:'var(--mustard)', emoji:'🟡'},
+    reedle:  {min:1, max:2, label:'Reedle',  color:'var(--green-lt)', emoji:'🟢'},
+    bha:     {min:0, max:2, label:'BHA',     color:'#8870c0', emoji:'🟣'},
+  };
+
+  function getActiveWeekKey(){
+    const d=new Date(now), day=d.getDay();
+    const mon=new Date(d); mon.setDate(d.getDate()-(day===0?6:day-1));
+    return `actives-week-${mon.toISOString().slice(0,10)}`;
+  }
+  function getWeekActives(){
+    return lsGet(getActiveWeekKey(),[]);
+  }
+  function confirmActive(v){
+    confirmedActive=v;
+    ['retinol','reedle','bha','recovery'].forEach(k=>{const el=document.getElementById('ca-'+k);if(el)el.className='supp-btn';});
+    const cls={retinol:'active-y',reedle:'active-g',bha:'supp-btn',recovery:'supp-btn'}[v]||'active-y';
+    const el=document.getElementById('ca-'+v);
+    if(el){ el.classList.add(cls); if(v==='bha'){el.style.borderColor='#8870c0';el.style.color='#8870c0';} }
+  }
+  function getTodayActiveLog(){
+    const date=now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    return getWeekActives().find(e=>e.date===date)||null;
+  }
+
+  function refreshActiveConfirmUI(){
+    const existing=getTodayActiveLog();
+    const activeLabel={retinol:'🟡 Retinol',reedle:'🟢 Reedle',bha:'🟣 BHA',recovery:'💤 Recovery'};
+    const btns=document.getElementById('active-confirm-btns');
+    const alreadyEl=document.getElementById('active-already-logged');
+    const nameEl=document.getElementById('active-logged-name');
+    const saveBtn=document.getElementById('save-active-btn');
+    const undoBtn=document.getElementById('undo-active-btn');
+    if(!btns) return;
+    if(existing){
+      // locked state
+      btns.style.opacity='0.4'; btns.style.pointerEvents='none';
+      alreadyEl.style.display='block';
+      nameEl.textContent=activeLabel[existing.active]||existing.active;
+      saveBtn.style.display='none';
+      undoBtn.style.display='block';
+    } else {
+      // unlocked state
+      btns.style.opacity='1'; btns.style.pointerEvents='auto';
+      alreadyEl.style.display='none';
+      saveBtn.style.display='block';
+      undoBtn.style.display='none';
+    }
+  }
+
+  function saveActiveLog(){
+    if(!confirmedActive) return;
+    const existing=getTodayActiveLog();
+    if(existing) return; // already logged today — do nothing
+    const date=now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    const weekActives=getWeekActives();
+    weekActives.unshift({active:confirmedActive,date,dow,id:Date.now()});
+    lsSet(getActiveWeekKey(),weekActives);
+    activeLogs.unshift({active:confirmedActive,date,id:Date.now()});
+    lsSet('jodee-actives',activeLogs);
+    document.getElementById('active-saved-note').style.display='block';
+    setTimeout(()=>{document.getElementById('active-saved-note').style.display='none';},2000);
+    confirmedActive=null;
+    ['retinol','reedle','bha','recovery'].forEach(k=>{const el=document.getElementById('ca-'+k);if(el){el.className='supp-btn';el.style.borderColor='';el.style.color='';}});
+    refreshActiveConfirmUI();
+    renderActiveTracker();
+    renderDashboard();
+  }
+
+  function undoActiveLog(){
+    const date=now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    const weekActives=getWeekActives();
+    const idx=weekActives.findIndex(e=>e.date===date);
+    if(idx>-1) weekActives.splice(idx,1);
+    lsSet(getActiveWeekKey(),weekActives);
+    // also remove from activeLogs
+    const ai=activeLogs.findIndex(e=>e.date===date);
+    if(ai>-1) activeLogs.splice(ai,1);
+    lsSet('jodee-actives',activeLogs);
+    confirmedActive=null;
+    ['retinol','reedle','bha','recovery'].forEach(k=>{const el=document.getElementById('ca-'+k);if(el){el.className='supp-btn';el.style.borderColor='';el.style.color='';}});
+    refreshActiveConfirmUI();
+    renderActiveTracker();
+    renderDashboard();
+  }
+
+  function renderActiveTracker(){
+    const grid=document.getElementById('active-week-grid');
+    if(!grid) return;
+    const SHORT7=['MON','TUE','WED','THU','FRI','SAT','SUN'];
+    const start=new Date(now); start.setDate(now.getDate()-(dow===0?6:dow-1));
+    const weekActives=getWeekActives();
+    const days=Array.from({length:7},(_,i)=>{
+      const d=new Date(start); d.setDate(start.getDate()+i);
+      return d.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    });
+    const activeColor={retinol:'var(--mustard)',reedle:'var(--green)',bha:'#8870c0',recovery:'var(--border2)'};
+    const activeEmoji={retinol:'🟡',reedle:'🟢',bha:'🟣',recovery:'💤'};
+    grid.innerHTML=days.map((d,i)=>{
+      const dayActive=weekActives.find(e=>e.date===d);
+      const isToday=i===(dow===0?6:dow-1);
+      const isFuture=i>(dow===0?6:dow-1);
+      const color=dayActive?activeColor[dayActive.active]:'var(--border2)';
+      const emoji=dayActive?activeEmoji[dayActive.active]:'';
+      const todayStyle=isToday&&!dayActive?'border-color:var(--mustard);border-style:dashed;':'';
+      const todayClass=isToday&&!dayActive?'pulse-today':'';
+      return `<div style="text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:0.06em;color:${isToday?'var(--mustard)':'var(--text-muted)'};margin-bottom:4px;">${SHORT7[i]}</div>
+        <div class="${todayClass}" style="width:100%;aspect-ratio:1;border-radius:50%;border:2px solid ${color};background:${dayActive?color+'22':'var(--bg3)'};display:flex;align-items:center;justify-content:center;font-size:12px;${todayStyle} ${isFuture&&!dayActive?'opacity:0.3;':''}">${emoji||''}</div>
+      </div>`;
+    }).join('');
+
+    // targets
+    const targets=document.getElementById('active-targets');
+    if(!targets) return;
+    const counts={retinol:0,reedle:0,bha:0,recovery:0};
+    weekActives.forEach(e=>{if(counts[e.active]!==undefined) counts[e.active]++;});
+    targets.innerHTML=Object.entries(ACTIVE_TARGETS).map(([k,t])=>{
+      const c=counts[k]; const pct=Math.min((c/t.max)*100,100);
+      const status=c<t.min?`<span style="color:var(--maroon);font-size:10px;">${t.min-c} more needed</span>`:c>=t.max?`<span style="color:var(--mustard);font-size:10px;">capped ✓</span>`:`<span style="color:var(--text-muted);font-size:10px;">${t.max-c} left</span>`;
+      return `<div style="padding:10px 0;border-bottom:1px solid var(--bg3);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <div style="font-size:13px;font-weight:500;">${t.emoji} ${t.label}</div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${t.color};">${c}/${t.max}</span>${status}</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:2px;height:4px;overflow:hidden;">
+          <div style="width:${pct}%;height:100%;background:${t.color};border-radius:2px;transition:width 0.4s;"></div>
+        </div>
+      </div>`;
+    }).join('')+`<div style="padding:10px 0 0;font-size:11px;color:var(--text-muted);">💤 Recovery nights: ${counts.recovery} this week · min 2 needed</div>`;
+  }
+
+  // ── LIFE DASHBOARD ──
+  function renderDashboard(){
+    const grid=document.getElementById('dashboard-grid');
+    if(!grid) return;
+
+    // Sleep data
+    const todayDate=now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+    const lastSleep=sleepLogs[0]||null;
+    const sleepHrs=lastSleep?lastSleep.hrs:null;
+    const sleepColor=!sleepHrs?'var(--text-muted)':sleepHrs>=7?'var(--green-lt)':sleepHrs>=6?'var(--mustard)':'var(--maroon-lt)';
+    const sleepBorder=!sleepHrs?'var(--border2)':sleepHrs>=7?'var(--green)':sleepHrs>=6?'var(--mustard)':'var(--maroon)';
+
+    // Water
+    const waterKey='jodee-water-'+now.toISOString().slice(0,10);
+    const waterDone=lsGet(waterKey,[]).length;
+    const waterPct=(waterDone/8)*100;
+    const waterColor=waterDone>=6?'var(--green)':waterDone>=4?'var(--mustard)':'var(--maroon)';
+
+    // Coke
+    const cokeD=loadCokeData();
+    const cokeColor=cokeD.total===0?'var(--text-muted)':cokeD.total<=1?'var(--green)':cokeD.total<=3?'var(--mustard)':'var(--maroon-lt)';
+    const cokeBorder=cokeD.total===0?'var(--border2)':cokeD.total<=1?'var(--green)':cokeD.total<=3?'var(--mustard)':'var(--maroon)';
+
+    // Movement
+    const weekMoves=getWeekMovements();
+    const moveCount=weekMoves.filter(d=>d.length>0).length;
+    const moveColor=moveCount===0?'var(--maroon)':moveCount===1?'var(--mustard)':'var(--green)';
+    const moveBorder=moveColor;
+    const todayMoveArr=weekMoves[dow===0?6:dow-1]||[];
+    const todayMove=todayMoveArr[0];
+    const moveEmoji={pilates:'🧘',walk:'🚶',bike:'🚴',stretch:'🤸',other:'💪'};
+
+    // Last active
+    const lastActive=activeLogs[0]||null;
+    const activeEmoji2={retinol:'🟡 Retinol',reedle:'🟢 Reedle',bha:'🟣 BHA',recovery:'💤 Recovery'};
+
+    // Next chore
+    const nextChore=choreList[0]||null;
+
+    const tileStyle=(border)=>`background:var(--card);border:1px solid ${border};border-radius:10px;padding:16px;cursor:pointer;transition:transform 0.15s;box-shadow:0 0 12px ${border}22;`;
+
+    const ringPath=(pct,color,size=80)=>{
+      const r=size/2-7; const circ=2*Math.PI*r;
+      const offset=circ-(pct/100)*circ;
+      return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+        <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--bg3)" stroke-width="7"/>
+        <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="7"
+          stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"
+          transform="rotate(-90 ${size/2} ${size/2})" style="filter:drop-shadow(0 0 6px ${color});transition:stroke-dashoffset 0.5s;"/>
+      </svg>`;
+    };
+
+    grid.innerHTML = `
+      <!-- Sleep -->
+      <div style="${tileStyle(sleepBorder)}" onclick="goTab('sleep')">
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:0.14em;color:var(--text-muted);">SLEEP</div>
+          <div style="font-size:14px;">😴</div>
+        </div>
+        <div style="display:flex;justify-content:center;margin-bottom:6px;position:relative;">
+          ${ringPath(sleepHrs?(sleepHrs/9)*100:0,sleepColor)}
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:${sleepColor};">${sleepHrs?sleepHrs+'h':'—'}</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--text-muted);text-align:center;">${lastSleep?lastSleep.q==='good'?'Good 😌':lastSleep.q==='bad'?'Rough 😞':'Okay 😴':'Not logged'}</div>
+      </div>
+
+      <!-- Water -->
+      <div style="${tileStyle(waterColor)}" onclick="goTab('drinks')">
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:0.14em;color:var(--text-muted);">WATER</div>
+          <div style="font-size:14px;">💧</div>
+        </div>
+        <div style="display:flex;justify-content:center;margin-bottom:6px;position:relative;">
+          ${ringPath(waterPct,waterColor)}
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:${waterColor};">${waterDone}/8</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--text-muted);text-align:center;">${waterDone>=8?'All done ✓':8-waterDone+' more to go'}</div>
+      </div>
+
+      <!-- Coke + Chore — side by side -->
+      ${(()=>{
+        const choreCount=choreList.length;
+        const choreBorder=choreCount===0?'var(--green)':choreCount<=2?'var(--mustard)':'var(--maroon)';
+        const choreGlow=choreCount===0?'0 0 10px #0d8a7a22':choreCount<=2?'0 0 10px #e8b02022':'var(--maroon-glow)';
+        const choreColor=choreCount===0?'var(--green-lt)':choreCount<=2?'var(--mustard)':'var(--maroon-lt)';
+        const completedChores=lsGet('jodee-chores-done-'+now.toISOString().slice(0,7),[]).length;
+        const choreDots=Math.min(choreCount,5);
+        const dotsHtml=Array.from({length:choreDots},()=>`<div style="width:8px;height:8px;border-radius:50%;background:${choreColor};box-shadow:0 0 4px ${choreColor};flex-shrink:0;"></div>`).join('');
+        const choreStatus=choreCount===0?`<div style="font-size:10px;color:var(--green-lt);">${completedChores>0?completedChores+' done this week ✓':'Nothing pending'}</div>`:`<div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:4px;">${dotsHtml}</div><div style="font-size:10px;color:${choreColor};">${choreCount} pending${choreCount>=3?' · clear the backlog':''}</div>`;
+        const cokeStatus=cokeD.total===0?'4 left this week':cokeD.total<=1?'3 left · on track ✓':cokeD.total===2?'2 left · doing well':cokeD.total===3?'1 left · watch it':cokeD.total>4?`${Math.round((cokeD.total-4)*10)/10} over ⚠`:'limit reached';
+        return `
+        <div style="background:var(--card);border:1px solid ${cokeBorder};border-radius:10px;padding:14px;cursor:pointer;display:flex;flex-direction:column;min-height:120px;box-shadow:0 0 10px ${cokeBorder}22;" onclick="goTab('drinks')">
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:0.14em;color:var(--text-muted);">COKE ZERO</div>
+            <div style="font-size:13px;">🥤</div>
+          </div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;color:${cokeColor};text-shadow:0 0 10px ${cokeColor};">${cokeD.total}</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">of 4 this week</div>
+          <div style="background:var(--bg3);border-radius:3px;height:4px;overflow:hidden;margin:8px 0 4px;">
+            <div style="width:${Math.min((cokeD.total/4)*100,100)}%;height:100%;border-radius:3px;background:${cokeColor};box-shadow:0 0 6px ${cokeColor};transition:width 0.5s;"></div>
+          </div>
+          <div style="flex:1;"></div>
+          <div style="font-size:10px;color:${cokeColor};">${cokeStatus}</div>
+        </div>
+        <div style="background:var(--card);border:1px solid ${choreBorder};border-radius:10px;padding:14px;cursor:pointer;display:flex;flex-direction:column;min-height:120px;box-shadow:${choreGlow};" onclick="goTab('chores')">
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:0.14em;color:var(--text-muted);">NEXT CHORE</div>
+            <div style="font-size:13px;">🧹</div>
+          </div>
+          <div style="font-size:12px;font-weight:500;color:${choreCount===0?'var(--green-lt)':'var(--text)'};line-height:1.4;margin-bottom:4px;">${nextChore?nextChore.text:'All clear!'}</div>
+          ${choreCount>0&&choreCount>1?`<div style="font-size:10px;color:var(--text-muted);margin-bottom:6px;">${choreCount-1} more in backlog</div>`:''}
+          <div style="flex:1;"></div>
+          ${choreStatus}
+        </div>`;
+      })()}
+
+      <!-- Movement — wide -->
+      <div style="${tileStyle(moveBorder)}grid-column:span 2;" onclick="goTab('exercise')">
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:0.14em;color:var(--text-muted);">MOVEMENT THIS WEEK</div>
+          <div style="font-size:14px;">🏃</div>
+        </div>
+        <div style="display:flex;gap:0;margin-bottom:10px;">
+          ${['MON','TUE','WED','THU','FRI','SAT','SUN'].map((d,i)=>{
+            const dayMoves=weekMoves[i]||[];
+            const hasMove=dayMoves.length>0;
+            const isToday=i===(dow===0?6:dow-1);
+            const isFuture=i>(dow===0?6:dow-1);
+            const mt=hasMove?dayMoves[0].moveType:null;
+            const em=mt?moveEmoji[mt]:'';
+            return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div class="${isToday&&!hasMove?'pulse-today':''}" style="width:30px;height:30px;border-radius:50%;border:2px solid ${hasMove?moveColor:'var(--border2)'};background:${hasMove?moveColor+'22':'var(--bg3)'};display:flex;align-items:center;justify-content:center;font-size:13px;${isToday&&!hasMove?'border-color:var(--mustard);':''} ${isFuture&&!hasMove?'opacity:0.25;':''}">${em||''}</div>
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:9px;letter-spacing:0.06em;color:${isToday?'var(--mustard)':'var(--text-muted)'};">${d}</div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid var(--border);">
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${moveColor};text-shadow:0 0 10px ${moveColor};">${moveCount}x</div>
+            <div style="font-size:10px;color:var(--text-muted);">this week</div>
+          </div>
+          <div style="text-align:right;">
+            ${weekMoves.map((d,i)=>d.length>0?`<div style="font-size:11px;color:var(--text-soft);">${moveEmoji[d[0].moveType]||'💪'} ${d[0].moveType.charAt(0).toUpperCase()+d[0].moveType.slice(1)} · ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i]}</div>`:''). filter(Boolean).join('')||`<div style="font-size:11px;color:var(--text-muted);">No sessions yet</div>`}
+          </div>
+        </div>
+      </div>
+
+      <!-- Actives Trail — wide, full 5-night view -->
+      <div style="${tileStyle('var(--border2)')}grid-column:span 2;" onclick="goTab('skincare')">
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:0.14em;color:var(--text-muted);">SKINCARE ACTIVES · LAST 5 NIGHTS</div>
+          <div style="font-size:14px;">✨</div>
+        </div>
+        ${(()=>{
+          const aColor={retinol:'var(--mustard)',reedle:'var(--green)',bha:'#8870c0',recovery:'var(--border2)'};
+          const aEmoji={retinol:'🟡',reedle:'🟢',bha:'🟣',recovery:'💤'};
+          const days5=Array.from({length:5},(_,i)=>{
+            const d=new Date(now); d.setDate(now.getDate()-(4-i));
+            return {label:['SUN','MON','TUE','WED','THU','FRI','SAT'][d.getDay()], date:d.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'})};
+          });
+          const weekActives=getWeekActives();
+          const todayDate=now.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+          const isToday=(date)=>date===todayDate;
+          const trailDots=days5.map((d,i)=>{
+            const entry=weekActives.find(e=>e.date===d.date)||activeLogs.find(e=>e.date===d.date);
+            const color=entry?aColor[entry.active]:'var(--border2)';
+            const emoji=entry?aEmoji[entry.active]:'';
+            const isT=isToday(d.date);
+            const connector=i<4?`<div style="flex:1;height:1px;background:var(--border2);margin-bottom:18px;"></div>`:'';
+            return `<div style="display:flex;align-items:center;flex:1;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div class="${isT&&!entry?'pulse-today':''}" style="width:26px;height:26px;border-radius:50%;border:2px solid ${color};background:${entry?color+'22':'var(--bg3)'};display:flex;align-items:center;justify-content:center;font-size:11px;${isT&&!entry?'border-color:var(--mustard);border-style:dashed;':''}">${emoji||''}</div>
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:9px;letter-spacing:0.06em;color:${isT?'var(--mustard)':'var(--text-muted)'};">${d.label}</div>
+              </div>
+              ${connector}
+            </div>`;
+          }).join('');
+          const last=activeLogs[0];
+          const activeLabel={retinol:'Retinol',reedle:'Reedle',bha:'BHA',recovery:'Recovery'};
+          const activeColor2={retinol:'var(--mustard)',reedle:'var(--green-lt)',bha:'#8870c0',recovery:'var(--text-muted)'};
+          // smart week-aware suggestion
+          const counts={retinol:0,reedle:0,bha:0,recovery:0};
+          weekActives.forEach(e=>{if(counts[e.active]!==undefined)counts[e.active]++;});
+          const todayLogged=weekActives.find(e=>e.date===todayDate);
+          let nextSuggestion='Open Skincare';
+          if(!todayLogged){
+            const lastA=activeLogs[0];
+            const lastType=lastA?lastA.active:null;
+            // never repeat same active two nights in a row
+            // prioritise what's short on minimum first
+            if(lastType==='retinol'||lastType==='bha'){
+              // after retinol or BHA → reedle if not capped, else recovery
+              if(counts.reedle<2) nextSuggestion='→ Reedle tonight';
+              else if(counts.retinol<2) nextSuggestion='→ Retinol tonight';
+              else nextSuggestion='→ Recovery tonight';
+            } else if(lastType==='reedle'){
+              // after reedle → retinol if not capped, else recovery
+              if(counts.retinol<3) nextSuggestion='→ Retinol tonight';
+              else if(counts.bha<2) nextSuggestion='→ BHA tonight';
+              else nextSuggestion='→ Recovery tonight';
+            } else if(lastType==='recovery'||!lastType){
+              // after recovery or no history → whatever is most behind
+              if(counts.retinol<2) nextSuggestion='→ Retinol tonight';
+              else if(counts.reedle<1) nextSuggestion='→ Reedle tonight';
+              else if(counts.retinol<3) nextSuggestion='→ Retinol tonight';
+              else nextSuggestion='→ Recovery tonight';
+            }
+            // hard caps
+            if(counts.retinol>=3&&nextSuggestion.includes('Retinol')) nextSuggestion=counts.reedle<2?'→ Reedle tonight':'→ Recovery tonight';
+            if(counts.reedle>=2&&nextSuggestion.includes('Reedle')) nextSuggestion=counts.retinol<3?'→ Retinol tonight':'→ Recovery tonight';
+          } else {
+            nextSuggestion=`✓ ${activeLabel[todayLogged.active]} logged`;
+          }
+          const textRow=last?`
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border);margin-top:4px;">
+              <div style="font-size:11px;color:var(--text-soft);">Last: <strong style="color:${activeColor2[last.active]}">${activeLabel[last.active]}</strong></div>
+              <div style="font-size:11px;color:var(--mustard);">${nextSuggestion}</div>
+            </div>`:'<div style="font-size:11px;color:var(--text-muted);margin-top:8px;">No actives logged yet</div>';
+          return `<div style="display:flex;align-items:center;">${trailDots}</div>${textRow}`;
+        })()}
+      </div>
+
+    `;
+  }
 
   // ── NIGHT PICKER ──
   let skinState='okay', lastActive='last';
@@ -2085,9 +3252,10 @@
   // Recovery: procedures Apr 24 2026
   const PROCEDURE_DATE = new Date('2026-04-24');
   const daysSince = Math.floor((now - PROCEDURE_DATE)/(1000*60*60*24));
-  const inRecovery = daysSince < 14;
+  const inRecovery = false; // skin fully healed — actives can resume
+  const piercingCare = true; // piercing care continues 6 months
 
-  if(!inRecovery) document.getElementById('recovery-banner').style.display='none';
+  // recovery banner always shown — still recovering piercings + monitoring results
 
   document.getElementById('date-line').textContent =
     now.toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
@@ -2111,37 +3279,37 @@
   function buildTodayItems(){
     const hw=HAIR_WASH_DAYS.includes(dow);
     const dc=DEEP_CLEAN_DAY.includes(dow);
-    const ex=EXERCISE_DAYS.includes(dow);
     const items=[
       // ── WAKE UP (11am–12pm) ──
       {text:'Wake up + drink a glass of water', note:'Target: 11AM–12PM · before anything else'},
       {text:'Lacto-Fit Eve probiotic', note:'Take now · empty stomach · before eating anything · powder stick'},
-      {text:'Morning skincare', note: inRecovery?'Recovery: gentle mist + barrier cream + SPF · no actives · no face wash':'Vitamin C → moisturizer → SPF'},
-      ...(inRecovery?[{text:'Piercing care — hypochlorous acid spray', note:'Morning clean · both piercings'}]:[]),
+      {text:'Morning skincare', note:'AM routine — Tower 28 → d\'Alba → Dr. Althea → Dr. G → SPF'},
+      ...(piercingCare?[{text:'Piercing care — hypochlorous acid spray', note:'Morning clean · both piercings · 6 month healing'}]:[]),
       // ── AFTERNOON (1–5pm) ──
       {text:'Eat a proper first meal', note:'Your "breakfast" — eat properly before taking meds'},
-      {text:'Morning meds (아침 pack)', warn: inRecovery?'엠피디엘정 + 인데놀정 + 미노씬캡슐 — always after food':'Check if 3-day course is complete'},
-      {text: hw?(dc?'Hair wash — Dr. For Hair (deep clean)':'Hair wash — Aromatica (color-safe)'):'Hair refresh (no wash today)',
-       note: hw?(dc?'Deep clean day · scalp reset · once/week max':'Standard wash · Unove treatment · cold rinse'):'Dry shampoo if needed · Aromatica spray optional'},
-      {text:'Labo-H Hairline Ampoule', note:'Daily · apply after hair routine'},
+      {text:'Anti-depressant · 2PM', note:'Once daily · take with or after food'},
       {text:'BB Lab Collagen', note:'Anytime · can take with your first meal'},
       ...(dow===2?[{text:'Pilates · 11AM', note:'Your Tuesday class · set an alarm the night before'}]:[]),
+      ...(dow===2?[{text:'Post-Pilates meal', note:'Eat properly after class · protein + carbs to recover · don\'t skip this'}]:[]),
+      {text:'Labo-H Hairline Ampoule', note:'Daily · apply after hair routine'},
       ...(OUTSIDE_DAYS.includes(dow)?[{text:'Go outside today', note:'Afternoon window · café, walk, errands on foot'}]:[]),
       ...(LAUNDRY_DAYS.includes(dow)?[{text:'Laundry day', note:'Get it going in the afternoon'}]:[]),
       // ── PRE-WORK WIND-UP (5–7pm) ──
       {text:'Water check: 4 glasses by 6PM', note:'See Water tab · adjust for your wake time'},
       {text:'Second meal / pre-work food', note:'Eat properly before your shift starts · fuel up'},
-      {text:'Ginseng (if needed today)', note:'Take by 6PM max · not later than that · check Supplements tab'},
-      // ── WORK (7–9pm actual start, target 7pm) ──
+      {text:'Ginseng (if needed today)', note:'Take by 6PM max · not later · check Supplements tab'},
+      // ── HAIR (evening, before/after bath) ──
+      {text: hw?(dc?'Hair wash — Dr. For Hair (deep clean)':'Hair wash — Aromatica or Unove (your choice)'):'Hair refresh (no wash today)',
+       note: hw?(dc?'Deep clean day · scalp reset · once/week max · Ayunche bonding cream after':'Standard wash · conditioner OR Unove (not both) · Ayunche bonding cream after'):'Dry shampoo if needed · Aromatica spray optional'},
+      // ── WORK ──
       {text:'Start work by 9PM', note:'Target is 7PM · even starting at 8:30 gives you more breathing room'},
       // ── DURING SHIFT ──
       {text:'Water goal: 8 glasses by 2AM', note:'Spread across your shift · keep a water bottle at your desk'},
       {text:'Hobby or content time', note:'Carve out even 20 min during a break · protect this'},
       // ── WIND DOWN (2–3am) ──
-      {text:'Evening meds (저녁 pack)', warn: inRecovery?'엠피디엘정 + 인데놀정 + 미노씬캡슐 — eat something first':'Check if 3-day course is complete'},
       {text:'Magnesium (if taking tonight)', note:'1–2 hours before sleep target · check Supplements tab'},
-      {text:'Evening skincare', note: inRecovery?'Recovery: gentle cleanse + barrier cream · no actives':'PM routine — check Skincare tab for tonight\'s type'},
-      ...(inRecovery?[{text:'Piercing care — hypochlorous acid spray', note:'Night clean · both piercings'}]:[]),
+      {text:'Evening skincare', note:'PM routine — check Skincare tab for tonight\'s active or recovery'},
+      ...(piercingCare?[{text:'Piercing care — hypochlorous acid spray', note:'Night clean · both piercings · 6 month healing'}]:[]),
       ...(RESET_DAYS.includes(dow)?[{text:'Room reset — 20 min tidy', note:'Sunday reset · set yourself up for the week'}]:[]),
       {text:'Wind down — screens off, wrap up', note:'Target: asleep by 3AM · no later than 4AM'},
     ];
@@ -2155,12 +3323,15 @@
   function buildChecklist(){
     const items=buildTodayItems();
     const c=document.getElementById('today-checklist');
+    const todayKey='jodee-checklist-'+now.toISOString().slice(0,10);
+    const saved=lsGet(todayKey,[]);
     c.innerHTML='';
     items.forEach((item,i)=>{
       const div=document.createElement('div');
       div.className='card'; div.style.marginBottom='8px';
-      div.innerHTML=`<ul class="checklist"><li onclick="toggleItem(this)" id="ti-${i}">
-        <div class="check-box"></div>
+      const isDone=saved.includes(i);
+      div.innerHTML=`<ul class="checklist"><li onclick="toggleItem(this,${i},'${todayKey}')" id="ti-${i}" class="${isDone?'done':''}">
+        <div class="check-box">${isDone?'✓':''}</div>
         <div>
           <div class="item-text">${item.text}</div>
           ${item.note?`<div class="item-note">${item.note}</div>`:''}
@@ -2172,9 +3343,14 @@
     updateProgress();
   }
 
-  function toggleItem(el){
+  function toggleItem(el,i,key){
     el.classList.toggle('done');
     el.querySelector('.check-box').textContent=el.classList.contains('done')?'✓':'';
+    // save state
+    const saved=lsGet(key,[]);
+    if(el.classList.contains('done')){ if(!saved.includes(i)) saved.push(i); }
+    else { const idx=saved.indexOf(i); if(idx>-1) saved.splice(idx,1); }
+    lsSet(key,saved);
     updateProgress();
   }
   function toggle(el){
@@ -2207,17 +3383,44 @@
   }
   function buildWater(){
     const z=getZone();
+    // load saved state
+    const waterKey='jodee-water-'+now.toISOString().slice(0,10);
+    const saved=lsGet(waterKey,[]);
     document.getElementById('water-rows').innerHTML=WS.map((r,i)=>`
       <div class="water-time-row">
         <div class="water-time">${r.time}</div>
         <div class="water-label">${r.label}</div>
-        <div class="cup ${i<z?'filled':''} ${i===z?'current-zone':''}" onclick="toggleCup(this)"></div>
+        <div class="cup ${saved.includes(i)?'filled':''} ${i===z?'current-zone':''}" onclick="toggleCup(this,${i},'${waterKey}')"></div>
       </div>`).join('');
     updateWaterCount();
   }
-  function toggleCup(el){el.classList.toggle('filled');updateWaterCount();}
+  function toggleCup(el,i,key){
+    el.classList.toggle('filled');
+    const saved=lsGet(key,[]);
+    if(el.classList.contains('filled')){ if(!saved.includes(i)) saved.push(i); }
+    else { const idx=saved.indexOf(i); if(idx>-1) saved.splice(idx,1); }
+    lsSet(key,saved);
+    updateWaterCount();
+    renderDashboard();
+  }
   function updateWaterCount(){
     document.getElementById('water-count').textContent=document.querySelectorAll('.cup.filled').length+' / 8';
+  }
+
+  function resetToday(){
+    // clear checklist
+    const todayKey='jodee-checklist-'+now.toISOString().slice(0,10);
+    lsSet(todayKey,[]);
+    document.querySelectorAll('[id^="ti-"]').forEach(li=>{
+      li.classList.remove('done');
+      const cb=li.querySelector('.check-box');
+      if(cb && !cb.style.borderColor) cb.textContent='';
+    });
+    // clear water
+    const waterKey='jodee-water-'+now.toISOString().slice(0,10);
+    lsSet(waterKey,[]);
+    document.querySelectorAll('.cup').forEach(c=>c.classList.remove('filled'));
+    updateProgress(); updateWaterCount();
   }
 
   function buildHairToday(){
@@ -2251,33 +3454,66 @@
     }).join('');
   }
 
+  // ── DRAWER NAVIGATION ──
+  function toggleDrawer(){
+    const open = document.getElementById('drawer').classList.contains('open');
+    open ? closeDrawer() : openDrawer();
+  }
+  function openDrawer(){
+    document.getElementById('drawer').classList.add('open');
+    document.getElementById('drawer-overlay').classList.add('visible');
+    document.getElementById('menu-btn').classList.add('open');
+  }
+  function closeDrawer(){
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('drawer-overlay').classList.remove('visible');
+    document.getElementById('menu-btn').classList.remove('open');
+  }
+  function drawerNav(id, label, el){
+    // update sections
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.getElementById('tab-'+id).classList.add('active');
+    // update drawer active state
+    document.querySelectorAll('.drawer-row').forEach(r=>r.classList.remove('active'));
+    el.classList.add('active');
+    // update top bar label
+    document.getElementById('top-bar-name').textContent = label;
+    // today button
+    const todayBtn = document.getElementById('today-btn');
+    if(id==='today') todayBtn.classList.remove('visible');
+    else todayBtn.classList.add('visible');
+    // close drawer after short delay
+    setTimeout(closeDrawer, 200);
+  }
+
   function switchTab(id,btn){
     document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     document.getElementById('tab-'+id).classList.add('active');
-    btn.classList.add('active');
-    // show "back to today" button when not on today tab
+    if(btn) btn.classList.add('active');
     const todayBtn = document.getElementById('today-btn');
     if(id==='today') todayBtn.classList.remove('visible');
     else todayBtn.classList.add('visible');
   }
   function goToday(){
     document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     document.getElementById('tab-today').classList.add('active');
-    document.querySelector('.tab').classList.add('active');
+    document.querySelectorAll('.drawer-row').forEach(r=>r.classList.remove('active'));
+    const dr=document.getElementById('dr-today'); if(dr) dr.classList.add('active');
+    document.getElementById('top-bar-name').textContent='✅ Today';
     document.getElementById('today-btn').classList.remove('visible');
   }
 
-  function resetToday(){
-    document.querySelectorAll('.checklist li').forEach(li=>{
-      li.classList.remove('done');
-      const cb=li.querySelector('.check-box');
-      if(cb&&!cb.style.borderColor.includes('maroon')&&!cb.style.color.includes('green'))
-        cb.textContent='';
-    });
-    document.querySelectorAll('.cup').forEach(c=>c.classList.remove('filled'));
-    updateProgress(); updateWaterCount();
+  function goTab(id){
+    const labels={sleep:'😴 Sleep',drinks:'💧 Drinks',exercise:'🏃 Exercise',skincare:'✨ Skincare',chores:'🧹 Chores',food:'🍽 Food',hair:'🌿 Hair',supplements:'💊 Supplements',content:'🎥 Content',week:'📅 Week',monthly:'🗓 Monthly',patterns:'📊 Patterns',recovery:'⚕ Recovery',today:'✅ Today',focus:'🎯 Focus'};
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    const sec=document.getElementById('tab-'+id); if(sec) sec.classList.add('active');
+    document.querySelectorAll('.drawer-row').forEach(r=>r.classList.remove('active'));
+    const dr=document.getElementById('dr-'+id); if(dr) dr.classList.add('active');
+    if(labels[id]) document.getElementById('top-bar-name').textContent=labels[id];
+    const todayBtn=document.getElementById('today-btn');
+    if(id==='today') todayBtn.classList.remove('visible');
+    else todayBtn.classList.add('visible');
   }
 
   // ── SUPPLEMENTS ──
@@ -2355,7 +3591,9 @@
   // ── SETTINGS / EXPORT / IMPORT ──
   const DATA_KEYS = [
     'jodee-skinlogs', 'jodee-sleeplogs', 'jodee-restlogs',
-    'jodee-foodlogs', 'jodee-content', 'jodee-chores'
+    'jodee-foodlogs', 'jodee-content', 'jodee-chores',
+    'jodee-movement', 'jodee-actives', 'jodee-supplogs',
+    'jodee-workoutlogs', 'jodee-koreanlogs'
   ];
 
   function exportData() {
@@ -2436,7 +3674,106 @@
       `</div>`;
   }
 
-  // ── PATTERNS DASHBOARD ──
+  // ── SUPPLEMENT LOG ──
+  const SUPPS = [
+    {id:'probiotic', label:'Lacto-Fit Probiotic', emoji:'💊', type:'core'},
+    {id:'collagen',  label:'BB Lab Collagen',     emoji:'🍊', type:'core'},
+    {id:'ginseng',   label:'Ginseng K-Energy',    emoji:'🌿', type:'conditional'},
+    {id:'magnesium', label:'Magnesium',            emoji:'🌙', type:'conditional'},
+  ];
+  const suppLogs = lsGet('jodee-supplogs', []);
+  let suppTicked = {probiotic:false, collagen:false, ginseng:false, magnesium:false};
+
+  function renderSuppDailyTicks(){
+    const todayKey = now.toISOString().slice(0,10);
+    const todayLog = suppLogs.find(e=>e.date===todayKey);
+    const el = document.getElementById('supp-daily-ticks');
+    const saveBtn = document.querySelector('[onclick="saveSuppLog()"]');
+    const savedEl = document.getElementById('supp-log-saved');
+    const lockedEl = document.getElementById('supp-log-locked');
+    if(todayLog){
+      suppTicked = {...todayLog.taken};
+      if(saveBtn) saveBtn.style.display='none';
+      if(lockedEl) lockedEl.style.display='block';
+    }
+    el.innerHTML = SUPPS.map(s=>{
+      const checked = todayLog ? todayLog.taken[s.id] : suppTicked[s.id];
+      const color = s.type==='core' ? 'var(--green)' : 'var(--mustard)';
+      const dimColor = s.type==='core' ? 'var(--green-dim)' : 'var(--mustard-dim)';
+      return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border2);" 
+        onclick="${todayLog?'':'"toggleSupp(\''+s.id+'\')"'}" style="cursor:${todayLog?'default':'pointer'}">
+        <div id="supp-tick-${s.id}" style="width:22px;height:22px;border-radius:4px;border:1.5px solid ${checked?color:'var(--border2)'};background:${checked?dimColor:'transparent'};display:flex;align-items:center;justify-content:center;font-size:12px;color:${color};flex-shrink:0;cursor:${todayLog?'default':'pointer'};" onclick="${todayLog?'':'toggleSupp(\''+s.id+'\')'}">${checked?'✓':''}</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;">${s.emoji} ${s.label}</div>
+          <div style="font-size:10px;color:var(--text-muted);">${s.type==='core'?'Daily · always':'Conditional · as needed'}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function toggleSupp(id){
+    const todayKey = now.toISOString().slice(0,10);
+    if(suppLogs.find(e=>e.date===todayKey)) return; // locked
+    suppTicked[id] = !suppTicked[id];
+    renderSuppDailyTicks();
+  }
+
+  function saveSuppLog(){
+    const todayKey = now.toISOString().slice(0,10);
+    if(suppLogs.find(e=>e.date===todayKey)) return;
+    suppLogs.unshift({date:todayKey, dow, taken:{...suppTicked}, id:Date.now()});
+    lsSet('jodee-supplogs', suppLogs);
+    document.getElementById('supp-log-saved').style.display='block';
+    setTimeout(()=>{ document.getElementById('supp-log-saved').style.display='none'; renderSuppDailyTicks(); renderSuppPatterns(); }, 1000);
+  }
+
+  function renderSuppPatterns(){
+    const el = document.getElementById('pat-supp-grid');
+    if(!el) return;
+    const DAYS7 = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+    const start = new Date(now); start.setDate(now.getDate()-(dow===0?6:dow-1));
+    const days7 = Array.from({length:7},(_,i)=>{
+      const d = new Date(start); d.setDate(start.getDate()+i);
+      return d.toISOString().slice(0,10);
+    });
+
+    const rows = SUPPS.map(s=>{
+      const color = s.type==='core'?'var(--green)':'var(--mustard)';
+      const dots = days7.map((d,i)=>{
+        const log = suppLogs.find(e=>e.date===d);
+        const taken = log ? log.taken[s.id] : null;
+        const isToday = i===(dow===0?6:dow-1);
+        const isFuture = i>(dow===0?6:dow-1);
+        const bg = taken ? color : 'transparent';
+        const border = taken ? color : isFuture ? 'var(--border)' : 'var(--border2)';
+        return `<div style="width:100%;aspect-ratio:1;border-radius:3px;border:1.5px solid ${border};background:${bg};${isToday&&!log?'border-color:var(--mustard);':''}${taken?'box-shadow:0 0 4px '+color+';':''}"></div>`;
+      }).join('');
+      const takenCount = days7.filter(d=>{ const l=suppLogs.find(e=>e.date===d); return l&&l.taken[s.id]; }).length;
+      const logged = days7.filter(d=>suppLogs.find(e=>e.date===d)).length;
+      return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border2);">
+        <div style="font-size:13px;width:20px;text-align:center;">${s.emoji}</div>
+        <div style="font-size:11px;color:var(--text-soft);width:80px;flex-shrink:0;">${s.label.split(' ')[0]}</div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;flex:1;">${dots}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:${color};width:28px;text-align:right;">${takenCount}/${logged||'—'}</div>
+      </div>`;
+    }).join('');
+
+    el.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding-left:112px;padding-right:36px;margin-bottom:4px;">
+        ${DAYS7.map((d,i)=>`<div style="font-family:'Bebas Neue',sans-serif;font-size:8px;color:${i===(dow===0?6:dow-1)?'var(--mustard)':'var(--text-muted)'};text-align:center;letter-spacing:0.04em;">${d}</div>`).join('')}
+      </div>
+      ${rows}`;
+
+    // nudge
+    const nudgeEl = document.getElementById('pat-supp-nudge');
+    const probioticDays = days7.filter(d=>{ const l=suppLogs.find(e=>e.date===d); return l&&l.taken.probiotic; }).length;
+    const loggedDays = days7.filter(d=>suppLogs.find(e=>e.date===d)).length;
+    if(loggedDays >= 3){
+      if(probioticDays < loggedDays){ nudgeEl.style.display='block'; nudgeEl.textContent='💊 Probiotic consistency is low this week — it works best when taken daily on an empty stomach.'; }
+      else if(probioticDays === loggedDays){ nudgeEl.style.display='block'; nudgeEl.style.color='var(--green-lt)'; nudgeEl.textContent='✅ Probiotic streak going — keep it up.'; }
+      else nudgeEl.style.display='none';
+    } else nudgeEl.style.display='none';
+  }
   function getLastNDates(n) {
     return Array.from({length: n}, (_, i) => {
       const d = new Date(now);
@@ -2558,26 +3895,117 @@
         if(saved) cokeWeeks.push({week: w===0?'This week':w===1?'Last week':w+' weeks ago', data: JSON.parse(saved)});
       } catch(e) {}
     }
-    document.getElementById('pat-coke-stats').innerHTML = cokeWeeks.length
-      ? cokeWeeks.map(w=>{
-          const pct = Math.min((w.data.total/4)*100,100);
-          const color = w.data.total<=2?'var(--green)':w.data.total<=3?'var(--mustard)':'var(--maroon)';
-          return `<div style="margin-bottom:10px;">
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
-              <span style="color:var(--text-soft);">${w.week}</span>
-              <span style="color:${color};font-family:'Bebas Neue',sans-serif;font-size:14px;">${w.data.total} / 4 cans</span>
+    // ── WATER BARS ──
+    const waterDays = dates7.map(d => {
+      const key = 'jodee-water-' + (() => {
+        // convert en-PH date back to ISO for key lookup
+        const parts = d.match(/(\w+), (\w+) (\d+)/);
+        if (!parts) return '';
+        const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+        const dt = new Date(now.getFullYear(), months[parts[2]], parseInt(parts[3]));
+        return dt.toISOString().slice(0,10);
+      })();
+      const saved = lsGet(key, []);
+      return saved.length;
+    });
+
+    const todayIdx = dates7.length - 1;
+    const isoDates7 = Array.from({length:7}, (_,i) => {
+      const d = new Date(now); d.setDate(now.getDate() - (6-i));
+      return d.toISOString().slice(0,10);
+    });
+
+    const maxWater = Math.max(...waterDays, 8);
+    const DAYS7 = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+    const todayDowIdx = dow === 0 ? 6 : dow - 1;
+
+    document.getElementById('pat-water-bars').innerHTML = `
+      <div style="display:flex;gap:6px;align-items:flex-end;height:110px;margin-bottom:8px;padding-top:20px;">
+        ${waterDays.map((glasses, i) => {
+          const isToday = i === todayDowIdx;
+          const isFuture = i > todayDowIdx;
+          const pct = glasses > 0 ? Math.min((glasses / 8) * 100, 100) : 0;
+          const color = isFuture ? 'var(--border2)' : glasses >= 8 ? 'var(--green)' : glasses >= 4 ? 'var(--mustard)' : glasses > 0 ? 'var(--maroon)' : 'var(--border2)';
+          const glow = glasses >= 8 ? 'var(--green-glow)' : glasses >= 4 ? 'var(--mustard-glow)' : glasses > 0 ? 'var(--maroon-glow)' : 'none';
+          const numColor = glasses >= 8 ? 'var(--green-lt)' : glasses >= 4 ? 'var(--mustard)' : glasses > 0 ? 'var(--maroon-lt)' : 'var(--border2)';
+          const label = isFuture ? '' : glasses > 0 ? (isToday ? glasses + '→' : String(glasses)) : '—';
+          const barStyle = isToday ? `border:1.5px dashed ${color};background:${color}22;` : `background:${color};box-shadow:${glow};`;
+          return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;">
+            <div style="flex:1;width:100%;display:flex;align-items:flex-end;position:relative;">
+              ${label ? `<div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-family:'Bebas Neue',sans-serif;font-size:12px;color:${numColor};">${label}</div>` : ''}
+              <div style="width:100%;height:${isFuture ? '6px' : pct > 0 ? pct + '%' : '6px'};${barStyle}border-radius:4px 4px 0 0;min-height:4px;"></div>
             </div>
-            <div style="background:var(--bg3);border-radius:2px;height:6px;overflow:hidden;">
-              <div style="width:${pct}%;height:100%;background:${color};border-radius:2px;"></div>
-            </div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:9px;color:${isToday ? 'var(--mustard)' : 'var(--text-muted)'};">${DAYS7[i]}</div>
           </div>`;
-        }).join('')
-      : '<div style="font-size:13px;color:var(--text-muted);">No Coke Zero data yet — log from the Drinks tab.</div>';
+        }).join('')}
+      </div>`;
+
+    const loggedWater = waterDays.slice(0, todayDowIdx + 1).filter(g => g > 0);
+    const avgWater = loggedWater.length ? (loggedWater.reduce((a,b) => a+b, 0) / loggedWater.length).toFixed(1) : '—';
+    const goalDays = loggedWater.filter(g => g >= 8).length;
+    const lowestIdx = loggedWater.length ? waterDays.slice(0, todayDowIdx + 1).indexOf(Math.min(...loggedWater)) : -1;
+    const lowestLabel = lowestIdx >= 0 ? DAYS7[lowestIdx] : '—';
+
+    const waterColor = avgWater === '—' ? 'var(--text-muted)' : parseFloat(avgWater) >= 7 ? 'var(--green-lt)' : parseFloat(avgWater) >= 4 ? 'var(--mustard)' : 'var(--maroon-lt)';
+    document.getElementById('pat-water-card').style.borderColor = avgWater === '—' ? 'var(--border2)' : parseFloat(avgWater) >= 7 ? 'var(--green)' : parseFloat(avgWater) >= 4 ? 'var(--mustard)' : 'var(--maroon)';
+
+    document.getElementById('pat-water-stats').innerHTML = [
+      `<div style="background:var(--bg3);border-radius:4px;padding:10px;text-align:center;border:1px solid var(--border2);">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${waterColor};">${avgWater}</div>
+        <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Avg / day</div>
+      </div>`,
+      `<div style="background:var(--bg3);border-radius:4px;padding:10px;text-align:center;border:1px solid var(--border2);">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${goalDays > 0 ? 'var(--green-lt)' : 'var(--text-muted)'};">${goalDays}/${loggedWater.length||'—'}</div>
+        <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Goal days</div>
+      </div>`,
+      `<div style="background:var(--bg3);border-radius:4px;padding:10px;text-align:center;border:1px solid var(--border2);">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--maroon-lt);">${lowestLabel}</div>
+        <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Lowest day</div>
+      </div>`,
+    ].join('');
+
+    // nudge
+    const nudgeEl = document.getElementById('pat-water-nudge');
+    if(loggedWater.length >= 3) {
+      const weekendLow = [waterDays[5], waterDays[6]].filter(g=>g>0&&g<6).length >= 1;
+      const shiftLow = [waterDays[1],waterDays[2],waterDays[3],waterDays[4]].filter(g=>g>0&&g<6).length >= 2;
+      if(weekendLow) { nudgeEl.style.display='block'; nudgeEl.style.color='var(--mustard)'; nudgeEl.textContent='💧 Weekend water tends to be lower — keep a bottle nearby on your days off.'; }
+      else if(shiftLow) { nudgeEl.style.display='block'; nudgeEl.style.color='var(--mustard)'; nudgeEl.textContent='💧 You tend to drink less during shifts — try front-loading before 9PM.'; }
+      else if(goalDays === loggedWater.length) { nudgeEl.style.display='block'; nudgeEl.style.color='var(--green-lt)'; nudgeEl.textContent='✅ You\'ve hit your water goal every logged day this week. Keep it going.'; }
+      else nudgeEl.style.display='none';
+    } else nudgeEl.style.display='none';
+  }
+
+  function renderStreakTile(){
+    const el=document.getElementById('dash-streak-rows');
+    if(!el||typeof STREAK_DEFS==='undefined') return;
+    el.innerHTML=STREAK_DEFS.slice(0,2).map(def=>{
+      const {streak}=getStreak(def);
+      const dots=Array.from({length:7},(_,i)=>{
+        const d=new Date(now);d.setDate(now.getDate()-(6-i));
+        const iso=d.toISOString().slice(0,10);
+        const datePH=d.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+        const isToday=i===6;
+        const hit=checkStreakDay(def,iso,datePH);
+        return `<div style="width:100%;max-width:14px;aspect-ratio:1;border-radius:2px;background:${hit?def.color:'var(--bg3)'};border:1px solid ${hit?def.color:'var(--border2)'};${isToday&&!hit?'border-color:var(--mustard);':''}${hit?'box-shadow:0 0 3px '+def.color+';':''}"></div>`;
+      }).join('');
+      return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <div style="font-size:13px;width:18px;text-align:center;">${def.emoji}</div>
+        <div style="font-size:10px;color:var(--text-soft);width:64px;flex-shrink:0;">${def.label}</div>
+        <div style="display:flex;gap:3px;flex:1;">${dots}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${def.color};width:32px;text-align:right;">${streak}🔥</div>
+      </div>`;
+    }).join('');
   }
 
   buildChecklist(); buildWater(); buildHairToday(); buildWeekGrid();
   renderCoke(); renderSkinLogs(); renderSleepLogs(); renderContent(); renderChores(); renderFoodLog();
   renderPatterns(); renderRestRecommendation(); renderDataSummary();
+  renderMovementLog(); renderActiveTracker(); renderDashboard();
+  refreshActiveConfirmUI(); renderSuppDailyTicks(); renderSuppPatterns();
+  renderStreakTile(); renderWorkoutLog(); renderKoreanLog();
+  renderTutorSessionDisplay(); renderDayContextNotes();
+  if(!inRecovery) { const n=document.getElementById('skincare-recovery-note'); if(n) n.style.display='none'; }
 </script>
 </body>
 </html>
