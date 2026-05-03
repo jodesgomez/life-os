@@ -1145,7 +1145,7 @@
         <button class="supp-btn" id="mv-pilates" onclick="setMovement('pilates')">Pilates 🧘</button>
         <button class="supp-btn" id="mv-walk" onclick="setMovement('walk')">Walk 🚶</button>
         <button class="supp-btn" id="mv-bike" onclick="setMovement('bike')">Bike 🚴</button>
-        <button class="supp-btn" id="mv-stretch" onclick="setMovement('stretch')">Stretch 🤸</button>
+        <button class="supp-btn" id="mv-weights" onclick="setMovement('weights')">Weights 🏋️</button>
         <button class="supp-btn" id="mv-other" onclick="setMovement('other')">Other 💪</button>
       </div>
     </div>
@@ -2502,7 +2502,7 @@
 
   function setMovement(v){
     moveType=v;
-    ['pilates','walk','bike','stretch','other'].forEach(k=>{const el=document.getElementById('mv-'+k);if(el)el.className='supp-btn';});
+    ['pilates','walk','bike','weights','other'].forEach(k=>{const el=document.getElementById('mv-'+k);if(el)el.className='supp-btn';});
     const el=document.getElementById('mv-'+v); if(el) el.classList.add('active-m');
   }
   function setMoveDur(v){
@@ -2524,7 +2524,7 @@
     movementLogs.unshift(entry);
     lsSet('jodee-movement',movementLogs);
     moveType=null; moveDur=null; moveFeel=null;
-    ['pilates','walk','bike','stretch','other'].forEach(k=>{const el=document.getElementById('mv-'+k);if(el)el.className='supp-btn';});
+    ['pilates','walk','bike','weights','other'].forEach(k=>{const el=document.getElementById('mv-'+k);if(el)el.className='supp-btn';});
     ['20','30','45','60'].forEach(k=>{const el=document.getElementById('md-'+k);if(el)el.className='supp-btn';});
     ['easy','good','tough'].forEach(k=>{const el=document.getElementById('mf-'+k);if(el)el.className='supp-btn';});
     renderMovementLog();
@@ -2539,7 +2539,7 @@
   function renderMovementLog(){
     const el=document.getElementById('movement-log-list');
     if(!el) return;
-    const moveEmoji={pilates:'🧘',walk:'🚶',bike:'🚴',stretch:'🤸',other:'💪'};
+    const moveEmoji={pilates:'🧘',walk:'🚶',bike:'🚴',weights:'🏋️',other:'💪'};
     const feelEmoji={easy:'😌',good:'💪',tough:'🔥'};
     const weekMoves=movementLogs.filter(e=>{
       const d=new Date(now); d.setDate(now.getDate()-(dow===0?6:dow-1));
@@ -2722,13 +2722,14 @@
     const moveBorder=moveColor;
     const todayMoveArr=weekMoves[dow===0?6:dow-1]||[];
     const todayMove=todayMoveArr[0];
-    const moveEmoji={pilates:'🧘',walk:'🚶',bike:'🚴',stretch:'🤸',other:'💪'};
+    const moveEmoji={pilates:'🧘',walk:'🚶',bike:'🚴',weights:'🏋️',other:'💪'};
 
     // Last active
     const lastActive=activeLogs[0]||null;
     const activeEmoji2={retinol:'🟡 Retinol',reedle:'🟢 Reedle',bha:'🟣 BHA',recovery:'💤 Recovery'};
 
     // Next chore
+    const choreList=lsGet('jodee-chores',[]);
     const nextChore=choreList[0]||null;
 
     const tileStyle=(border)=>`background:var(--card);border:1px solid ${border};border-radius:10px;padding:16px;cursor:pointer;transition:transform 0.15s;box-shadow:0 0 12px ${border}22;`;
