@@ -2728,9 +2728,10 @@
     const lastActive=activeLogs[0]||null;
     const activeEmoji2={retinol:'🟡 Retinol',reedle:'🟢 Reedle',bha:'🟣 BHA',recovery:'💤 Recovery'};
 
-    // Next chore
+    // Next chore — show today's picked chore if one exists, else first in backlog
     const choreList=lsGet('jodee-chores',[]);
-    const nextChore=choreList[0]||null;
+    const savedPicked=lsGet('jodee-picked-chore',null);
+    const nextChore=savedPicked||choreList[0]||null;
 
     const tileStyle=(border)=>`background:var(--card);border:1px solid ${border};border-radius:10px;padding:16px;cursor:pointer;transition:transform 0.15s;box-shadow:0 0 12px ${border}22;`;
 
@@ -3201,7 +3202,7 @@
 
   // ── CHORES ──
   const choreList = lsGet('jodee-chores', []);
-  let pickedChore=null;
+  let pickedChore = lsGet('jodee-picked-chore', null);
   function addChore(){
     const val=document.getElementById('chore-input').value.trim();
     if(!val) return;
@@ -3209,13 +3210,16 @@
     lsSet('jodee-chores', choreList);
     document.getElementById('chore-input').value='';
     renderChores();
+    renderDashboard();
   }
   function pickChore(){
     const pending=choreList.filter(c=>c);
     if(!pending.length){ alert('Add some chores first!'); return; }
     pickedChore=pending[Math.floor(Math.random()*pending.length)];
+    lsSet('jodee-picked-chore', pickedChore);
     document.getElementById('chore-picked').textContent=pickedChore.text;
     document.getElementById('chore-pick-result').style.display='block';
+    renderDashboard();
   }
   function doneChore(){
     if(!pickedChore) return;
@@ -3223,14 +3227,18 @@
     if(i>-1) choreList.splice(i,1);
     lsSet('jodee-chores', choreList);
     pickedChore=null;
+    lsSet('jodee-picked-chore', null);
     document.getElementById('chore-pick-result').style.display='none';
     renderChores();
+    renderDashboard();
   }
   function deleteChore(id){
     const i=choreList.findIndex(c=>c.id===id);
     if(i>-1) choreList.splice(i,1);
     lsSet('jodee-chores', choreList);
+    if(pickedChore&&pickedChore.id===id){ pickedChore=null; lsSet('jodee-picked-chore',null); document.getElementById('chore-pick-result').style.display='none'; }
     renderChores();
+    renderDashboard();
   }
   function renderChores(){
     const el=document.getElementById('chore-list');
@@ -4006,6 +4014,8 @@
   refreshActiveConfirmUI(); renderSuppDailyTicks(); renderSuppPatterns();
   renderStreakTile(); renderWorkoutLog(); renderKoreanLog();
   renderTutorSessionDisplay(); renderDayContextNotes();
+  // restore picked chore if one was saved
+  if(pickedChore){ document.getElementById('chore-picked').textContent=pickedChore.text; document.getElementById('chore-pick-result').style.display='block'; }
   if(!inRecovery) { const n=document.getElementById('skincare-recovery-note'); if(n) n.style.display='none'; }
 </script>
 </body>
