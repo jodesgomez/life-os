@@ -3009,6 +3009,8 @@
     skinLogs.unshift(entry);
     lsSet('jodee-skinlogs', skinLogs);
     renderSkinLogs();
+    renderDashboard();
+    renderPatterns();
     skinScore=0; skinFlagsSelected.clear();
     [1,2,3,4,5].forEach(k=>document.getElementById('sl-'+k).className='supp-btn');
     document.querySelectorAll('#skin-flags .supp-btn').forEach(b=>b.className='supp-btn');
@@ -3104,6 +3106,8 @@
     ['rf-good','rf-groggy','rf-ok'].forEach(id=>document.getElementById(id).className='supp-btn');
     renderRestRecommendation();
     renderSleepLogs();
+    renderDashboard();
+    renderPatterns();
   }
   function setSleepQ(v){
     sleepQ=v;
@@ -3128,6 +3132,9 @@
     sleepLogs.unshift(entry);
     lsSet('jodee-sleeplogs', sleepLogs);
     renderSleepLogs();
+    renderDashboard();
+    renderPatterns();
+    renderRestRecommendation();
   }
   function renderSleepLogs(){
     const el=document.getElementById('sleep-log-list');
